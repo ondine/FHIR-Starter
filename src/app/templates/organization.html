@@ -1,0 +1,36 @@
+<div class="container-fluid">
+    <div class="well well-lg">
+        <h3>Organization Administration</h3>
+        <span class="back pull-right"><a href="/editOrganization">Add an Organization</a></span>
+    </div>
+    <ng-include src="'/templates/error.html'"></ng-include>
+    <ng-include src="'/templates/success.html'"></ng-include>
+    <div class="row">
+        <legend>Search</legend>
+        <div class="col-lg-6">
+            <form name="organizationSearchForm" class="form-horizontal" ng-submit="search(searchSpecification)">
+                <p class="input-group">
+                    <input name="search" type="text" class="form-control" ng-model="searchSpecification"
+                           placeholder="Search for Organization by name"/>
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="search(searchSpecification)">
+                                <i class="fa fa-search"></i>
+                            </button>
+                       </span>
+                </p>
+            </form>
+        </div>
+        <div class="col-lg-12" ng-show="bundle">
+            <label>{{bundle.title}}: ({{bundle.totalResults | number}} results found)</label>
+            <ol>
+                <div ng-repeat="org in bundle.entry" class="col-lg-6" style="padding-bottom: 10px;">
+                    <search-item name="{{org.content.name}}"
+                                 summary="{{org.summary || '' | truncate:50}}"
+                                 resourceid="{{org.id}}"
+                                 edit="edit(org.$$hashKey)"
+                                 remove="delete(org.$$hashKey)"/>
+                </div>
+            </ol>
+        </div>
+    </div>
+</div>

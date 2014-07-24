@@ -1,0 +1,52 @@
+<div ng-controller="AddressController">
+    <ng-form name="addressEditForm" class="form-horizontal" ng-model="addresses">
+        <label class="col-lg-2 control-label">Address</label>
+
+        <div class="col-lg-10">
+            <div class="btn-group" style="padding-bottom: 20px">
+                <label class="btn btn-info btn-sm" ng-model="address.use" btn-radio="'home'"><i class="fa fa-home"></i>&nbsp;Home</label>
+                <label class="btn btn-info btn-sm" ng-model="address.use" btn-radio="'work'"><i class="fa fa-building"></i>&nbsp;Work</label>
+                <label class="btn btn-info btn-sm" ng-model="address.use" btn-radio="'temp'"><i class="fa fa-eraser"></i>&nbsp;Temp</label>
+                <label class="btn btn-info btn-sm" ng-model="address.use" btn-radio="'old'"><i class="fa fa-history"></i>&nbsp;Old</label>
+            </div>
+        </div>
+
+        <div class="controls col-lg-3 col-lg-offset-2">
+            <textarea required id="address-street" class="form-control" rows="2" placeholder="Street"
+                      ng-model="address.line"></textarea>
+        </div>
+
+        <div class="controls col-lg-3">
+            <input required type="text" id="address-city" class="form-control" placeholder="City"
+                   ng-model="address.city">
+        </div>
+        <div class="controls col-lg-2">
+            <input required type="text" ng-model="address.state"
+                   typeahead="state for state in states | filter:$viewValue | limitTo:3"
+                   class="form-control" placeholder="State" id="address-state">
+        </div>
+        <div class="controls col-lg-2">
+            <input required type="text" id="address-zip" class="form-control"
+                   ng-pattern="/^\d{5}([\-]?\d{4})$/" placeholder="Postal Code"
+                   ng-model="address.zip">
+        </div>
+
+        <div class="col-lg-12" style="padding-top: 10px">
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-default" ng-click="reset(addressEditForm)">Reset
+                </button>
+                <button type="submit" ng-disabled="addressEditForm.$invalid" class="btn btn-primary"
+                        ng-click="saveAddress(addressEditForm, address)">Save Address
+                </button>
+            </div>
+        </div>
+    </ng-form>
+    <div ng-show="addresses" class="col-lg-10 col-lg-offset-2" style="padding-top: 50px">
+        <ul class="list-group">
+            <div ng-repeat="address in addresses">
+                <address-item address="address" edit="editAddress(address)"
+                              remove="removeAddress(address)"/>
+            </div>
+        </ul>
+    </div>
+</div>

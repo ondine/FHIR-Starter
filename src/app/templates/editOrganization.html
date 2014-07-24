@@ -1,0 +1,66 @@
+<div class="container-fluid">
+    <div class="well well-lg">
+        <h3>Organization Administration</h3>
+
+        <span class="back pull-right">
+        <a ng-show="mode=='edit'" href="/editOrganization">Add an Organization</a>&nbsp;&nbsp;<a href="/organization">Find
+            an Organization</a>
+        </span>
+    </div>
+    <ng-include src="'/templates/error.html'"></ng-include>
+    <ng-include src="'/templates/success.html'"></ng-include>
+    <div style="padding-top: 20px">
+        <ng-form name="organizationEditForm" class="form-horizontal" ng-model="organization">
+            <div ng-show="resource">
+                <legend>Editing {{resource.title}}</legend>
+            </div>
+            <div ng-hide="resource">
+                <legend>Add new Organization</legend>
+            </div>
+
+            <fieldset>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label" for="organization-name">Name</label>
+
+                    <div class="col-lg-5">
+                        <input required type="text" id="organization-name" class="form-control"
+                               placeholder="The name associated with the organization"
+                               ng-model="organization.name">
+                    </div>
+
+                    <div class="col-lg-2">
+                        <label for="organization-type" class="control-label pull-right">Type</label>
+                    </div>
+                    <div class="col-lg-3">
+                        <select class="form-control" id="organization-type" ng-model="organization.type.coding[0]">
+                            <option ng-repeat="coding in codings" value="{{coding}}"
+                                    ng-selected="coding.code===organization.type.coding[0].code">
+                                {{coding.display}}
+                            </option>
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group well">
+                    <ng-include src="'/templates/identifier.html'"></ng-include>
+                </div>
+                <div class="form-group well">
+                    <ng-include src="'/templates/address.html'"></ng-include>
+                </div>
+
+                <div class="form-group well">
+                    <ng-include src="'/templates/telecom.html'"></ng-include>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-lg-10 col-lg-offset-2">
+                        <button class="btn btn-default" ng-click="reset()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" ng-click="save()">Submit
+                        </button>
+                    </div>
+                </div>
+            </fieldset>
+        </ng-form>
+    </div>
+</div>

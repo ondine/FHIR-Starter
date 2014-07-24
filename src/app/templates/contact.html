@@ -1,0 +1,48 @@
+<div ng-controller="ContactController">
+    <ng-form name="contactForm" class="form-horizontal">
+        <label class="col-lg-2 control-label">Contact</label>
+
+        <div class="controls col-lg-4">
+            <div class="btn-group">
+                <label class="btn btn-info btn-sm" ng-model="contact.use" btn-radio="'home'"><i class="fa fa-home"></i>&nbsp;Home</label>
+                <label class="btn btn-info btn-sm" ng-model="contact.use" btn-radio="'work'"><i class="fa fa-building"></i>&nbsp;Work</label>
+                <label class="btn btn-info btn-sm" ng-model="contact.use" btn-radio="'mobile'"><i class="fa fa-mobile"></i>&nbsp;Mobile</label>
+                <label class="btn btn-info btn-sm" ng-model="contact.use" btn-radio="'temp'"><i class="fa fa-eraser"></i>&nbsp;Temp</label>
+                <label class="btn btn-info btn-sm" ng-model="contact.use" btn-radio="'old'"><i class="fa fa-history"></i>&nbsp;Old</label>
+            </div>
+        </div>
+
+        <div class="controls col-lg-3">
+            <div class="btn-group">
+                <label class="btn btn-primary btn-sm" ng-model="contact.system" btn-radio="'phone'"><i class="fa fa-phone"></i>&nbsp;Phone</label>
+                <label class="btn btn-primary btn-sm" ng-model="contact.system" btn-radio="'fax'"><i class="fa fa-fax"></i>&nbsp;Fax</label>
+                <label class="btn btn-primary btn-sm" ng-model="contact.system" btn-radio="'email'"><i class="fa fa-envelope"></i>&nbsp;Email</label>
+                <label class="btn btn-primary btn-sm" ng-model="contact.system" btn-radio="'url'"><i class="fa fa-chain"></i>&nbsp;Url</label>
+            </div>
+        </div>
+
+        <div class="controls col-lg-3">
+            <input required id="value" class="form-control" placeholder="fax, phone, email or url"
+                   ng-model="contact.value">
+        </div>
+
+        <div class="col-lg-12" style="padding-top: 10px">
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-default" ng-click="reset(contactForm)">Reset
+                </button>
+                <button type="submit" ng-disabled="contactForm.$invalid" class="btn btn-primary"
+                        ng-click="saveContact(contactForm)">Save Contact
+                </button>
+            </div>
+        </div>
+    </ng-form>
+
+    <div ng-show="showContact" class="col-lg-10 col-lg-offset-2" style="padding-top: 50px">
+        <ul class="list-group">
+            <div ng-repeat="contact in contacts">
+                <contact-item contact="contact" edit="editContact(contact)"
+                              remove="removeContact(contact)"/>
+            </div>
+        </ul>
+    </div>
+</div>
