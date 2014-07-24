@@ -6,7 +6,7 @@ FHIRStarter.controller('OrganizationController',
             $scope.coding = null;
             $scope.codings = organizationService.getTypeCoding();
             $scope.mode = $route.current.mode;
-            $scope.searchSpecification = null;
+            $scope.searchText = "";
 
             $scope.$on('updatedIdentifiers',
                 function (event, data) {
@@ -28,10 +28,10 @@ FHIRStarter.controller('OrganizationController',
                 $route.reload();
             };
 
-            $scope.enterSubmit = function() {
-              if (angular.isDefined($scope.searchSpecification)) {
-                  organizationService.query($scope.searchSpecification).then(onSearch, onError);
-              }
+            $scope.enterSubmit = function () {
+                if (angular.isDefined($scope.searchText)) {
+                    organizationService.query($scope.searchText).then(onSearch, onError);
+                }
             };
 
             $scope.save = function () {
@@ -73,18 +73,19 @@ FHIRStarter.controller('OrganizationController',
                 $location.url('/editOrganization/' + hashKey);
             };
 
-            $scope.search = function (name) {
-                organizationService.query(name).then(onSearch, onError);
+            $scope.search = function () {
+                organizationService.query($scope.searchText).then(onSearch, onError);
             };
 
             var onSearch = function (data) {
                 $scope.bundle = data;
+                $scope.searchedText = $scope.searchText;
             };
 
             var onDeleted = function () {
                 $scope.message = $scope.resource.title + " deleted.";
-                if (angular.isDefined($scope.searchSpecification)) {
-                    $scope.search($scope.searchSpecification);
+                if (angular.isDefined($scope.searchText)) {
+                    $scope.search($scope.searchText);
                 }
                 $anchorScroll();
             };
@@ -95,7 +96,8 @@ FHIRStarter.controller('OrganizationController',
                 } else {
                     $scope.message = $scope.organization.name + " added.";
                     $scope.mode = 'edit';
-                };
+                }
+                ;
                 initializeOrganization();
                 $anchorScroll();
             };

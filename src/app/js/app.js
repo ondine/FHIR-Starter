@@ -66,7 +66,10 @@ var FHIRStarter = angular.module('FHIRStarter', ['ngRoute', 'ngAnimate', 'ngSani
             }
             return resultString;
         };
-    });
+    })
+    .run(['$route',  function ($route) {
+        // Include $route to kick start the router.
+    }]);
 
 function generateUUID() {
     var d = new Date().getTime();

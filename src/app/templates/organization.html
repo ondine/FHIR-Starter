@@ -6,14 +6,19 @@
     <ng-include src="'/templates/error.html'"></ng-include>
     <ng-include src="'/templates/success.html'"></ng-include>
     <div class="row">
-        <legend>Search</legend>
+        <div ng-show="searchedText">
+            <legend>Search results for '{{searchedText}}'</legend>
+        </div>
+        <div ng-hide="searchedText">
+            <legend>Search</legend>
+        </div>
         <div class="col-lg-6">
-            <form name="organizationSearchForm" class="form-horizontal" ng-submit="search(searchSpecification)">
+            <form name="organizationSearchForm" class="form-horizontal" ng-submit="search()">
                 <p class="input-group">
-                    <input name="search" type="text" class="form-control" ng-model="searchSpecification"
+                    <input name="search" type="text" class="form-control" ng-model="searchText"
                            placeholder="Search for Organization by name"/>
                         <span class="input-group-btn">
-                            <button type="button" class="btn btn-default" ng-click="search(searchSpecification)">
+                            <button type="button" class="btn btn-default" ng-click="search()">
                                 <i class="fa fa-search"></i>
                             </button>
                        </span>
