@@ -58,7 +58,7 @@
 
     app.config(['$httpProvider', function($httpProvider) {
         // app-specific header X-FHIR-Starter for CORS
-        $httpProvider.defaults.headers.common = { 'Accept': 'application/json+fhir, application/json'};
+        $httpProvider.defaults.headers.common = { 'Accept': 'application/json+fhir, application/json, text/plain, */*'};
         $httpProvider.defaults.headers.put = { 'Content-Type': 'application/json+fhir', 'X-FHIR-Starter': 'urn:fhir.starter' };
         $httpProvider.defaults.headers.post = { 'Content-Type': 'application/json+fhir', 'X-FHIR-Starter': 'urn:fhir.starter' };
         $httpProvider.defaults.headers.delete = { 'X-FHIR-Starter': 'urn:fhir.starter' };
