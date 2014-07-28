@@ -1,0 +1,58 @@
+﻿<section class="mainbar" data-ng-controller="organizations as vm">
+    <section class="matter">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="col-md-12">
+                    <input class="form-control search-query"
+                           data-ng-model="vm.searchText"
+                           data-ng-keyup="vm.search($event)"
+                           placeholder="Search organizations by name..."
+                            />
+                    <div class="btn-group pull-right">
+                        <a class="btn btn-info"
+                           data-ng-click="vm.search($event)"><i class="fa fa-search"></i><span>Search</span></a>
+                        <a class="btn btn-info" href="/organization/new"><i class="fa fa-plus"></i><span>Add Organization</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="widget worange">
+                    <div data-cc-widget-header title="{{vm.title}}"
+                         subtitle="{{vm.organizationsFilteredCount}} / {{vm.organizationsCount}}"
+                         right-text="Page {{vm.paging.currentPage}} of {{vm.paging.pageCount}}"></div>
+                    <div class="widget-content col-sm-12">
+                        <ol>
+                            <div class="col-sm-6"
+                                 data-ng-repeat="o in vm.organizations"
+                                 data-ng-click="vm.goToOrganization(o)">
+                                <fs-search-item name="{{o.content.name}}"
+                                                summary="{{o.summary || '' | truncate:50}}"
+                                                resourceid="{{o.id}}"
+                                                edit="edit(o.$$hashKey)"
+                                                remove="delete(o.$$hashKey)"></fs-search-item>
+                            </div>
+                        </ol>
+                    </div>
+                </div>
+                <div class="widget-foot">
+                    <div class="clearfix"></div>
+                    <pagination boundary-links="false"
+                                ng-change="vm.pageChanged(page)"
+                                total-items="vm.organizationsFilteredCount"
+                                items-per-page="vm.paging.pageSize"
+                                ng-model="vm.paging.currentPage"
+                                max-size="vm.paging.maxPagesToShow"
+                                class="pagination-small"
+                                previous-text="Prev"
+                                next-text="Next"
+                                first-text="First"
+                                last-text="Last"></pagination>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+</section>
