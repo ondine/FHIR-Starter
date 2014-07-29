@@ -24,33 +24,38 @@
             var promises = [getServers(), getActiveServer()];
             common.activateController(promises, controllerId)
                 .then(function () {
-                    if (vm.activeServer !== null) {
+                    if (vm.activeServer) {
                         fetchConformance(vm.activeServer);
                     }
                 });
         }
 
         function changeServer(id) {
-            vm.isBusy = true;
+            toggleSpinner(true);
             conformanceService.clearCache();
             fhirServers.getServerById(id)
                 .then(function (selectedServer) {
                     log('Updated active server to ' + selectedServer.name);
                     return vm.activeServer = selectedServer;
+                }, function (error) {
+                    log('Error ' + error);
+                    toggleSpinner(false);
                 })
                 .then(setActiveServer)
                 .then(fetchConformance)
                 .then(function () {
-                    vm.isBusy = false;
+                    toggleSpinner(false);
                 });
         }
 
         function fetchConformance(server) {
-            conformanceService.getConformance(server.baseUrl)
-                .then(function (conformance) {
-                    log('Loaded conformance statement for ' + vm.activeServer.name);
-                    return vm.conformance = conformance;
-                });
+            if (server) {
+                conformanceService.getConformance(server.baseUrl)
+                    .then(function (conformance) {
+                        log('Loaded conformance statement for ' + vm.activeServer.name);
+                        return vm.conformance = conformance;
+                    });
+            }
         }
 
         function getActiveServer() {
@@ -70,6 +75,10 @@
         function setActiveServer(server) {
             fhirServers.setActiveServer(server);
             return server;
+        }
+
+        function toggleSpinner(on) {
+            vm.isBusy = on;
         }
     }
 })();

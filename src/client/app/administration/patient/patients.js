@@ -71,6 +71,9 @@
                     .then(function (data) {
                         log('Returned ' + (angular.isArray(data.entry) ? data.entry.length : 0) + ' Patients from ' + vm.activeServer.name, true);
                         return data;
+                    }, function(error) {
+                        log('Error ' + error);
+                        toggleSpinner(false);
                     })
                     .then(processSearchResults)
                     .then(function () {

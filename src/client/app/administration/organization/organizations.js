@@ -23,17 +23,20 @@
         vm.pageChanged = pageChanged;
         vm.paging = {
             currentPage: 1,
+            links: null,
             maxPagesToShow: 5,
-            pageSize: 15
+            pageSize: 15,
+            totalResults: 0
         };
         vm.refresh = refresh;
         vm.search = search;
+        vm.searchResults = null;
         vm.searchText = '';
         vm.title = 'Organizations';
 
         Object.defineProperty(vm.paging, 'pageCount', {
             get: function () {
-                return Math.floor(vm.filteredOrganizationsCount / vm.paging.pageSize) + 1;
+                return Math.floor(vm.paging.totalResults / vm.paging.pageSize) + 1;
             }
         });
 
@@ -57,26 +60,8 @@
                 });
         }
 
-        function getOrganizationsCount() {
-
-        }
-
         function getOrganizationsFilteredCount() {
-
-        }
-
-        function getOrganizations() {
-            if (vm.searchText.length > 0) {
-                toggleSpinner(true);
-                organizationService.search(vm.activeServer.baseUrl, vm.searchText)
-                    .then(function (data) {
-                        log('Returned ' + (angular.isArray(data) ? data.length : 0) + ' Organizations from ' + vm.activeServer.name, true);
-                        return vm.organizations = data;
-                    })
-                    .then(function () {
-                        toggleSpinner(false);
-                    });
-            }
+            // TODO: filter results based on doB or address, etc.
         }
 
         function goToOrganization(organization) {
@@ -92,23 +77,44 @@
             return isMatch;
         }
 
-        function pageChanged(page) {
-            if (!page) {
-                return;
-            }
-            vm.paging.currentPage = page;
+        function pageChanged() {
             getOrganizations();
         }
 
+        function processSearchResults(searchResults) {
+            vm.organizations = searchResults.entry;
+            vm.paging.links = searchResults.link;
+            vm.paging.totalResults = searchResults.totalResults;
+        }
+
         function refresh() {
-            getOrganizations();
+
         }
 
         function search($event) {
             if ($event.keyCode === keyCodes.esc) {
                 vm.searchText = '';
             } else if ($event.keyCode === keyCodes.enter || $event.type === 'click') {
+                vm.paging.currentPage = 1;
                 getOrganizations();
+            }
+        }
+
+        function getOrganizations() {
+            if (vm.searchText.length > 0) {
+                toggleSpinner(true);
+                organizationService.getOrganizations(vm.activeServer.baseUrl, vm.searchText, vm.paging.currentPage, vm.paging.pageSize)
+                    .then(function (data) {
+                        log('Returned ' + (angular.isArray(data.entry) ? data.entry.length : 0) + ' Organizations from ' + vm.activeServer.name, true);
+                        return data;
+                    }, function(error) {
+                        log('Error ' + error);
+                        toggleSpinner(false);
+                    })
+                    .then(processSearchResults)
+                    .then(function () {
+                        toggleSpinner(false);
+                    });
             }
         }
 

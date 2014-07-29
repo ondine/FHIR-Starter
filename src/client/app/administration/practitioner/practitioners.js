@@ -64,22 +64,7 @@
             // TODO: filter results based on doB or address, etc.
         }
 
-        function fetchLinkedPage(url) {
-            if (url.length > 0) {
-                toggleSpinner(true);
-                practitionerService.getLink(url)
-                    .then(function (data) {
-                        log('Returned ' + (angular.isArray(data.entry) ? data.entry.length : 0) + ' Practitioners from ' + vm.activeServer.name, true);
-                        return data;
-                    })
-                    .then(processSearchResults)
-                    .then(function () {
-                        toggleSpinner(false);
-                    });
-            }
-        }
-
-        function goToPractitioner(practitioner) {
+         function goToPractitioner(practitioner) {
             if (practitioner && practitioner.$$hashKey) {
                 $location.path('/practitioner/' + practitioner.$$hashKey);
             }
@@ -123,6 +108,9 @@
                         log('Returned ' + (angular.isArray(data.entry) ? data.entry.length : 0) + ' Practitioners from ' + vm.activeServer.name, true);
                         return data;
                     }, function (error) {
+                        log('Error ' + error);
+                        toggleSpinner(false);
+                    }, function(error) {
                         log('Error ' + error);
                         toggleSpinner(false);
                     })
