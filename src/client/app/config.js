@@ -25,10 +25,7 @@
         del: 46
     };
 
-    // Use Furore for now (pending update to CORS support from other service implementers)
-    var fhirServerUrl = 'http://spark.furore.com/fhir';
-
-    var events = {
+     var events = {
         controllerActivateSuccess: 'controller.activateSuccess',
         spinnerToggle: 'spinner.toggle'
     };
@@ -37,7 +34,6 @@
         appErrorPrefix: '[FS Error] ', //Configure the exceptionHandler decorator
         docTitle: 'FHIRStarter: ',
         events: events,
-        fhirServerUrl: fhirServerUrl,
         keyCodes: keyCodes,
         version: '0.1.0'
     };

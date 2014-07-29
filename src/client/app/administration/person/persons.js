@@ -45,7 +45,7 @@
         function activate() {
             common.activateController([getActiveServer()], controllerId)
                 .then(function () {
-                    log('Activated Person View');
+                    // nothing to do
                 });
         }
 

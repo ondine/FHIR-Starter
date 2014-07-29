@@ -27,7 +27,6 @@
                     if (vm.activeServer !== null) {
                         fetchConformance(vm.activeServer);
                     }
-                    log('Activated Dashboard View');
                 });
         }
 

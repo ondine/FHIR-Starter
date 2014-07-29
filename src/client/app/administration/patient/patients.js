@@ -45,7 +45,7 @@
         function activate() {
             common.activateController([getActiveServer()], controllerId)
                 .then(function () {
-                    log('Activated Patient View');
+                    // nothing to do
                 });
         }
 

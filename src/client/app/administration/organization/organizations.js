@@ -42,7 +42,7 @@
         function activate() {
             common.activateController([getActiveServer()], controllerId)
                 .then(function () {
-                    log('Activated Organization View');
+                    // nothing to do
                 });
         }
 
