@@ -11,6 +11,7 @@
         var vm = this;
 
         vm.activeServer = null;
+        vm.busyMessage = "Contacting remote server ...";
         vm.cacheInfo = null;
         vm.changeServer = changeServer;
         vm.conformance = null;

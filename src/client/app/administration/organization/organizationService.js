@@ -44,15 +44,9 @@
             if (angular.isUndefined(nameFilter)) {
                 deferred.reject('Invalid search input');
             }
-            var names = nameFilter.split(' ');
-            if (names.length === 1) {
-                params = 'name=' + names[0];
-            } else {
-                params = 'given=' + names[0] + '&family=' + names[1];
-            }
-            params = params + '&_offset=' + skip + '&_count=' + take;
+            params = nameFilter + '&search-offset=' + skip + '&_count=' + take;
 
-            fhirClient.getResource(baseUrl + '/Organization/_search?' + params)
+            fhirClient.getResource(baseUrl + '/Organization/_search?name=' + params)
                 .then(function (data) {
                     dataCache.addToCache('organizations', data.entry);
                     deferred.resolve(data);
@@ -64,31 +58,6 @@
 
         function updateOrganization(resourceId, resource) {
 
-        }
-
-        function searchOrganizations(baseUrl, name, pageSize, offset) {
-            var deferred = $q.defer();
-
-            if (angular.isUndefined(name)) {
-                deferred.reject('Invalid search input');
-            }
-
-            var params = '';
-            var names = name.split(' ');
-            if (names.length === 1) {
-                params = 'family=' + names[0];
-            } else {
-                params = 'given=' + names[0] + '&family=' + names[1] + '&search-offset=' + offset + '&_count=' + pageSize;
-            }
-
-            fhirClient.getResource(baseUrl + '/Organization/_search?' + params)
-                .then(function (data) {
-                    dataCache.addToCache('organizations', data.entry);
-                    deferred.resolve(data);
-                }, function (outcome) {
-                    deferred.reject(outcome);
-                });
-            return deferred.promise;
         }
     }
 })();

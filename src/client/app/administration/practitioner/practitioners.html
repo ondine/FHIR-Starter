@@ -19,9 +19,6 @@
                 </div>
             </div>
         </div>
-        <div data-ng-show="vm.isBusy" >
-            <img src="/content/images/loading.gif" class="img-responsive center-block"/>
-        </div>
         <div class="container">
             <div class="row" data-ng-show="vm.practitioners">
                 <div class="widget wgreen">
@@ -58,6 +55,9 @@
                     <div class="clearfix"></div>
                 </div>
             </div>
+        </div>
+        <div data-ng-show="vm.isBusy" class="page-splash dissolve-animation">
+            <div class="page-splash-message page-splash-message-subtle">{{vm.busyMessage}}&nbsp;&nbsp;<i class="fa fa-spinner fa-spin"></i></div>
         </div>
     </section>
 </section>
