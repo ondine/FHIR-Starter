@@ -1,4 +1,4 @@
-﻿(function() {
+﻿(function () {
     'use strict';
 
     var app = angular.module('FHIRStarter');
@@ -15,7 +15,7 @@
         return directive;
 
         function link(scope, element, attrs) {
-            attrs.$observe('ccImgPerson', function(value) {
+            attrs.$observe('ccImgPerson', function (value) {
                 value = basePath + (value || unknownImage);
                 attrs.$set('src', value);
             });
@@ -148,7 +148,7 @@
                 });
 
                 function toggleIcon() {
-                    $win.scrollTop() > 300 ? element.slideDown(): element.slideUp();
+                    $win.scrollTop() > 300 ? element.slideDown() : element.slideUp();
                 }
             }
         }
@@ -177,7 +177,7 @@
         }
     }]);
 
-    app.directive('ccWidgetHeader', function() {
+    app.directive('ccWidgetHeader', function () {
         //Usage:
         //<div data-cc-widget-header title="vm.map.title"></div>
         var directive = {
@@ -198,7 +198,7 @@
         }
     });
 
-    app.directive('fsSearchItem', function() {
+    app.directive('fsSearchItem', function () {
         // Description:
         //
         // Usage:
@@ -211,8 +211,7 @@
                 name: "@name",
                 resourceid: "@resourceid",
                 summary: "@summary",
-                edit: "&",
-                remove: "&"
+                edit: "&"
             }
         };
         return directive;

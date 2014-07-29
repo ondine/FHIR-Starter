@@ -3,9 +3,9 @@
 
     var serviceId = 'organizationService';
 
-    angular.module('FHIRStarter').factory(serviceId, ['common', 'config', 'fhirClient', organizationService]);
+    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', organizationService]);
 
-    function organizationService(common, config, fhirClient) {
+    function organizationService(common, dataCache, fhirClient) {
         var getLogFn = common.logger.getLogFn;
         var log = getLogFn(serviceId);
         var logError = getLogFn(serviceId, 'error');
@@ -22,9 +22,7 @@
 
         return service;
 
-
         function addOrganization(resource) {
-
         }
 
         function updateOrganization(resourceId, resource) {
@@ -39,24 +37,17 @@
 
         }
 
-        function searchOrganizations(name) {
-            var organizations;
+        function searchOrganizations(baseUrl, name) {
+            var deferred = $q.defer();
 
-            var url = config.fhirServerUrl + "/Organization/_search?name=" + name;
-
-            return fhirClient.getResource(url).then(searchSucceeded, _searchFailed);
-
-            function searchSucceeded(data) {
-                organizations = data.entry;
-                log('Retrieved [Organizations] from the remote FHIR server', organizations.length, true);
-                return organizations;
-            }
-        }
-
-        function _searchFailed(error) {
-            var msg = config.appErrorPrefix + 'Error retrieving Organization data. [HTTP Status: ' + error.status + ']' + error.outcome;
-            logError(msg, error);
-            throw error;
+            fhirClient.getResource(baseUrl + '/Organization/_search?name=' + name)
+                .then(function (data) {
+                    dataCache.addToCache('organizations', data.entry);
+                    deferred.resolve(data.entry);
+                }, function (outcome) {
+                    deferred.reject(outcome);
+                });
+            return deferred.promise;
         }
     }
 })();

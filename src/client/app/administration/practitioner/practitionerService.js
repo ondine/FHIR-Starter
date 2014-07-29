@@ -1,25 +1,94 @@
 ﻿(function () {
     'use strict';
 
-    var serviceId = 'organizationService';
+    var serviceId = 'practitionerService';
 
-    // TODO: replace app with your module name
-    angular.module('app').factory(serviceId, ['$http', organizationService]);
+    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', practitionerService]);
 
-    function organizationService($http) {
-        // Define the functions and properties to reveal.
+    function practitionerService(common, dataCache, fhirClient) {
+        var getLogFn = common.logger.getLogFn;
+        var log = getLogFn(serviceId);
+        var logError = getLogFn(serviceId, 'error');
+        var logSuccess = getLogFn(serviceId, 'success');
+        var $q = common.$q;
+
         var service = {
-            getData: getData
+            addPractitioner: addPractitioner,
+            updatePractitioner: updatePractitioner,
+            getPractitioner: getPractitioner,
+            deletePractitioner: deletePractitioner,
+            getPractitioners: getPractitioners
         };
 
         return service;
 
-        function getData() {
+
+        function addPractitioner(resource) {
 
         }
 
-        //#region Internal Methods        
+        function deletePractitioner(resourceId) {
 
-        //#endregion
+        }
+
+        function getPractitioner(resourceId) {
+
+        }
+
+        function getPractitioners(baseUrl, nameFilter, page, size) {
+            var deferred = $q.defer();
+            var params = '';
+            var take = size || 20;
+            var skip = page ? (page - 1) * take : 0;
+
+            if (angular.isUndefined(nameFilter)) {
+                deferred.reject('Invalid search input');
+            }
+            var names = nameFilter.split(' ');
+            if (names.length === 1) {
+                params = 'name=' + names[0];
+            } else {
+                params = 'given=' + names[0] + '&family=' + names[1];
+            }
+            params = params + '&_offset=' + skip + '&_count=' + take;
+
+            fhirClient.getResource(baseUrl + '/Practitioner/_search?' + params)
+                .then(function (data) {
+                    dataCache.addToCache('practitioners', data.entry);
+                    deferred.resolve(data);
+                }, function (outcome) {
+                    deferred.reject(outcome);
+                });
+            return deferred.promise;
+        }
+
+        function updatePractitioner(resourceId, resource) {
+
+        }
+
+        function searchPractitioners(baseUrl, name, pageSize, offset) {
+            var deferred = $q.defer();
+
+            if (angular.isUndefined(name)) {
+                deferred.reject('Invalid search input');
+            }
+
+            var params = '';
+            var names = name.split(' ');
+            if (names.length === 1) {
+                params = 'family=' + names[0];
+            } else {
+                params = 'given=' + names[0] + '&family=' + names[1] + '&search-offset=' + offset + '&_count=' + pageSize;
+            }
+
+            fhirClient.getResource(baseUrl + '/Practitioner/_search?' + params)
+                .then(function (data) {
+                    dataCache.addToCache('practitioners', data.entry);
+                    deferred.resolve(data);
+                }, function (outcome) {
+                    deferred.reject(outcome);
+                });
+            return deferred.promise;
+        }
     }
 })();

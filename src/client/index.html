@@ -2,8 +2,6 @@
 <html data-ng-app="FHIRStarter">
 <head>
     <style>
-        /* This helps the ng-show/ng-hide animations start at the right place. */
-        /* Since Angular has this but needs to load, this gives us the class early. */
         .ng-hide {
             display: none!important;
         }
@@ -23,16 +21,6 @@
 <body>
 <div>
     <div data-ng-include="'/app/layout/shell.html'"></div>
-    <div id="splash-page" data-ng-show="false">
-        <div class="page-splash">
-            <div class="page-splash-message">
-                FHIR Starter
-            </div>
-            <div class="progress progress-striped active page-progress-bar">
-                <div class="bar"></div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <span data-cc-scroll-to-top></span>
@@ -41,13 +29,13 @@
 <script src="lib/jquery-2.1.1.min.js"></script>
 <script src="lib/angular/angular.js"></script>
 <script src="lib/angular/angular-animate.min.js"></script>
+<script src="lib/angular/angular-cookies.min.js"></script>
 <script src="lib/angular/angular-route.min.js"></script>
 <script src="lib/angular/angular-sanitize.min.js"></script>
 <script src="lib/bootstrap.min.js"></script>
-<script src="lib/toastr.min.js"></script>
 <script src="lib/moment.min.js"></script>
+<script src="lib/toastr.min.js"></script>
 <script src="lib/ui-bootstrap-tpls-0.11.0.min.js"></script>
-<script src="lib/spin.min.js"></script>
 
 <!-- Bootstrapping -->
 <script src="app/app.js"></script>
@@ -66,17 +54,31 @@
 <!-- app -->
 <script src="app/layout/shell.js"></script>
 <script src="app/layout/sidebar.js"></script>
-<script src="app/dashboard/dashboard.js"></script>
 
 <!-- app Services -->
-<script src="app/services/filters.js"></script>
+<script src="app/services/dataCache.js"></script>
 <script src="app/services/directives.js"></script>
 <script src="app/services/fhirClient.js"></script>
+<script src="app/services/fhirServers.js"></script>
+<script src="app/services/filters.js"></script>
+
+<!-- dashboard -->
+<script src="app/dashboard/dashboard.js"></script>
+<script src="app/dashboard/conformanceService.js"></script>
 
 <!-- FHIR Administration Services -->
 <script src="app/administration/organization/organizations.js"></script>
 <script src="app/administration/organization/organizationDetail.js"></script>
 <script src="app/administration/organization/organizationService.js"></script>
+<script src="app/administration/patient/patients.js"></script>
+<script src="app/administration/patient/patientDetail.js"></script>
+<script src="app/administration/patient/patientService.js"></script>
+<script src="app/administration/person/persons.js"></script>
+<script src="app/administration/person/personDetail.js"></script>
+<script src="app/administration/person/personService.js"></script>
+<script src="app/administration/practitioner/practitioners.js"></script>
+<script src="app/administration/practitioner/practitionerDetail.js"></script>
+<script src="app/administration/practitioner/practitionerService.js"></script>
 
 </body>
 </html>

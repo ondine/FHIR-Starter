@@ -16,7 +16,7 @@
         $routeProvider.otherwise({ redirectTo: '/' });
     }
 
-    // Define the routes 
+    // Define the routes
     function getRoutes() {
         return [
             {
@@ -29,7 +29,8 @@
                         content: '<i class="fa fa-dashboard"></i> Dashboard'
                     }
                 }
-            }, {
+            },
+            {
                 url: '/organizations',
                 config: {
                     title: 'organizations',
@@ -39,32 +40,70 @@
                         content: '<i class="fa fa-hospital-o"></i> Organization'
                     }
                 }
-            }, {
+            },
+            {
                 url: '/organization/:hashKey',
                 config: {
                     title: 'organization',
                     templateUrl: '/app/administration/organization/organizationDetail.html',
                     settings: { }
                 }
-            }, {
-                url: '/practitioner',
+            },
+            {
+                url: '/practitioners',
                 config: {
-                    title: 'practitioner',
-                    templateUrl: '/app/administration/practitioner/practitioner.html',
+                    title: 'practitioners',
+                    templateUrl: '/app/administration/practitioner/practitioners.html',
                     settings: {
-                        nav: 3,
+                        nav: 5,
                         content: '<i class="fa fa-user-md"></i> Practitioner'
                     }
                 }
-            }, {
-                url: '/patient',
+            },
+            {
+                url: '/practitioner/:hashKey',
                 config: {
-                    title: 'patient',
-                    templateUrl: '/app/administration/patient/patient.html',
+                    title: 'practitioner',
+                    templateUrl: '/app/administration/practitioner/practitionerDetail.html',
+                    settings: { }
+                }
+            },
+            {
+                url: '/patients',
+                config: {
+                    title: 'patients',
+                    templateUrl: '/app/administration/patient/patients.html',
                     settings: {
                         nav: 3,
                         content: '<i class="fa fa-male"></i> Patient'
                     }
+                }
+            },
+            {
+                url: '/patient/:hashKey',
+                config: {
+                    title: 'patient',
+                    templateUrl: '/app/administration/patient/patientDetail.html',
+                    settings: { }
+                }
+            },
+            {
+                url: '/persons',
+                config: {
+                    title: 'person',
+                    templateUrl: '/app/administration/person/persons.html',
+                    settings: {
+                        nav: 4,
+                        content: '<i class="fa fa-child"></i> Person'
+                    }
+                }
+            },
+            {
+                url: '/person/:hashKey',
+                config: {
+                    title: 'person',
+                    templateUrl: '/app/administration/person/personDetail.html',
+                    settings: { }
                 }
             }
         ];

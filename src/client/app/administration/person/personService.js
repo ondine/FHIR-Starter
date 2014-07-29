@@ -1,11 +1,11 @@
 ﻿(function () {
     'use strict';
 
-    var serviceId = 'patientService';
+    var serviceId = 'personService';
 
-    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', patientService]);
+    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', personService]);
 
-    function patientService(common, dataCache, fhirClient) {
+    function personService(common, dataCache, fhirClient) {
         var getLogFn = common.logger.getLogFn;
         var log = getLogFn(serviceId);
         var logError = getLogFn(serviceId, 'error');
@@ -13,29 +13,29 @@
         var $q = common.$q;
 
         var service = {
-            addPatient: addPatient,
-            updatePatient: updatePatient,
-            getPatient: getPatient,
-            deletePatient: deletePatient,
-            getPatients: getPatients
+            addPerson: addPerson,
+            updatePerson: updatePerson,
+            getPerson: getPerson,
+            deletePerson: deletePerson,
+            getPersons: getPersons
         };
 
         return service;
 
 
-        function addPatient(resource) {
+        function addPerson(resource) {
 
         }
 
-        function deletePatient(resourceId) {
+        function deletePerson(resourceId) {
 
         }
 
-        function getPatient(resourceId) {
+        function getPerson(resourceId) {
 
         }
 
-        function getPatients(baseUrl, nameFilter, page, size) {
+        function getPersons(baseUrl, nameFilter, page, size) {
             var deferred = $q.defer();
             var params = '';
             var take = size || 20;
@@ -52,9 +52,9 @@
             }
             params = params + '&_offset=' + skip + '&_count=' + take;
 
-            fhirClient.getResource(baseUrl + '/Patient/_search?' + params)
+            fhirClient.getResource(baseUrl + '/RelatedPerson/_search?' + params)
                 .then(function (data) {
-                    dataCache.addToCache('patients', data.entry);
+                    dataCache.addToCache('persons', data.entry);
                     deferred.resolve(data);
                 }, function (outcome) {
                     deferred.reject(outcome);
@@ -62,11 +62,11 @@
             return deferred.promise;
         }
 
-        function updatePatient(resourceId, resource) {
+        function updatePerson(resourceId, resource) {
 
         }
 
-        function searchPatients(baseUrl, name, pageSize, offset) {
+        function searchPersons(baseUrl, name, pageSize, offset) {
             var deferred = $q.defer();
 
             if (angular.isUndefined(name)) {
@@ -81,9 +81,9 @@
                 params = 'given=' + names[0] + '&family=' + names[1] + '&search-offset=' + offset + '&_count=' + pageSize;
             }
 
-            fhirClient.getResource(baseUrl + '/Patient/_search?' + params)
+            fhirClient.getResource(baseUrl + '/Person/_search?' + params)
                 .then(function (data) {
-                    dataCache.addToCache('patients', data.entry);
+                    dataCache.addToCache('persons', data.entry);
                     deferred.resolve(data);
                 }, function (outcome) {
                     deferred.reject(outcome);

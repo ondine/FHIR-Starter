@@ -1,49 +1,51 @@
-﻿<section class="mainbar" data-ng-controller="organizations as vm">
+﻿<section class="mainbar" data-ng-controller="practitioners as vm">
     <section class="matter">
-        <div class="container">
+        <div class="container-fluid">
             <div class="row-fluid">
                 <div class="col-md-12">
+
                     <input class="form-control search-query"
                            data-ng-model="vm.searchText"
                            data-ng-keyup="vm.search($event)"
-                           placeholder="Find organization by name ..."
+                           placeholder="Find practitioner by name ..."
                             />
 
                     <div class="btn-group pull-right">
                         <a class="btn btn-info"
                            data-ng-click="vm.search($event)"><i class="fa fa-search"></i><span>Search</span></a>
-                        <a class="btn btn-info" href="/organization/new"><i class="fa fa-plus"></i><span>Add Organization</span></a>
+                        <a class="btn btn-info" href="/practitioner/new"><i
+                                class="fa fa-plus"></i><span>Add Practitioner</span></a>
                     </div>
                 </div>
             </div>
         </div>
-        <div data-ng-show="vm.isBusy">
+        <div data-ng-show="vm.isBusy" >
             <img src="/content/images/loading.gif" class="img-responsive center-block"/>
         </div>
-        <div class="container" data-ng-show="vm.organizations">
-            <div class="row">
-                <div class="widget worange">
+        <div class="container">
+            <div class="row" data-ng-show="vm.practitioners">
+                <div class="widget wgreen">
                     <div data-cc-widget-header title="{{vm.title}}"
                          subtitle="{{vm.paging.totalResults}} total results"
                          right-text="Page {{vm.paging.currentPage}} of {{vm.paging.pageCount}}"></div>
                     <div class="widget-content col-sm-12">
-                        <ol>
+                        <ul class="list-group">
                             <div class="col-sm-6"
-                                 data-ng-repeat="o in vm.organizations"
-                                 data-ng-click="vm.goToOrganization(o)">
-                                <fs-search-item name="{{o.content.name}}"
-                                                summary="{{o.summary || '' | truncate:50}}"
-                                                resourceid="{{o.id}}"
-                                                edit="edit(o.$$hashKey)"></fs-search-item>
+                                 data-ng-repeat="p in vm.practitioners"
+                                 data-ng-click="vm.goToPractitioner(p)">
+                                <fs-search-item name="{{p.title}}"
+                                                summary="{{p.summary}}"
+                                                resourceid="{{p.id}}"
+                                                edit="edit(p.$$hashKey)"></fs-search-item>
                             </div>
-                        </ol>
+                        </ul>
                     </div>
                 </div>
                 <div class="widget-foot">
                     <div data-ng-show="vm.paging.totalResults > vm.paging.pageSize">
                         <pagination boundary-links="false"
                                     ng-change="vm.pageChanged()"
-                                    total-items="vm.organizationsFilteredCount"
+                                    total-items="vm.paging.totalResults"
                                     items-per-page="vm.paging.pageSize"
                                     ng-model="vm.paging.currentPage"
                                     max-size="vm.paging.maxPagesToShow"

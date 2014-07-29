@@ -4,6 +4,7 @@
     var app = angular.module('FHIRStarter', [
         // Angular modules 
         'ngAnimate',        // animations
+        'ngCookies',        // cookies
         'ngRoute',          // routing
         'ngSanitize',       // sanitizes html bindings (ex: sidebar.js)
 

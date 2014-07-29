@@ -15,9 +15,13 @@
 
         return service;
 
-        function spinnerHide() { spinnerToggle(false); }
+        function spinnerHide() {
+            spinnerToggle(false);
+        }
 
-        function spinnerShow() { spinnerToggle(true); }
+        function spinnerShow() {
+            spinnerToggle(true);
+        }
 
         function spinnerToggle(show) {
             common.$broadcast(commonConfig.config.spinnerToggleEvent, { show: show });

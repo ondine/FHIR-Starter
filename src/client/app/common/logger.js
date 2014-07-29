@@ -1,7 +1,8 @@
 (function () {
     'use strict';
     
-    angular.module('common').factory('logger', ['$log', logger]);
+    angular.module('common')
+        .factory('logger', ['$log', logger]);
 
     function logger($log) {
         var service = {

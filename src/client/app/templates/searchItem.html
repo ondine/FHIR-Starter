@@ -1,9 +1,6 @@
-<li>
-    <a data-ng-click="edit()" title="Go to details">{{name}}</a>
+<li class="list-group-item">
+    <a data-ng-click="edit()" title="Double click to go to details">{{name}}</a>
 
-    <div class="btn-group" style="padding-left: 20px;">
-        <button type="button" class="btn btn-danger btn-xs" data-ng-click="remove()">Delete</button>
-    </div>
     <div class="small" data-ng-bind-html="resourceid"></div>
     <label class="small" data-ng-bind-html="summary"></label>
 </li>
