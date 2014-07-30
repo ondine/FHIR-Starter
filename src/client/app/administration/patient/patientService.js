@@ -14,10 +14,12 @@
 
         var service = {
             addPatient: addPatient,
-            updatePatient: updatePatient,
-            getPatient: getPatient,
             deletePatient: deletePatient,
-            getPatients: getPatients
+            getCachedPatient: getCachedPatient,
+            getCachedSearchResults: getCachedSearchResults,
+            getPatient: getPatient,
+            getPatients: getPatients,
+            updatePatient: updatePatient
         };
 
         return service;
@@ -31,8 +33,45 @@
 
         }
 
+        function getCachedSearchResults() {
+            var deferred = $q.defer();
+            var cachedSearchResults = dataCache.readFromCache('foundPatients');
+            if (cachedSearchResults) {
+                deferred.resolve(cachedSearchResults);
+            } else {
+                deferred.reject('Search results not cached.');
+            }
+            return deferred.promise;
+        }
+
         function getPatient(resourceId) {
 
+        }
+
+        function getCachedPatient(hashKey) {
+            var deferred = $q.defer();
+            getCachedSearchResults()
+                .then(getPatient,
+                function () {
+                    deferred.reject('Patient search results not found in cache.');
+                });
+            return deferred.promise;
+
+            function getPatient(searchResults) {
+                var cachedPatient;
+                var cachedPatients = searchResults.entry;
+                for (var i = 0, len = cachedPatients.length; i < len; i++) {
+                    if (cachedPatients[i].$$hashKey === hashKey) {
+                        cachedPatient = cachedPatients[i];
+                        break;
+                    }
+                }
+                if (cachedPatient) {
+                    deferred.resolve(cachedPatient)
+                } else {
+                    deferred.reject('Patient not found in cache: ' + hashKey);
+                }
+            }
         }
 
         function getPatients(baseUrl, nameFilter, page, size) {
@@ -54,7 +93,7 @@
 
             fhirClient.getResource(baseUrl + '/Patient/_search?' + params)
                 .then(function (data) {
-                    dataCache.addToCache('patients', data.entry);
+                    dataCache.addToCache('foundPatients', data);
                     deferred.resolve(data);
                 }, function (outcome) {
                     deferred.reject(outcome);

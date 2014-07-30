@@ -7,6 +7,11 @@
     toastr.options.timeOut = 3000;
     toastr.options.positionClass = 'toast-bottom-right';
 
+    var imageSettings = {
+        imageBasePath: '../content/images/',
+        unknownPersonImageSource: '../content/images/unknown_person.jpg'
+    }
+
     var keyCodes = {
         backspace: 8,
         tab: 9,
@@ -34,6 +39,7 @@
         appErrorPrefix: '[FS Error] ', //Configure the exceptionHandler decorator
         docTitle: 'FHIRStarter: ',
         events: events,
+        imageSettings: imageSettings,
         keyCodes: keyCodes,
         version: '0.1.0'
     };

@@ -198,6 +198,24 @@
         }
     });
 
+    app.directive('fsImgPerson', ['config', function (config) {
+        //Usage:
+        //<div data-fs-img-person="vm.person.imageSource"></div>
+        var unknownImage = config.imageSettings.unknownPersonImageSource;
+        var directive = {
+            link: link,
+            restrict: 'A'
+        };
+        return directive;
+
+        function link(scope, element, attrs) {
+            attrs.$observe('fsImgPerson', function(value) {
+                value = (value || unknownImage);
+                attrs.$set('src', value);
+            });
+        }
+    }]);
+
     app.directive('fsSearchItem', function () {
         // Description:
         //

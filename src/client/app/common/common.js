@@ -138,5 +138,20 @@
                     return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
                 });
         }
+
+        function removeNullProperties (target) {
+            Object.keys(target).map(function (key) {
+                if (target[key] instanceof Object) {
+                    if (!Object.keys(target[key]).length && typeof target[key].getMonth !== 'function') {
+                        delete target[key];
+                    } else {
+                        removeNullProperties(target[key]);
+                    }
+                } else if (target[key] === null) {
+                    delete target[key];
+                }
+            });
+            return target;
+        };
     }
 })();

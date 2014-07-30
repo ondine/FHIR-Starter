@@ -27,13 +27,12 @@
         }
 
         function getItemFromCache(hash, key) {
-            var foundItem = null;
-            if (isNaN(hash) === false) {
+            var foundItem = undefined;
+            if (hash && key) {
                 var items = readFromCache(key);
-                var hashInt = parseInt(hash);
-                if (typeof items !== 'undefined') {
+                    if (items) {
                     for (var i = 0, len = items.length; i < len; i++) {
-                        if (items[i].$$hashKey === hashInt) {
+                        if (items[i].$$hashKey === hash) {
                             foundItem = items[i];
                             break;
                         }

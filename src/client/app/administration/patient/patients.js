@@ -7,10 +7,10 @@
         ['$location', 'common', 'config', 'fhirServers', 'patientService', patients]);
 
     function patients($location, common, config, fhirServers, patientService) {
+        var vm = this;
         var getLogFn = common.logger.getLogFn;
         var keyCodes = config.keyCodes;
         var log = getLogFn(controllerId);
-        var vm = this;
 
         vm.activeServer = null;
         vm.busyMessage = "Contacting remote server ...";
@@ -24,8 +24,8 @@
         vm.paging = {
             currentPage: 1,
             links: null,
-            maxPagesToShow: 5,
-            pageSize: 15,
+            maxPagesToShow: 10,
+            pageSize: 30,
             totalResults: 0
         };
         vm.refresh = refresh;
@@ -53,9 +53,11 @@
         activate();
 
         function activate() {
-            common.activateController([getActiveServer()], controllerId)
+            common.activateController([getActiveServer(), getCachedPatients()], controllerId)
                 .then(function () {
                     // nothing to do
+                }, function (error) {
+                    log('Error ' + error);
                 });
         }
 
@@ -70,6 +72,17 @@
                 });
         }
 
+        function getCachedPatients() {
+            patientService.getCachedSearchResults()
+                .then(function (data) {
+                    log('Returned ' + (angular.isArray(data.entry) ? data.entry.length : 0) + ' Patients from cache');
+                    return data;
+                }, function (error) {
+                    // proceed
+                })
+                .then(processSearchResults);
+        }
+
         function getPatientsFilteredCount() {
             // TODO: filter results based on doB or address, etc.
         }
@@ -81,7 +94,7 @@
                     .then(function (data) {
                         log('Returned ' + (angular.isArray(data.entry) ? data.entry.length : 0) + ' Patients from ' + vm.activeServer.name, true);
                         return data;
-                    }, function(error) {
+                    }, function (error) {
                         log('Error ' + error);
                         toggleSpinner(false);
                     })
@@ -110,9 +123,11 @@
         }
 
         function processSearchResults(searchResults) {
-            vm.patients = searchResults.entry;
-            vm.paging.links = searchResults.link;
-            vm.paging.totalResults = searchResults.totalResults;
+            if (searchResults) {
+                vm.patients = searchResults.entry;
+                vm.paging.links = searchResults.link;
+                vm.paging.totalResults = searchResults.totalResults;
+            }
         }
 
         function refresh() {
