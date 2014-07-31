@@ -124,9 +124,9 @@
 
         function processSearchResults(searchResults) {
             if (searchResults) {
-                vm.patients = searchResults.entry;
-                vm.paging.links = searchResults.link;
-                vm.paging.totalResults = searchResults.totalResults;
+                vm.patients = (searchResults.entry || []);
+                vm.paging.links = (searchResults.link || []);
+                vm.paging.totalResults = (searchResults.totalResults || 0);
             }
         }
 

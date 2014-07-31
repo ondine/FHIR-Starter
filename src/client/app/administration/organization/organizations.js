@@ -10,6 +10,7 @@
         var getLogFn = common.logger.getLogFn;
         var keyCodes = config.keyCodes;
         var log = getLogFn(controllerId);
+        var logError = getLogFn(controllerId, 'error');
         var vm = this;
 
         vm.activeServer = null;
@@ -20,6 +21,7 @@
         vm.goToOrganization = goToOrganization;
         vm.organizations = [];
         vm.organizationsCount = 0;
+        vm.errorOutcome = null;
         vm.pageChanged = pageChanged;
         vm.paging = {
             currentPage: 1,
@@ -82,9 +84,11 @@
         }
 
         function processSearchResults(searchResults) {
-            vm.organizations = searchResults.entry;
-            vm.paging.links = searchResults.link;
-            vm.paging.totalResults = searchResults.totalResults;
+            if (searchResults) {
+                vm.organizations = (searchResults.entry || []);
+                vm.paging.links = (searchResults.link || []);
+                vm.paging.totalResults = (searchResults.totalResults || 0);
+            }
         }
 
         function refresh() {
@@ -107,9 +111,9 @@
                     .then(function (data) {
                         log('Returned ' + (angular.isArray(data.entry) ? data.entry.length : 0) + ' Organizations from ' + vm.activeServer.name, true);
                         return data;
-                    }, function(error) {
-                        log('Error ' + error);
+                    }, function (error) {
                         toggleSpinner(false);
+                        logError((angular.isDefined(error.outcome) ? error.outcome.issue[0].details : error));
                     })
                     .then(processSearchResults)
                     .then(function () {

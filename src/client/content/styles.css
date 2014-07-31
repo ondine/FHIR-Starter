@@ -1,12 +1,28 @@
 ﻿/*#region Override background color theme */
 
 /*For Bootstrap 3*/
-.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
-
+.nav, .pagination, .carousel, .panel-title a {
+    cursor: pointer;
+}
 
 body {
     background-color: #FFF;
 }
+/* During drag */
+body #file-drop {
+    z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+/* No drag */
+body.dragOver #file-drop {
+    display: block;
+}
+
 
 .navbar-inverse {
     background-color: #333;
@@ -93,7 +109,6 @@ textarea.form-control {
     width: 90px;
 }
 
-
 .map {
     height: 228px;
 }
@@ -111,10 +126,9 @@ textarea.form-control {
     margin-right: 0;
 }
 
-.btn-group{
+.btn-group {
     margin: .2em;
 }
-
 
 small {
     font-size: 14px;
@@ -164,7 +178,6 @@ small {
     line-height: 18px !important;
 }
 
-
 .search-query {
     margin: 2px auto 8px auto !important;
 }
@@ -179,7 +192,8 @@ small {
 
 .input-group[class*="col-"] {
     width: 80%;
-    margin: 0 1.5em;}
+    margin: 0 1.5em;
+}
 
 .user .user-pic {
     display: block;
@@ -284,7 +298,6 @@ small {
     padding: 0 4px 0 0;
 }
 
-
 .progress,
 .page-progress-bar {
     margin: 30px 10% !important;
@@ -295,6 +308,7 @@ small {
     left: auto;
     top: auto !important;
 }
+
 /*#endregion*/
 
 table th > a {
@@ -305,7 +319,6 @@ table th > a {
 .table-hover tbody tr:hover > th {
     cursor: pointer;
 }
-
 
 .widget-content.referrer {
     border-width: 0;
@@ -322,6 +335,7 @@ a {
     position: relative;
     overflow: hidden;
 }
+
 /*#endregion */
 
 /*#region Angular ng-include, ng-view, ng-repeat shuffle animations*/
@@ -358,6 +372,7 @@ a {
     left: 2em;
     opacity: 0;
 }
+
 /*#endregion*/
 
 /*#region Angular ng-include, ng-view, ng-repeat fader animation */
@@ -386,17 +401,18 @@ a {
 }
 
 .fader-animation.ng-move {
-    opacity:0.5;
+    opacity: 0.5;
 }
+
 .fader-animation.ng-move.ng-move-active {
-    opacity:1;
+    opacity: 1;
 }
 
 /*#endregion*/
 
 /*#region Angular ng-show dissolve animation */
 .dissolve-animation.ng-hide-remove {
-    display: inline!important;
+    display: inline !important;
 }
 
 .dissolve-animation.ng-hide-remove,
@@ -416,12 +432,14 @@ a {
 .dissolve-animation.ng-hide-remove {
     opacity: 0;
 }
+
 /*#endregion */
 
 /*#region toastr */
 #toast-container.toast-top-full-width > div, #toast-container.toast-bottom-full-width > div {
     margin: 4px auto;
 }
+
 /*#endregion */
 
 /*#region Responsive */

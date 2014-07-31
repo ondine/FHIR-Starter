@@ -20,6 +20,10 @@
                     break;
                 }
             }
+
+            if (resultString.length > len && resultString.indexOf(' ')){
+                resultString = (resultString.substring(0, len)) + ' ...';
+            }
             return resultString;
         };
     })

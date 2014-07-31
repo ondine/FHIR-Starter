@@ -105,6 +105,26 @@
                     templateUrl: '/app/administration/person/personDetail.html',
                     settings: { }
                 }
+            },
+
+            {
+                url: '/questionnaires',
+                config: {
+                    title: 'questionnaire',
+                    templateUrl: '/app/clinical/questionnaire/questionnaires.html',
+                    settings: {
+                        nav: 5,
+                        content: '<i class="fa fa-clipboard"></i> Questionnaire'
+                    }
+                }
+            },
+            {
+                url: '/questionnaire/:hashKey',
+                config: {
+                    title: 'questionnaire',
+                    templateUrl: '/app/clinical/questionnaire/questionnaireDetail.html',
+                    settings: { }
+                }
             }
         ];
     }

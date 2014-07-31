@@ -151,6 +151,9 @@ ModelManifest.xml
 Thumbs.db
 ehthumbs.db
 
+# Local file security files
+.cekey
+
 # Folder config file
 Desktop.ini
 
