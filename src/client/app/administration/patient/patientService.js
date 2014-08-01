@@ -45,7 +45,15 @@
         }
 
         function getPatient(resourceId) {
-
+            var deferred = $q.defer();
+            fhirClient.getResource(resourceId)
+                .then(function (data) {
+                    dataCache.addToCache('foundPatients', data);
+                    deferred.resolve(data);
+                }, function (outcome) {
+                    deferred.reject(outcome);
+                });
+            return deferred.promise;
         }
 
         function getCachedPatient(hashKey) {
@@ -103,31 +111,6 @@
 
         function updatePatient(resourceId, resource) {
 
-        }
-
-        function searchPatients(baseUrl, name, pageSize, offset) {
-            var deferred = $q.defer();
-
-            if (angular.isUndefined(name)) {
-                deferred.reject('Invalid search input');
-            }
-
-            var params = '';
-            var names = name.split(' ');
-            if (names.length === 1) {
-                params = 'family=' + names[0];
-            } else {
-                params = 'given=' + names[0] + '&family=' + names[1] + '&search-offset=' + offset + '&_count=' + pageSize;
-            }
-
-            fhirClient.getResource(baseUrl + '/Patient/_search?' + params)
-                .then(function (data) {
-                    dataCache.addToCache('patients', data.entry);
-                    deferred.resolve(data);
-                }, function (outcome) {
-                    deferred.reject(outcome);
-                });
-            return deferred.promise;
         }
     }
 })();

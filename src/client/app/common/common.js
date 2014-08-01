@@ -40,6 +40,7 @@
             activateController: activateController,
             createSearchThrottle: createSearchThrottle,
             debouncedThrottle: debouncedThrottle,
+            generateUUID: generateUUID,
             isNumber: isNumber,
             logger: logger, // for accessibility
             textContains: textContains

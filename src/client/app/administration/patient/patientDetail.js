@@ -4,12 +4,13 @@
     var controllerId = 'patientDetail';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$routeParams', '$window', 'common', 'patientService', patientDetail]);
+        ['$routeParams', '$window', 'common', 'fhirServers', 'patientService', patientDetail]);
 
-    function patientDetail($routeParams, $window, common, patientService) {
+    function patientDetail($routeParams, $window, common, fhirServers, patientService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
 
+        vm.activeServer;
         vm.cancel = cancel;
         vm.activate = activate;
         vm.getTitle = getTitle;
@@ -17,7 +18,6 @@
         vm.isSaving = false;
         vm.isEditing = true;
         vm.patient = undefined;
-        vm.patientIdParameter = $routeParams.hashKey;
         vm.save = save;
         vm.title = 'patientDetail';
 
@@ -32,7 +32,9 @@
         activate();
 
         function activate() {
-            common.activateController([getRequestedPatient()], controllerId);
+            common.activateController([getActiveServer()], controllerId).then(function() {
+                getRequestedPatient();
+            });
         }
 
         function cancel() {
@@ -47,20 +49,44 @@
             return !vm.isSaving;
         }
 
-        function getRequestedPatient() {
-            var val = $routeParams.hashKey;
-            if (val !== 'new') {
-                return patientService.getCachedPatient(val)
-                .then(function(data) {
-                    vm.patient = data;
-                }, function(error) {
-                    logError(error);
+        function getActiveServer() {
+            fhirServers.getActiveServer()
+                .then(function (server) {
+                    return vm.activeServer = server;
                 });
+        }
+
+        function getRequestedPatient() {
+            if ($routeParams.hashKey && $routeParams.hashKey !== 'new') {
+                return patientService.getCachedPatient($routeParams.hashKey)
+                    .then(function (data) {
+                        vm.patient = data;
+                    }, function (error) {
+                        logError(error);
+                    });
+            } else if ($routeParams.id) {
+                var resourceId = vm.activeServer.baseUrl + '/Patient/' + $routeParams.id;
+                return patientService.getPatient(resourceId)
+                    .then(function (data) {
+                        vm.patient = data;
+                    }, function (error) {
+                        logError(error);
+                    });
+            }
+            else {
+                vm.title = 'Add New Patient';
             }
         }
 
         function getTitle() {
-            return 'Edit ' + ((vm.patient && vm.patient.fullName) || '');
+            var title = '';
+            if (vm.patient) {
+                title = vm.title = 'Edit ' + ((vm.patient && vm.patient.fullName) || '');
+            } else {
+                title = vm.title = 'Add New Patient';
+            }
+            return vm.title = title;
+
         }
 
         function goBack() {

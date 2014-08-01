@@ -17,7 +17,7 @@
         vm.activeServer = null;
         vm.busyMessage = "Contacting remote server ...";
         vm.filteredQuestionnaires = [];
-        vm.filteredQuestionnairesCount = 0;
+        vm.questionnairesFilteredCount = 0;
         vm.isBusy = false;
         vm.goToQuestionnaire = goToQuestionnaire;
         vm.questionnaires = [];
@@ -28,8 +28,8 @@
         vm.paging = {
             currentPage: 1,
             links: null,
-            maxPagesToShow: 10,
-            pageSize: 10,
+            maxPagesToShow: 5,
+            pageSize: 12,
             totalResults: 0
         };
         vm.refresh = refresh;
@@ -38,7 +38,7 @@
 
         Object.defineProperty(vm.paging, 'pageCount', {
             get: function () {
-                return Math.floor(vm.filteredQuestionnairesCount / vm.paging.pageSize) + 1;
+                return Math.floor(vm.questionnairesFilteredCount / vm.paging.pageSize) + 1;
             }
         });
 
@@ -67,7 +67,10 @@
         }
 
         function getQuestionnairesFilteredCount() {
-            vm.filteredQuestionnairesCount = questionnaireService.getFilteredCount(vm.questionnairesFilter);
+            return questionnaireService.getFilteredCount(vm.questionnairesFilter)
+                .then(function (data) {
+                    vm.questionnairesFilteredCount = data;
+                });
         }
 
         function getQuestionnairesCount() {
@@ -79,9 +82,9 @@
 
         function getQuestionnaires(forceRefresh) {
             toggleSpinner(true);
-            return questionnaireService.getQuestionnaires(vm.activeServer.baseUrl, forceRefresh, vm.paging.currentPage, vm.paging.pageSize, vm.questionnairesFilter)
+            return questionnaireService.getQuestionnaires(forceRefresh, vm.activeServer.baseUrl, vm.paging.currentPage, vm.paging.pageSize, vm.questionnairesFilter)
                 .then(function (data) {
-                    vm.questionnaires = vm.filteredQuestionnaires = data;
+                    vm.questionnaires = data;
                     getQuestionnairesFilteredCount();
                     if (!vm.questionnairesCount || forceRefresh) {
                         getQuestionnairesCount();
@@ -104,7 +107,7 @@
             var textContains = common.textContains;
             var searchText = vm.questionnairesSearch;
             var isMatch = searchText ?
-                textContains(questionnaire.title, searchText)
+                textContains((questionnaire.title || ''), searchText)
                     || textContains(questionnaire.content.status, searchText)
                 : true;
             return isMatch;
@@ -121,10 +124,8 @@
         function search($event) {
             if ($event.keyCode === keyCodes.esc) {
                 vm.questionnairesSearch = '';
-                applyFilter(true);
-            } else {
-                applyFilter();
             }
+            getQuestionnaires();
         }
 
         function toggleSpinner(on) {

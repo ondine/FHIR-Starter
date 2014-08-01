@@ -1,12 +1,12 @@
-﻿<section class="mainbar" data-ng-controller="questionnaires as vm">
+﻿<section class="mainbar" data-ng-controller="valuesets as vm">
     <section class="matter">
         <div class="container-fluid">
             <div class="row-fluid">
                 <div class="col-md-12">
                     <input class="form-control search-query"
-                           data-ng-model="vm.questionnairesSearch"
+                           data-ng-model="vm.valuesetsSearch"
                            data-ng-keyup="vm.search($event)"
-                           placeholder="Filter by title, status ..."
+                           placeholder="Filter local results by name ..."
                             />
 
                     <div class="btn-group pull-right">
@@ -14,37 +14,37 @@
                             <a class="btn btn-info"
                                data-ng-click="vm.refresh()"><i
                                     class="fa fa-refresh"></i><span>Refresh</span></a>
-                            <a class="btn btn-info" href="/questionnaire/new"><i
-                                    class="fa fa-plus"></i><span>Add Questionnaire</span></a>
+                            <a class="btn btn-info" href="/valueset/new"><i
+                                    class="fa fa-plus"></i><span>Add Custom ValueSet</span></a>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="container">
-                <div class="row" data-ng-show="vm.questionnairesCount > 0">
+                <div class="row" data-ng-show="vm.valuesetsCount > 0">
                     <div class="widget wblue">
                         <div data-cc-widget-header title="{{vm.title}}"
-                             subtitle="{{vm.questionnairesFilteredCount}} / {{vm.questionnairesCount}}"
+                             subtitle="{{vm.valuesetsFilteredCount}} / {{vm.valuesetsCount}}"
                              right-text="Page {{vm.paging.currentPage}} of {{vm.paging.pageCount}}"></div>
                         <div class="widget-content col-sm-12">
                             <ul class="list-group">
                                 <div class="col-sm-6"
-                                     data-ng-repeat="q in vm.questionnaires"
-                                     data-ng-click="vm.goToQuestionnaire(q)">
-                                    <fs-search-item name="{{q.content.name.text}}"
-                                                    summary="{{q.summary | truncate:75}}"
-                                                    resourceid="{{q.id | truncate:75}}"
-                                                    edit="edit(q.$$hashKey)"></fs-search-item>
+                                     data-ng-repeat="v in vm.valuesets"
+                                     data-ng-click="vm.goToValueset(v)">
+                                    <fs-search-item name="{{v.content.name}}"
+                                                    summary="{{v.content.description | truncate:75}}"
+                                                    resourceid="{{v.content.id }}"
+                                                    edit="edit(v.$$hashKey)"></fs-search-item>
                                 </div>
                             </ul>
                         </div>
                     </div>
                     <div class="widget-foot">
                         <div class="clearfix"></div>
-                        <div data-ng-show="vm.questionnairesFilteredCount > vm.paging.pageSize">
-                            <pagination boundary-links="false"
+                        <div data-ng-show="vm.valuesetsFilteredCount > vm.paging.pageSize">
+                            <pagination boundary-links="true"
                                         ng-change="vm.pageChanged()"
-                                        total-items="vm.questionnairesFilteredCount"
+                                        total-items="vm.valuesetsFilteredCount"
                                         items-per-page="vm.paging.pageSize"
                                         ng-model="vm.paging.currentPage"
                                         max-size="vm.paging.maxPagesToShow"

@@ -1,7 +1,53 @@
 ﻿<section class="mainbar" data-ng-controller="organizationDetail as vm">
     <section class="matter">
         <div class="container-fluid">
-            Organization hash key = {{vm.organizationIdParameter}}
+            <div>
+                <button class="btn btn-info" data-ng-click="vm.goBack()"><i class="fa fa-hand-o-left"></i>Back</button>
+                <button class="btn btn-info" data-ng-click="vm.cancel()" data-ng-disabled="!vm.canSave"><i
+                        class="fa fa-undo"></i>Cancel
+                </button>
+                <button class="btn btn-info" data-ng-click="vm.save()" data-ng-disabled="!vm.canSave"><i
+                        class="fa fa-save"></i>Save
+                </button>
+                <div class="pull-right">
+                    <button class="btn btn-info" data-ng-click="vm.delete()" data-ng-disabled="!vm.canDelete"><i
+                            class="fa fa-minus"></i>Delete
+                    </button>
+                </div>
+            </div>
+            <div class="widget wblue">
+                <div data-cc-widget-header title="{{vm.getTitle()}}"></div>
+                <div class="widget-content user">
+                    <div>
+                        <div>
+                            <label>First Name</label>
+                            <input data-ng-model="vm.patient.firstName" placeholder="First Name"/>
+                        </div>
+                        <div>
+                            <label>Last Name</label>
+                            <input data-ng-model="vm.patient.lastName" placeholder="Last Name"/>
+                        </div>
+
+                        <div>
+                            <label>Email</label>
+                            <input data-ng-model="vm.patient.email" placeholder="Email"/>
+                        </div>
+
+                        <div>
+                            <label>Home Telephone</label>
+                            <input data-ng-model="vm.patient.telephone.home" placeholder="Home Telephone"/>
+                        </div>
+
+                        <div>
+                            <label>Work Telephone</label>
+                            <input data-ng-model="vm.patient.telephone.work" placeholder="Work Telephone"/>
+                        </div>
+                        <div>
+                            <img data-fs-img-person="{{vm.patient.imageSource}}" class="img-polaroid"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 </section>

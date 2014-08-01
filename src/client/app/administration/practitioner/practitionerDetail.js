@@ -10,7 +10,8 @@
         var vm = this;
 
         vm.activate = activate;
-        vm.practitionerIdParameter = $routeParams.hashKey;
+        vm.practitionerHashKey = $routeParams.hashKey;
+        vm.practitionerId = $routeParams.id;
         vm.title = 'practitionerDetail';
 
         activate();

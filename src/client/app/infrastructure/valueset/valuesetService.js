@@ -1,13 +1,14 @@
 ﻿(function () {
     'use strict';
 
-    var serviceId = 'questionnaireService';
+    var serviceId = 'valuesetService';
 
-    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', questionnaireService]);
+    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', valuesetService]);
 
-    function questionnaireService(common, dataCache, fhirClient) {
+    function valuesetService(common, dataCache, fhirClient) {
         var getLogFn = common.logger.getLogFn;
-        var cacheKey = 'foundQuestionnaires';
+        var dataCacheKey = 'localValuesets';
+        var linksCacheKey = 'linksValuesets';
         var isLoaded = false;
         var log = getLogFn(serviceId);
         var logError = getLogFn(serviceId, 'error');
@@ -16,23 +17,23 @@
 
 
         var service = {
-            addQuestionnaire: addQuestionnaire,
-            deleteQuestionnaire: deleteQuestionnaire,
-            getCachedQuestionnaire: getCachedQuestionnaire,
+            addValueset: addValueset,
+            deleteValueset: deleteValueset,
+            getCachedValueset: getCachedValueset,
             getFilteredCount: getFilteredCount,
-            getRemoteQuestionnaire: getRemoteQuestionnaire,
-            getQuestionnairesCount: getQuestionnairesCount,
-            getQuestionnaires: getQuestionnaires,
-            updateQuestionnaire: updateQuestionnaire
+            getRemoteValueset: getRemoteValueset,
+            getValuesetsCount: getValuesetsCount,
+            getValuesets: getValuesets,
+            updateValueset: updateValueset
         };
 
         return service;
 
-        function addQuestionnaire(baseUrl) {
+        function addValueset(baseUrl) {
             var deferred = $q.defer();
             var id = common.generateUUID();
 
-            fhirClient.addResource(baseUrl + '/Questionnaire/' + id)
+            fhirClient.addResource(baseUrl + '/Valueset/' + id)
                 .then(function (data) {
                     deferred.resolve(data);
                 },
@@ -42,7 +43,7 @@
             return deferred.promise;
         }
 
-        function deleteQuestionnaire(resourceId) {
+        function deleteValueset(resourceId) {
             var deferred = $q.defer();
             fhirClient.deleteResource(resourceId)
                 .then(function (data) {
@@ -68,7 +69,7 @@
             return deferred.promise;
         }
 
-        function getRemoteQuestionnaire(resourceId) {
+        function getRemoteValueset(resourceId) {
             var deferred = $q.defer();
             fhirClient.getResource(resourceId)
                 .then(function (data) {
@@ -80,34 +81,34 @@
             return deferred.promise;
         }
 
-        function getCachedQuestionnaire(hashKey) {
+        function getCachedValueset(hashKey) {
             var deferred = $q.defer();
             _getAllLocal()
-                .then(getQuestionnaire,
+                .then(getValueset,
                 function () {
-                    deferred.reject('Questionnaire search results not found in cache.');
+                    deferred.reject('Valueset search results not found in cache.');
                 });
             return deferred.promise;
 
-            function getQuestionnaire(cachedEntries) {
-                var cachedQuestionnaire;
+            function getValueset(cachedEntries) {
+                var cachedValueset;
                 for (var i = 0, len = cachedEntries.length; i < len; i++) {
                     if (cachedEntries[i].$$hashKey === hashKey) {
-                        cachedQuestionnaire = cachedEntries[i];
+                        cachedValueset = cachedEntries[i];
                         break;
                     }
                 }
-                if (cachedQuestionnaire) {
-                    deferred.resolve(cachedQuestionnaire)
+                if (cachedValueset) {
+                    deferred.resolve(cachedValueset)
                 } else {
-                    deferred.reject('Questionnaire not found in cache: ' + hashKey);
+                    deferred.reject('Valueset not found in cache: ' + hashKey);
                 }
             }
         }
 
-        function getQuestionnairesCount() {
+        function getValuesetsCount() {
             var deferred = $q.defer();
-            if (_areQuestionnairesLoaded()) {
+            if (_areValuesetsLoaded()) {
                 _getAllLocal().then(function (data) {
                     deferred.resolve(data.length);
                 });
@@ -117,15 +118,15 @@
             return deferred.promise;
         }
 
-        function getQuestionnaires(forceRemote, baseUrl, page, size, filter) {
+        function getValuesets(forceRemote, baseUrl, page, size, filter) {
             var deferred = $q.defer();
             var take = size || 20;
             var skip = page ? (page - 1) * take : 0;
 
-            if (_areQuestionnairesLoaded() && !forceRemote) {
+            if (_areValuesetsLoaded() && !forceRemote) {
                 _getAllLocal().then(getByPage);
             } else {
-                fhirClient.getResource(baseUrl + '/Questionnaire')
+                fhirClient.getResource(baseUrl + '/ValueSet/_search?_count=500')
                     .then(querySucceeded,
                     function (outcome) {
                         deferred.reject(outcome);
@@ -133,7 +134,7 @@
             }
 
             function getByPage(entries) {
-                var pagedQuestionnaires;
+                var pagedValuesets;
                 var filteredEntries = [];
 
                 if (filter) {
@@ -147,26 +148,26 @@
                 }
 
                 if (filteredEntries.length < size) {
-                    pagedQuestionnaires = filteredEntries;
+                    pagedValuesets = filteredEntries;
                 } else {
                     var start = (skip < filteredEntries.length) ? skip : (filteredEntries - size);
                     var items = ((start + size) >= filteredEntries.length) ? (filteredEntries.length) : (start + size);
-                    pagedQuestionnaires = filteredEntries.slice(start, items);
+                    pagedValuesets = filteredEntries.slice(start, items);
                 }
-                deferred.resolve(pagedQuestionnaires);
+                deferred.resolve(pagedValuesets);
             }
 
             function querySucceeded(data) {
-                _areQuestionnairesLoaded(true);
-                log('Retrieved [Questionnaires] from remote FHIR server', data.entry.length)
-                dataCache.addToCache(cacheKey, data.entry);
+                _areValuesetsLoaded(true);
+                log('Retrieved ' + data.entry.length + ' of ' + data.totalResults + ' available [Valuesets] from remote FHIR server', data.entry.length)
+                dataCache.addToCache(dataCacheKey, data.entry);
                 return data.entry;
             }
 
             return deferred.promise;
         }
 
-        function updateQuestionnaire(resourceId, resource) {
+        function updateValueset(resourceId, resource) {
             var deferred = $q.defer();
 
             fhirClient.addResource(resourceId, resource)
@@ -180,11 +181,11 @@
         }
 
         function _getAllLocal() {
-            var cachedQuestionnaires = dataCache.readFromCache(cacheKey);
-            return $q.when(cachedQuestionnaires);
+            var cachedValuesets = dataCache.readFromCache(dataCacheKey);
+            return $q.when(cachedValuesets);
         }
 
-        function _areQuestionnairesLoaded(value) {
+        function _areValuesetsLoaded(value) {
             if (value === undefined) {
                 return isLoaded;
             }
