@@ -1,0 +1,66 @@
+﻿<section class="mainbar" data-ng-controller="profiles as vm">
+    <section class="matter">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="col-md-12">
+                    <input class="form-control search-query"
+                           data-ng-model="vm.profilesSearch"
+                           data-ng-keyup="vm.search($event)"
+                           placeholder="Filter local results by name ..."
+                            />
+
+                    <div class="btn-group pull-right">
+                        <div class="btn-group">
+                            <a class="btn btn-info"
+                               data-ng-click="vm.refresh()"><i
+                                    class="fa fa-refresh"></i><span>Refresh</span></a>
+                            <a class="btn btn-info" href="/profile/new"><i
+                                    class="fa fa-plus"></i><span>Add Custom Profile</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row" data-ng-show="vm.profilesCount > 0">
+                    <div class="widget wblue">
+                        <div data-cc-widget-header title="{{vm.title}}"
+                             subtitle="{{vm.profilesFilteredCount}} / {{vm.profilesCount}}"
+                             right-text="Page {{vm.paging.currentPage}} of {{vm.paging.pageCount}}"></div>
+                        <div class="widget-content col-sm-12">
+                            <ul class="list-group">
+                                <div class="col-sm-6"
+                                     data-ng-repeat="v in vm.profiles"
+                                     data-ng-click="vm.goToValueset(v)">
+                                    <fs-search-item name="{{v.content.name}}"
+                                                    summary="{{v.content.description | truncate:75}}"
+                                                    resourceid="{{v.content.id }}"
+                                                    edit="edit(v.$$hashKey)"></fs-search-item>
+                                </div>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="widget-foot">
+                        <div class="clearfix"></div>
+                        <div data-ng-show="vm.profilesFilteredCount > vm.paging.pageSize">
+                            <pagination boundary-links="true"
+                                        ng-change="vm.pageChanged()"
+                                        total-items="vm.profilesFilteredCount"
+                                        items-per-page="vm.paging.pageSize"
+                                        ng-model="vm.paging.currentPage"
+                                        max-size="vm.paging.maxPagesToShow"
+                                        class="pagination-small"
+                                        previous-text="Prev"
+                                        next-text="Next"
+                                        first-text="First"
+                                        last-text="Last"></pagination>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+            <div data-ng-show="vm.isBusy" class="page-splash dissolve-animation">
+                <div class="page-splash-message page-splash-message-subtle">{{vm.busyMessage}}&nbsp;&nbsp;<i
+                        class="fa fa-cog fa-spin"></i></div>
+            </div>
+    </section>
+</section>

@@ -147,7 +147,7 @@
                     title: 'valuesets',
                     templateUrl: '/app/infrastructure/valueset/valuesets.html',
                     settings: {
-                        nav: 5,
+                        nav: 6,
                         content: '<i class="fa fa-codepen"></i> ValueSet'
                     }
                 }
@@ -157,6 +157,44 @@
                 config: {
                     title: 'valueset',
                     templateUrl: '/app/infrastructure/valueset/valuesetDetail.html',
+                    settings: { }
+                }
+            },
+            {
+                url: '/conceptmaps',
+                config: {
+                    title: 'conceptmaps',
+                    templateUrl: '/app/infrastructure/conceptmap/conceptmaps.html',
+                    settings: {
+                        nav: 7,
+                        content: '<i class="fa fa-map-marker"></i> ConceptMap'
+                    }
+                }
+            },
+            {
+                url: '/conceptmap/:hashKey',
+                config: {
+                    title: 'conceptmap',
+                    templateUrl: '/app/infrastructure/conceptmap/conceptmapDetail.html',
+                    settings: { }
+                }
+            },
+            {
+                url: '/profiles',
+                config: {
+                    title: 'profiles',
+                    templateUrl: '/app/infrastructure/profile/profiles.html',
+                    settings: {
+                        nav: 8,
+                        content: '<i class="fa fa-file-text-o"></i> Profile'
+                    }
+                }
+            },
+            {
+                url: '/profile/:hashKey',
+                config: {
+                    title: 'profile',
+                    templateUrl: '/app/infrastructure/profile/profileDetail.html',
                     settings: { }
                 }
             },
