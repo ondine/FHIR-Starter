@@ -1,49 +1,124 @@
 <section class="mainbar" data-ng-controller="patientDetail as vm">
     <section class="matter">
-        <div class="container-fluid">
-            <div>
-                <button class="btn btn-info" data-ng-click="vm.goBack()"><i class="fa fa-hand-o-left"></i>Back</button>
-                <button class="btn btn-info" data-ng-click="vm.cancel()" data-ng-disabled="!vm.canSave"><i
-                        class="fa fa-undo"></i>Cancel
-                </button>
-                <button class="btn btn-info" data-ng-click="vm.save()" data-ng-disabled="!vm.canSave"><i
-                        class="fa fa-save"></i>Save
-                </button>
-                <div class="pull-right">
-                    <button class="btn btn-info" data-ng-click="vm.delete()" data-ng-disabled="!vm.canDelete"><i
-                            class="fa fa-minus"></i>Delete
+        <div class="container">
+            <div class="row">
+                <div class="btn-group col-md-12">
+                    <button class="btn btn-info" data-ng-click="vm.goBack()"><i class="fa fa-hand-o-left"></i>Back
                     </button>
+                    <button class="btn btn-info" data-ng-click="vm.edit(vm.patient)"><i class="fa fa-edit"></i>Edit
+                    </button>
+                    <div class="btn-group pull-right">
+                        <button class="btn btn-danger" data-ng-click="vm.delete(vm.patient)"><i
+                                class="fa fa-minus-circle"></i>Delete
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="widget wblue">
-                <div data-cc-widget-header title="{{vm.getTitle()}}"></div>
-                <div class="widget-content user">
-                    <div>
-                        <div>
-                            <label>First Name</label>
-                            <input data-ng-model="vm.patient.firstName" placeholder="First Name"/>
+            <div class="row">
+                <div class="widget wblue">
+                    <div data-cc-widget-header title="{{ vm.patient.name | fullName }}">
+                    </div>
+                    <div class="widget-content user col-md-12">
+                        <div class="col-md-2">
+                            <img fs-img-person="vm.patient.photo[0]"
+                                 class="img-polaroid" src="/content/images/unknown_person.jpg"/>
                         </div>
-                        <div>
-                            <label>Last Name</label>
-                            <input data-ng-model="vm.patient.lastName" placeholder="Last Name"/>
-                        </div>
+                        <div class="col-md-10">
+                            <table class="table table-striped table-hover">
+                                <tr>
+                                    <td>Name</td>
+                                    <td>{{vm.patient.name | fullName }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Date of Birth</td>
+                                    <td>
+                                        <div data-ng-show="vm.patient.birthDate">
+                                            {{vm.patient.birthDate | date: longDate}}
+                                        </div>
 
-                        <div>
-                            <label>Email</label>
-                            <input data-ng-model="vm.patient.email" placeholder="Email"/>
-                        </div>
+                                    </td>
+                                </tr>
 
-                        <div>
-                            <label>Home Telephone</label>
-                            <input data-ng-model="vm.patient.telephone.home" placeholder="Home Telephone"/>
-                        </div>
+                                <tr>
+                                    <td>Gender</td>
+                                    <td>
+                                        {{vm.patient.gender.coding[0].display}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Addresses</td>
+                                    <td>
+                                        <p class="small" data-ng-repeat="a in vm.patient.address">
+                                            <strong>{{a.use}}</strong>: {{a.line.join(', ')}}, {{a.city}}, {{a.state}}
+                                            {{a.zip}} {{a.country}}
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Communication</td>
+                                    <td>
+                                        <p class="small" data-ng-repeat="t in vm.patient.telecom">
+                                            <strong>{{t.use}} {{t.system}}</strong>: {{t.value}}
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Contact</td>
+                                    <td>
+                                        <p class="small" data-ng-repeat="c in vm.patient.contact">
+                                            {{c.name.given.join(' ')}} {{c.name.family.join(' ')}}
+                                            ({{c.relationship.text || "relationship unspecified"}})
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Links</td>
+                                    <td>
+                                        <div data-ng-repeat="l in vm.patient.link">
+                                            <a href="{{l.other.reference}}">{{l.other.type || "Link Type
+                                                Unspecified"}}</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Marital Status</td>
+                                    <td>
+                                        {{vm.patient.maritalStatus.text}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Multiple Birth</td>
+                                    <td>
+                                        {{vm.patient.multipleBirth}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Managing Organization</td>
+                                    <td>
+                                        <a href="{{vm.patient.managingOrganization.reference}}">{{vm.patient.managingOrganization.display}}</a>
+                                    </td>
+                                </tr>
+                                <tr data-ng-show="vm.patient.identifier">
+                                    <td>Identifiers</td>
+                                    <td>
+                                        <table class="table table-striped table-hover small">
+                                            <thead>
+                                            <th>System</th>
+                                            <th>Value</th>
+                                            <th>Label</th>
+                                            <th>Use</th>
+                                            </thead>
+                                            <tr data-ng-repeat="id in vm.patient.identifier">
+                                                <td>{{id.system}}</td>
+                                                <td>{{id.value}}</td>
+                                                <td>{{id.label}}</td>
+                                                <td>{{id.use}}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
 
-                        <div>
-                            <label>Work Telephone</label>
-                            <input data-ng-model="vm.patient.telephone.work" placeholder="Work Telephone"/>
-                        </div>
-                        <div>
-                            <img data-fs-img-person="{{vm.patient.imageSource}}" class="img-polaroid"/>
+                            </table>
                         </div>
                     </div>
                 </div>

@@ -26,5 +26,23 @@
             }
             return resultString;
         };
-    })
+    });
+
+    app.filter('fullName', function() {
+        return function(humanName) {
+            if (humanName && angular.isArray(humanName)){
+                return buildName(humanName[0].given) + ' ' + buildName(humanName[0].family);
+            } else {
+                return 'Name Unknown';
+            }
+
+            function buildName(input) {
+                if (input && angular.isArray(input)) {
+                    return input.join(' ');
+                } else {
+                    return '';
+                }
+            }
+        }
+    });
 })();

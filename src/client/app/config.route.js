@@ -75,12 +75,20 @@
                     templateUrl: '/app/administration/patient/patients.html',
                     settings: {
                         nav: 3,
-                        content: '<i class="fa fa-male"></i> Patient'
+                        content: '<i class="fa fa-wheelchair"></i> Patient'
                     }
                 }
             },
             {
                 url: '/patient/:hashKey',
+                config: {
+                    title: 'patient',
+                    templateUrl: '/app/administration/patient/patientEdit.html',
+                    settings: { }
+                }
+            },
+            {
+                url: '/patient/view/:hashKey',
                 config: {
                     title: 'patient',
                     templateUrl: '/app/administration/patient/patientDetail.html',
@@ -94,7 +102,7 @@
                     templateUrl: '/app/administration/person/persons.html',
                     settings: {
                         nav: 4,
-                        content: '<i class="fa fa-child"></i> Person'
+                        content: '<i class="fa fa-user"></i> Person'
                     }
                 }
             },
@@ -195,6 +203,25 @@
                 config: {
                     title: 'profile',
                     templateUrl: '/app/infrastructure/profile/profileDetail.html',
+                    settings: { }
+                }
+            },
+            {
+                url: '/compositions',
+                config: {
+                    title: 'compositions',
+                    templateUrl: '/app/infrastructure/composition/compositions.html',
+                    settings: {
+                        nav: 9,
+                        content: '<i class="fa fa-paperclip"></i> Composition'
+                    }
+                }
+            },
+            {
+                url: '/composition/:hashKey',
+                config: {
+                    title: 'composition',
+                    templateUrl: '/app/infrastructure/composition/compositionDetail.html',
                     settings: { }
                 }
             },

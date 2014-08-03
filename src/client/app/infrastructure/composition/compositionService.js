@@ -1,14 +1,14 @@
 ﻿(function () {
     'use strict';
 
-    var serviceId = 'profileService';
+    var serviceId = 'compositionService';
 
-    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', profileService]);
+    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', compositionService]);
 
-    function profileService(common, dataCache, fhirClient) {
+    function compositionService(common, dataCache, fhirClient) {
         var getLogFn = common.logger.getLogFn;
-        var dataCacheKey = 'localProfiles';
-        var linksCacheKey = 'linksProfiles';
+        var dataCacheKey = 'localCompositions';
+        var linksCacheKey = 'linksCompositions';
         var isLoaded = false;
         var log = getLogFn(serviceId);
         var logError = getLogFn(serviceId, 'error');
@@ -17,23 +17,23 @@
 
 
         var service = {
-            addProfile: addProfile,
-            deleteProfile: deleteProfile,
-            getCachedProfile: getCachedProfile,
+            addComposition: addComposition,
+            deleteComposition: deleteComposition,
+            getCachedComposition: getCachedComposition,
             getFilteredCount: getFilteredCount,
-            getRemoteProfile: getRemoteProfile,
-            getProfilesCount: getProfilesCount,
-            getProfiles: getProfiles,
-            updateProfile: updateProfile
+            getRemoteComposition: getRemoteComposition,
+            getCompositionsCount: getCompositionsCount,
+            getCompositions: getCompositions,
+            updateComposition: updateComposition
         };
 
         return service;
 
-        function addProfile(baseUrl) {
+        function addComposition(baseUrl) {
             var deferred = $q.defer();
             var id = common.generateUUID();
 
-            fhirClient.addResource(baseUrl + '/Profile/' + id)
+            fhirClient.addResource(baseUrl + '/Composition/' + id)
                 .then(function (data) {
                     deferred.resolve(data);
                 },
@@ -43,7 +43,7 @@
             return deferred.promise;
         }
 
-        function deleteProfile(resourceId) {
+        function deleteComposition(resourceId) {
             var deferred = $q.defer();
             fhirClient.deleteResource(resourceId)
                 .then(function (data) {
@@ -69,7 +69,7 @@
             return deferred.promise;
         }
 
-        function getRemoteProfile(resourceId) {
+        function getRemoteComposition(resourceId) {
             var deferred = $q.defer();
             fhirClient.getResource(resourceId)
                 .then(function (data) {
@@ -81,34 +81,34 @@
             return deferred.promise;
         }
 
-        function getCachedProfile(hashKey) {
+        function getCachedComposition(hashKey) {
             var deferred = $q.defer();
             _getAllLocal()
-                .then(getProfile,
+                .then(getComposition,
                 function () {
-                    deferred.reject('Profile search results not found in cache.');
+                    deferred.reject('Composition search results not found in cache.');
                 });
             return deferred.promise;
 
-            function getProfile(cachedEntries) {
-                var cachedProfile;
+            function getComposition(cachedEntries) {
+                var cachedComposition;
                 for (var i = 0, len = cachedEntries.length; i < len; i++) {
                     if (cachedEntries[i].$$hashKey === hashKey) {
-                        cachedProfile = cachedEntries[i];
+                        cachedComposition = cachedEntries[i];
                         break;
                     }
                 }
-                if (cachedProfile) {
-                    deferred.resolve(cachedProfile)
+                if (cachedComposition) {
+                    deferred.resolve(cachedComposition)
                 } else {
-                    deferred.reject('Profile not found in cache: ' + hashKey);
+                    deferred.reject('Composition not found in cache: ' + hashKey);
                 }
             }
         }
 
-        function getProfilesCount() {
+        function getCompositionsCount() {
             var deferred = $q.defer();
-            if (_areProfilesLoaded()) {
+            if (_areCompositionsLoaded()) {
                 _getAllLocal().then(function (data) {
                     deferred.resolve(data.length);
                 });
@@ -118,15 +118,15 @@
             return deferred.promise;
         }
 
-        function getProfiles(forceRemote, baseUrl, page, size, filter) {
+        function getCompositions(forceRemote, baseUrl, page, size, filter) {
             var deferred = $q.defer();
             var take = size || 20;
             var skip = page ? (page - 1) * take : 0;
 
-            if (_areProfilesLoaded() && !forceRemote) {
+            if (_areCompositionsLoaded() && !forceRemote) {
                 _getAllLocal().then(getByPage);
             } else {
-                fhirClient.getResource(baseUrl + '/Profile/_search?_count=500')
+                fhirClient.getResource(baseUrl + '/Composition/_search?_count=500')
                     .then(querySucceeded,
                     function (outcome) {
                         deferred.reject(outcome);
@@ -134,7 +134,7 @@
             }
 
             function getByPage(entries) {
-                var pagedProfiles;
+                var pagedCompositions;
                 var filteredEntries = [];
 
                 if (filter) {
@@ -148,18 +148,18 @@
                 }
 
                 if (filteredEntries.length < size) {
-                    pagedProfiles = filteredEntries;
+                    pagedCompositions = filteredEntries;
                 } else {
                     var start = (skip < filteredEntries.length) ? skip : (filteredEntries - size);
                     var items = ((start + size) >= filteredEntries.length) ? (filteredEntries.length) : (start + size);
-                    pagedProfiles = filteredEntries.slice(start, items);
+                    pagedCompositions = filteredEntries.slice(start, items);
                 }
-                deferred.resolve(pagedProfiles);
+                deferred.resolve(pagedCompositions);
             }
 
             function querySucceeded(data) {
-                _areProfilesLoaded(true);
-                log('Retrieved ' + data.entry.length + ' of ' + data.totalResults + ' available [Profiles] from remote FHIR server', data.entry.length)
+                _areCompositionsLoaded(true);
+                log('Retrieved ' + data.entry.length + ' of ' + data.totalResults + ' available [Compositions] from remote FHIR server', data.entry.length)
                 dataCache.addToCache(dataCacheKey, data.entry);
                 return data.entry;
             }
@@ -167,7 +167,7 @@
             return deferred.promise;
         }
 
-        function updateProfile(resourceId, resource) {
+        function updateComposition(resourceId, resource) {
             var deferred = $q.defer();
 
             fhirClient.addResource(resourceId, resource)
@@ -181,11 +181,11 @@
         }
 
         function _getAllLocal() {
-            var cachedProfiles = dataCache.readFromCache(dataCacheKey);
-            return $q.when(cachedProfiles);
+            var cachedCompositions = dataCache.readFromCache(dataCacheKey);
+            return $q.when(cachedCompositions);
         }
 
-        function _areProfilesLoaded(value) {
+        function _areCompositionsLoaded(value) {
             if (value === undefined) {
                 return isLoaded;
             }

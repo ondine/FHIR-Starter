@@ -36,7 +36,7 @@
         activate();
 
         function activate() {
-            common.activateController([getRequestedValueset()], controllerId);
+            common.activateController([getRequestedConceptmap()], controllerId);
         }
 
         function cancel() {
@@ -51,10 +51,10 @@
             return !vm.isSaving;
         }
 
-        function getRequestedValueset() {
+        function getRequestedConceptmap() {
             var val = $routeParams.hashKey;
             if (val !== 'new') {
-                return conceptmapService.getCachedValueset(val)
+                return conceptmapService.getCachedConceptmap(val)
                 .then(function(data) {
                     vm.conceptmap = data;
                 }, function(error) {

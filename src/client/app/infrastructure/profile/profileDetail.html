@@ -1,11 +1,10 @@
 <section class="mainbar" data-ng-controller="profileDetail as vm">
     <section class="matter">
-        <div class="container-fluid">
+        <div class="container">
             <div>
                 <button class="btn btn-info" data-ng-click="vm.goBack()"><i class="fa fa-hand-o-left"></i>Back</button>
             </div>
-
-            <div class="widget wblue">
+            <div class="widget worange">
                 <div data-cc-widget-header title="{{vm.profile.content.name}}"></div>
                 <accordion close-others="true">
                     <accordion-group heading="Summary" is-open="vm.status.isFirstOpen"
@@ -15,8 +14,16 @@
                             </div>
                         </div>
                     </accordion-group>
-                    <accordion-group heading="Details">
+                    <accordion-group heading="Metadata">
                         <table class="table table-striped table-hover">
+                            <tr>
+                                <td>Identifier</td>
+                                <td>{{vm.profile.content.identifier}}</td>
+                            </tr>
+                            <tr>
+                                <td>Version</td>
+                                <td>{{vm.profile.content.version}}</td>
+                            </tr>
                             <tr>
                                 <td>Name</td>
                                 <td>{{vm.profile.content.name}}</td>
@@ -26,130 +33,81 @@
                                 <td>{{vm.profile.content.publisher}}</td>
                             </tr>
                             <tr>
-                                <td>Version</td>
-                                <td>{{vm.profile.content.version}}</td>
+                                <td>Contact</td>
+                                <td>{{vm.profile.content.telecom}}</td>
                             </tr>
                             <tr>
                                 <td>Description</td>
                                 <td>{{vm.profile.content.description}}</td>
                             </tr>
                             <tr>
-                                <td>Identifier</td>
-                                <td>{{vm.profile.content.identifier}}</td>
+                                <td>Requirements</td>
+                                <td>{{vm.profile.content.requirements}}</td>
+                            </tr>
+                            <tr>
+                                <td>Code</td>
+                                <td>{{vm.profile.content.code}}</td>
+                            </tr>
+                            <tr>
+                                <td>Status</td>
+                                <td>{{vm.profile.content.status}}</td>
                             </tr>
                             <tr>
                                 <td>Experimental</td>
                                 <td>{{vm.profile.content.experimental}}</td>
                             </tr>
                             <tr>
-                                <td>Published</td>
-                                <td>{{vm.profile.content.published}}</td>
-                            </tr>
-                            <tr>
-                                <td>Extensible</td>
-                                <td>{{vm.profile.content.extensible}}</td>
-                            </tr>
-                            <tr>
-                                <td>Date</td>
+                                <td>Date of Publication</td>
                                 <td>{{vm.profile.content.date}}</td>
                             </tr>
                             <tr>
-                                <td>Copyright</td>
-                                <td>{{vm.profile.content.copyright}}</td>
+                                <td>FHIR Version</td>
+                                <td>{{vm.profile.content.fhirVersion}}</td>
                             </tr>
                         </table>
                     </accordion-group>
-                    <accordion-group heading="Concepts" data-ng-show="vm.profile.content.define">
-                        <table class="table table-striped table-hover">
-                            <tr>
-                                <td>System</td>
-                                <td>{{vm.profile.content.define.system}}</td>
-                            </tr>
-                            <tr>
-                                <td>Version</td>
-                                <td>{{vm.profile.content.define.version}}</td>
-                            </tr>
-                            <tr>
-                                <td>Case Sensitive</td>
-                                <td>{{vm.profile.content.define.caseSensitive}}</td>
-                            </tr>
-                        </table>
+                    <accordion-group heading="Mapping" data-ng-show="vm.profile.content.mapping">
                         <table class="table table-striped table-hover">
                             <thead>
-                            <th>Code</th>
-                            <th>Abstract</th>
-                            <th>Display</th>
-                            <th>Definition</th>
+                            <th>Identity</th>
+                            <th>URI</th>
+                            <th>Name</th>
                             </thead>
                             <tbody>
-                            <tr data-ng-repeat="c in vm.profile.content.define.concept">
-                                <td>{{c.code}}</td>
-                                <td>{{c.abstract}}</td>
-                                <td>{{c.display}}</td>
-                                <td>{{c.definition}}</td>
+                            <tr data-ng-repeat="m in vm.profile.content.mapping">
+                                <td>{{m.identity}}</td>
+                                <td>{{m.uri}}</td>
+                                <td>{{m.name}}</td>
                             </tr>
                             </tbody>
                         </table>
                     </accordion-group>
-                    <accordion-group heading="External Concepts" data-ng-show="vm.profile.content.compose">
-                        <h5>{{vm.profile.content.compose.import}}</h5>
-                        <table class="table table-striped table-hover">
-                            <thead>
-                            <th>System</th>
-                            <th>Version</th>
-                            <th>Codes</th>
-                            <th>Filters</th>
-                            </thead>
-                            <tbody>
-                            <tr data-ng-repeat="i in vm.profile.content.compose.include">
-                                <td>{{i.system}}</td>
-                                <td>{{i.version}}</td>
-                                <td>
-                                    <div data-ng-repeat="c in i.code">
-                                        <p class="small">{{c}}</p>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div data-ng-repeat="f in i.filter">
-                                        <p class="small">{{c.property}}</p>
+                    <div data-ng-repeat="st in vm.profile.content.structure">
+                        <accordion-group heading="Structure: {{st.type}}">
+                            <div data-ng-repeat="el in st.element">
+                                <h6>{{el.path}} Definition</h6>
+                                <table class="table table-striped table-hover">
+                                    <tr>
+                                        <td>Short</td>
+                                        <td>{{el.definition.short}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Formal</td>
+                                        <td>{{el.definition.formal}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Comments</td>
+                                        <td>{{el.definition.comments}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cardinality</td>
+                                         <td>{{el.definition.min}}..{{el.definition.max}}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </accordion-group>
+                    </div>
 
-                                        <p class="small">{{c.op}}</p>
-
-                                        <p class="small">{{c.value}}</p>
-                                    </div>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </accordion-group>
-                    <accordion-group heading="Expansions" data-ng-show="vm.profile.content.expansion">
-                        <table class="table table-striped table-hover">
-                            <tr>
-                                <td>Identifier</td>
-                                <td>{{vm.profile.content.expansion.identifier}}</td>
-                            </tr>
-                            <tr>
-                                <td>Timestamp</td>
-                                <td>{{vm.profile.content.expansion.timestamp}}</td>
-                            </tr>
-                        </table>
-                        <table class="table table-striped table-hover">
-                            <thead>
-                            <th>System</th>
-                            <th>Code</th>
-                            <th>Display</th>
-                            <th>Contents</th>
-                            </thead>
-                            <tbody>
-                            <tr data-ng-repeat="c in vm.profile.content.expansion.contains">
-                                <td>{{c.system}}</td>
-                                <td>{{c.code}}</td>
-                                <td>{{c.display}}</td>
-                                <td>{{c.contains}}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </accordion-group>
                 </accordion>
             </div>
         </div>

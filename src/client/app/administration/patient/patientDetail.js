@@ -4,15 +4,18 @@
     var controllerId = 'patientDetail';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$routeParams', '$window', 'common', 'fhirServers', 'patientService', patientDetail]);
+        ['$location', '$routeParams', '$window', 'common', 'fhirServers', 'patientService', patientDetail]);
 
-    function patientDetail($routeParams, $window, common, fhirServers, patientService) {
+    function patientDetail($location, $routeParams, $window, common, fhirServers, patientService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
 
         vm.activeServer;
+        vm.calculateAge = calculateAge;
         vm.cancel = cancel;
         vm.activate = activate;
+        vm.delete = deletePatient;
+        vm.edit = edit;
         vm.getTitle = getTitle;
         vm.goBack = goBack;
         vm.isSaving = false;
@@ -29,12 +32,23 @@
             get: canDelete
         });
 
+
         activate();
 
         function activate() {
-            common.activateController([getActiveServer()], controllerId).then(function() {
+            common.activateController([getActiveServer()], controllerId).then(function () {
                 getRequestedPatient();
             });
+        }
+
+        function calculateAge(birthDate) {
+            if (birthDate) {
+                var ageDifMs = Date.now() - birthDate.getTime();
+                var ageDate = new Date(ageDifMs); // miliseconds from epoch
+                return Math.abs(ageDate.getUTCFullYear() - 1970);
+            } else {
+                return undefined;
+            }
         }
 
         function cancel() {
@@ -47,6 +61,25 @@
 
         function canSave() {
             return !vm.isSaving;
+        }
+
+        function deletePatient(patient) {
+            if (patient && patient.resourceId && patient.hashKey) {
+                patientService.deleteCachedPatient(patient.hashKey, patient.resourceId)
+                    .then(function () {
+                        $location.path('/patients');
+                    },
+                    function (error) {
+                        logError(error);
+                    }
+                );
+            }
+        }
+
+        function edit(patient) {
+            if (patient && patient.hashKey) {
+                $location.path('/patient/' + patient.hashKey);
+            }
         }
 
         function getActiveServer() {

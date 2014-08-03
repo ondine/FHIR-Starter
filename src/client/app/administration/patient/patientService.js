@@ -6,6 +6,9 @@
     angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', patientService]);
 
     function patientService(common, dataCache, fhirClient) {
+        var dataCacheKey = 'localPatients';
+        var linksCacheKey = 'linksPatients';
+        var itemCacheKey = 'contextPatient';
         var getLogFn = common.logger.getLogFn;
         var log = getLogFn(serviceId);
         var logError = getLogFn(serviceId, 'error');
@@ -14,6 +17,7 @@
 
         var service = {
             addPatient: addPatient,
+            deleteCachedPatient: deleteCachedPatient,
             deletePatient: deletePatient,
             getCachedPatient: getCachedPatient,
             getCachedSearchResults: getCachedSearchResults,
@@ -30,12 +34,21 @@
         }
 
         function deletePatient(resourceId) {
-
+            var deferred = $q.defer();
+            fhirClient.deleteResource(resourceId)
+                .then(function (data) {
+                    logSuccess(resourceId + ' deleted' + data);
+                    deferred.resolve();
+                }, function (outcome) {
+                    logError('Failed to delete' + resourceId + outcome);
+                    deferred.reject(outcome);
+                });
+            return deferred.promise;
         }
 
         function getCachedSearchResults() {
             var deferred = $q.defer();
-            var cachedSearchResults = dataCache.readFromCache('foundPatients');
+            var cachedSearchResults = dataCache.readFromCache(dataCacheKey);
             if (cachedSearchResults) {
                 deferred.resolve(cachedSearchResults);
             } else {
@@ -48,7 +61,7 @@
             var deferred = $q.defer();
             fhirClient.getResource(resourceId)
                 .then(function (data) {
-                    dataCache.addToCache('foundPatients', data);
+                    dataCache.addToCache(dataCacheKey, data);
                     deferred.resolve(data);
                 }, function (outcome) {
                     deferred.reject(outcome);
@@ -71,13 +84,51 @@
                 for (var i = 0, len = cachedPatients.length; i < len; i++) {
                     if (cachedPatients[i].$$hashKey === hashKey) {
                         cachedPatient = cachedPatients[i];
+                        cachedPatient.content.resourceId = cachedPatient.id;
+                        cachedPatient.content.hashKey = cachedPatient.$$hashKey;
                         break;
                     }
                 }
                 if (cachedPatient) {
-                    deferred.resolve(cachedPatient)
+                    deferred.resolve(cachedPatient.content)
                 } else {
                     deferred.reject('Patient not found in cache: ' + hashKey);
+                }
+            }
+        }
+
+        function deleteCachedPatient(hashKey, resourceId) {
+            var deferred = $q.defer();
+            deletePatient(resourceId)
+                .then(getCachedSearchResults,
+                function (error) {
+                    deferred.reject(error);
+                })
+                .then(removeFromCache)
+                .then(function () {
+                    deferred.resolve()
+                });
+
+            return deferred.promise;
+
+            function removeFromCache(searchResults) {
+                var removed = false;
+                var cachedPatients = searchResults.entry;
+                for (var i = 0, len = cachedPatients.length; i < len; i++) {
+                    if (cachedPatients[i].$$hashKey === hashKey) {
+                        cachedPatients.splice(i, 1);
+                        searchResults.entry = cachedPatients;
+                        searchResults.totalResults = (searchResults.totalResults - 1);
+                        dataCache.addToCache(dataCacheKey, searchResults);
+                        removed = true;
+                        break;
+                    }
+                }
+                if (removed) {
+                    deferred.resolve();
+                } else {
+                    logError('Patient not found in cache: ' + hashKey);
+                    deferred.resolve();
                 }
             }
         }
@@ -101,7 +152,7 @@
 
             fhirClient.getResource(baseUrl + '/Patient/_search?' + params)
                 .then(function (data) {
-                    dataCache.addToCache('foundPatients', data);
+                    dataCache.addToCache(dataCacheKey, data);
                     deferred.resolve(data);
                 }, function (outcome) {
                     deferred.reject(outcome);

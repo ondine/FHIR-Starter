@@ -19,6 +19,10 @@
         vm.questionnaire = undefined;
         vm.questionnaireIdParameter = $routeParams.hashKey;
         vm.save = save;
+        vm.status = {
+            isFirstOpen: true,
+            isFirstDisabled: false
+        };
         vm.title = 'questionnaireDetail';
 
         Object.defineProperty(vm, 'canSave', {

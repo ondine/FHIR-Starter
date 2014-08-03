@@ -18,50 +18,14 @@
             <div class="widget wblue">
                 <div data-cc-widget-header title="{{vm.questionnaire.title}}"></div>
                 <accordion close-others="true">
-                    <accordion-group heading="Summary" is-open="status.isFirstOpen"
-                                     is-disabled="status.isFirstDisabled">
+                    <accordion-group heading="Summary" is-open="vm.status.isFirstOpen"
+                                     is-disabled="vm.status.isFirstDisabled">
                         <div>
                             <div class="col-md-8" data-ng-bind-html="vm.questionnaire.summary">
                             </div>
                         </div>
                     </accordion-group>
                     <accordion-group heading="Details">
-                        <table class="table table-striped table-hover">
-                            <tr>
-                                <td>Title</td>
-                                <td>{{vm.questionnaire.title}}</td>
-                            </tr>
-                            <tr>
-                                <td>Resource Id</td>
-                                <td>{{vm.questionnaire.id}}</td>
-                            </tr>
-                            <tr>
-                                <td>Updated</td>
-                                <td>{{vm.questionnaire.updated}}</td>
-                            </tr>
-                            <tr>
-                                <td>Published</td>
-                                <td>{{vm.questionnaire.published}}</td>
-                            </tr>
-                            <tr>
-                                <td>Links</td>
-                                <td>
-                                    <div data-ng-repeat="link in vm.questionnaire.link">
-                                        <a href="{{link.href}}" target="_new">{{link.rel}}</a>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Author</td>
-                                <td>
-                                    <div data-ng-repeat="author in vm.questionnaire.author">
-                                        <p class="small">{{author.name}}</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </accordion-group>
-                    <accordion-group heading="Content">
                         <table class="table table-striped table-hover">
                             <tr>
                                 <td>Authored</td>
@@ -82,6 +46,11 @@
                                 </td>
                             </tr>
                             <tr>
+                                <td>Source</td>
+                                <td><a href="{{vm.questionnaire.content.source.reference}}">{{vm.questionnaire.content.source.display}}</a>
+                                </td>
+                            </tr>
+                            <tr>
                                 <td>Name</td>
                                 <td>{{vm.questionnaire.content.name.text}}
                                     <div data-ng-repeat="coding in vm.questionnaire.content.name.coding">
@@ -97,10 +66,12 @@
                                     </div>
                                 </td>
                             </tr>
+                            <tr>
+                                <td>Encounter</td>
+                                <td><a href="{{vm.questionnaire.content.encounter.reference}}">{{vm.questionnaire.content.encounter.display}}</a>
+                                </td>
+                            </tr>
                         </table>
-                    </accordion-group>
-                    <accordion-group heading="Contained">
-
                     </accordion-group>
                     <div data-ng-show="vm.questionnaire.content.group">
                         <accordion-group heading="{{vm.questionnaire.content.group.header}}">

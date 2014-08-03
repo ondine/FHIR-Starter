@@ -8,8 +8,8 @@
     toastr.options.positionClass = 'toast-bottom-right';
 
     var imageSettings = {
-        imageBasePath: '../content/images/',
-        unknownPersonImageSource: '../content/images/unknown_person.jpg'
+        imageBasePath: '/content/images/',
+        unknownPersonImageSource: '/content/images/unknown_person.jpg'
     }
 
     var keyCodes = {
@@ -30,7 +30,7 @@
         del: 46
     };
 
-     var events = {
+    var events = {
         controllerActivateSuccess: 'controller.activateSuccess',
         spinnerToggle: 'spinner.toggle'
     };
@@ -45,7 +45,7 @@
     };
 
     app.value('config', config);
-    
+
     app.config(['$logProvider', function ($logProvider) {
         // turn debugging off/on (no info or warn)
         if ($logProvider.debugEnabled) {
@@ -54,11 +54,11 @@
 
     }]);
 
-    app.config(['$locationProvider', function($locationProvider) {
+    app.config(['$locationProvider', function ($locationProvider) {
         $locationProvider.html5Mode(true);
     }]);
 
-    app.config(['$httpProvider', function($httpProvider) {
+    app.config(['$httpProvider', function ($httpProvider) {
         // app-specific header X-FHIR-Starter for CORS
         $httpProvider.defaults.headers.common = { 'Accept': 'application/json+fhir, application/json, text/plain, */*'};
         $httpProvider.defaults.headers.put = { 'Content-Type': 'application/json+fhir', 'X-FHIR-Starter': 'urn:fhir.starter' };
@@ -66,9 +66,15 @@
         $httpProvider.defaults.headers.delete = { 'X-FHIR-Starter': 'urn:fhir.starter' };
         $httpProvider.defaults.headers.options = { 'Access-Control-Request-Headers': 'X-FHIR-Starter', 'Content-Location': 'urn:fhir.starter'};
     }]);
-    
+
     app.config(['commonConfigProvider', function (cfg) {
         cfg.config.controllerActivateSuccessEvent = config.events.controllerActivateSuccess;
         cfg.config.spinnerToggleEvent = config.events.spinnerToggle;
+    }]);
+
+    app.config(['$compileProvider', function ($compileProvider) {
+        //  Default imgSrcSanitizationWhitelist: /^\s*(https?|ftp|file):|data:image\//
+        //  chrome-extension: will be added to the end of the expression
+        $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|chrome-extension):|data:image\//);
     }]);
 })();

@@ -1,12 +1,12 @@
 ﻿(function () {
     'use strict';
 
-    var controllerId = 'conceptmaps';
+    var controllerId = 'compositions';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$location', 'common', 'config', 'fhirServers', 'conceptmapService', conceptmaps]);
+        ['$location', 'common', 'config', 'fhirServers', 'compositionService', compositions]);
 
-    function conceptmaps($location, common, config, fhirServers, conceptmapService) {
+    function compositions($location, common, config, fhirServers, compositionService) {
         var vm = this;
         var applyFilter = function () {
         };
@@ -16,14 +16,14 @@
 
         vm.activeServer = null;
         vm.busyMessage = "Contacting remote server ...";
-        vm.filteredConceptmaps = [];
-        vm.conceptmapsFilteredCount = 0;
+        vm.filteredCompositions = [];
+        vm.compositionsFilteredCount = 0;
         vm.isBusy = false;
-        vm.goToConceptmap = goToConceptmap;
-        vm.conceptmaps = [];
-        vm.conceptmapsCount = 0;
-        vm.conceptmapsFilter = conceptmapFilter;
-        vm.conceptmapsSearch = '';
+        vm.goToComposition = goToComposition;
+        vm.compositions = [];
+        vm.compositionsCount = 0;
+        vm.compositionsFilter = compositionFilter;
+        vm.compositionsSearch = '';
         vm.pageChanged = pageChanged;
         vm.paging = {
             currentPage: 1,
@@ -34,11 +34,11 @@
         };
         vm.refresh = refresh;
         vm.search = search;
-        vm.title = 'ConceptMaps';
+        vm.title = 'Compositions';
 
         Object.defineProperty(vm.paging, 'pageCount', {
             get: function () {
-                return Math.floor(vm.conceptmapsFilteredCount / vm.paging.pageSize) + 1;
+                return Math.floor(vm.compositionsFilteredCount / vm.paging.pageSize) + 1;
             }
         });
 
@@ -47,13 +47,13 @@
         function activate() {
             common.activateController([getActiveServer()], controllerId)
                 .then(function () {
-                    getConceptmaps(false);
+                    getCompositions(false);
                 }, function (error) {
                     log('Error ' + error);
                 })
                 .then(function () {
-                    applyFilter = common.createSearchThrottle(vm, 'conceptmaps');
-                    if (vm.conceptmapsSearch) {
+                    applyFilter = common.createSearchThrottle(vm, 'compositions');
+                    if (vm.compositionsSearch) {
                         applyFilter(true);
                     }
                 });
@@ -66,28 +66,28 @@
                 });
         }
 
-        function getConceptmapsFilteredCount() {
-            return conceptmapService.getFilteredCount(vm.conceptmapsFilter)
+        function getCompositionsFilteredCount() {
+            return compositionService.getFilteredCount(vm.compositionsFilter)
                 .then(function (data) {
-                    vm.conceptmapsFilteredCount = data;
+                    vm.compositionsFilteredCount = data;
                 });
         }
 
-        function getConceptmapsCount() {
-            return conceptmapService.getConceptmapsCount()
+        function getCompositionsCount() {
+            return compositionService.getCompositionsCount()
                 .then(function (data) {
-                    return vm.conceptmapsCount = data;
+                    return vm.compositionsCount = data;
                 });
         }
 
-        function getConceptmaps(forceRefresh) {
+        function getCompositions(forceRefresh) {
             toggleSpinner(true);
-            return conceptmapService.getConceptmaps(forceRefresh, vm.activeServer.baseUrl, vm.paging.currentPage, vm.paging.pageSize, vm.conceptmapsFilter)
+            return compositionService.getCompositions(forceRefresh, vm.activeServer.baseUrl, vm.paging.currentPage, vm.paging.pageSize, vm.compositionsFilter)
                 .then(function (data) {
-                    vm.conceptmaps = data;
-                    getConceptmapsFilteredCount();
-                    if (!vm.conceptmapsCount || forceRefresh) {
-                        getConceptmapsCount();
+                    vm.compositions = data;
+                    getCompositionsFilteredCount();
+                    if (!vm.compositionsCount || forceRefresh) {
+                        getCompositionsCount();
                     }
                     toggleSpinner(false);
                     return data;
@@ -97,34 +97,34 @@
                 });
         }
 
-        function goToConceptmap(conceptmap) {
-            if (conceptmap && conceptmap.$$hashKey) {
-                $location.path('/conceptmap/' + conceptmap.$$hashKey);
+        function goToComposition(composition) {
+            if (composition && composition.$$hashKey) {
+                $location.path('/composition/' + composition.$$hashKey);
             }
         }
 
-        function conceptmapFilter(conceptmap) {
+        function compositionFilter(composition) {
             var textContains = common.textContains;
-            var searchText = vm.conceptmapsSearch;
+            var searchText = vm.compositionsSearch;
             var isMatch = searchText ?
-                textContains(conceptmap.content.name, searchText)
+                textContains(composition.title, searchText)
                 : true;
             return isMatch;
         }
 
         function pageChanged() {
-            getConceptmaps(false);
+            getCompositions(false);
         }
 
         function refresh() {
-            getConceptmaps(true);
+            getCompositions(true);
         }
 
         function search($event) {
             if ($event.keyCode === keyCodes.esc) {
-                vm.conceptmapsSearch = '';
+                vm.compositionsSearch = '';
             }
-            getConceptmaps();
+            getCompositions();
         }
 
         function toggleSpinner(on) {

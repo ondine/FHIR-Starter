@@ -16,10 +16,10 @@
 
         vm.activeServer = null;
         vm.busyMessage = "Contacting remote server ...";
-        vm.filteredValuesets = [];
+        vm.filteredProfiles = [];
         vm.profilesFilteredCount = 0;
         vm.isBusy = false;
-        vm.goToValueset = goToValueset;
+        vm.goToProfile = goToProfile;
         vm.profiles = [];
         vm.profilesCount = 0;
         vm.profilesFilter = profileFilter;
@@ -47,7 +47,7 @@
         function activate() {
             common.activateController([getActiveServer()], controllerId)
                 .then(function () {
-                    getValuesets(false);
+                    getProfiles(false);
                 }, function (error) {
                     log('Error ' + error);
                 })
@@ -66,28 +66,28 @@
                 });
         }
 
-        function getValuesetsFilteredCount() {
+        function getProfilesFilteredCount() {
             return profileService.getFilteredCount(vm.profilesFilter)
                 .then(function (data) {
                     vm.profilesFilteredCount = data;
                 });
         }
 
-        function getValuesetsCount() {
-            return profileService.getValuesetsCount()
+        function getProfilesCount() {
+            return profileService.getProfilesCount()
                 .then(function (data) {
                     return vm.profilesCount = data;
                 });
         }
 
-        function getValuesets(forceRefresh) {
+        function getProfiles(forceRefresh) {
             toggleSpinner(true);
-            return profileService.getValuesets(forceRefresh, vm.activeServer.baseUrl, vm.paging.currentPage, vm.paging.pageSize, vm.profilesFilter)
+            return profileService.getProfiles(forceRefresh, vm.activeServer.baseUrl, vm.paging.currentPage, vm.paging.pageSize, vm.profilesFilter)
                 .then(function (data) {
                     vm.profiles = data;
-                    getValuesetsFilteredCount();
+                    getProfilesFilteredCount();
                     if (!vm.profilesCount || forceRefresh) {
-                        getValuesetsCount();
+                        getProfilesCount();
                     }
                     toggleSpinner(false);
                     return data;
@@ -97,7 +97,7 @@
                 });
         }
 
-        function goToValueset(profile) {
+        function goToProfile(profile) {
             if (profile && profile.$$hashKey) {
                 $location.path('/profile/' + profile.$$hashKey);
             }
@@ -113,18 +113,18 @@
         }
 
         function pageChanged() {
-            getValuesets(false);
+            getProfiles(false);
         }
 
         function refresh() {
-            getValuesets(true);
+            getProfiles(true);
         }
 
         function search($event) {
             if ($event.keyCode === keyCodes.esc) {
                 vm.profilesSearch = '';
             }
-            getValuesets();
+            getProfiles();
         }
 
         function toggleSpinner(on) {

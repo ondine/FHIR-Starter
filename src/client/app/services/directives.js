@@ -23,7 +23,7 @@
     }]);
 
     app.directive('ccSidebar', function () {
-        // Opens and clsoes the sidebar menu.
+        // Opens and closes the sidebar menu.
         // Usage:
         //  <div data-cc-sidebar>
         // Creates:
@@ -200,18 +200,27 @@
 
     app.directive('fsImgPerson', ['config', function (config) {
         //Usage:
-        //<div data-fs-img-person="vm.person.imageSource"></div>
-        var unknownImage = config.imageSettings.unknownPersonImageSource;
+        //<img fs-img-person="vm.person.photo[0]"/>
         var directive = {
             link: link,
+            scope: {
+                fsImgPerson: "=?"
+            },
             restrict: 'A'
         };
         return directive;
 
         function link(scope, element, attrs) {
-            attrs.$observe('fsImgPerson', function(value) {
-                value = (value || unknownImage);
-                attrs.$set('src', value);
+            scope.$watch('fsImgPerson', function (value) {
+                var imgSource = config.imageSettings.unknownPersonImageSource;
+                if (value) {
+                    if (value.url) {
+                        imgSource = value.url;
+                    } else if (value.data) {
+                        imgSource = 'data:' + value.contentType + ';base64,' + value.data;
+                    }
+                }
+                attrs.$set('src', imgSource);
             });
         }
     }]);
@@ -270,7 +279,8 @@
                 element.bind("dragleave", onDragEnd)
                     .bind("drop", function (e) {
                         onDragEnd(e);
-                        loadFile(e.originalEvent.dataTransfer.files[0]); /* This is the file */
+                        loadFile(e.originalEvent.dataTransfer.files[0]);
+                        /* This is the file */
                     });
             }
         };

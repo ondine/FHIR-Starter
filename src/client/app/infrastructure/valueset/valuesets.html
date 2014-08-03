@@ -1,7 +1,7 @@
 ﻿<section class="mainbar" data-ng-controller="valuesets as vm">
     <section class="matter">
-        <div class="container-fluid">
-            <div class="row-fluid">
+        <div class="container">
+            <div class="row">
                 <div class="col-md-12">
                     <input class="form-control search-query"
                            data-ng-model="vm.valuesetsSearch"
@@ -20,24 +20,22 @@
                     </div>
                 </div>
             </div>
-            <div class="container">
-                <div class="row" data-ng-show="vm.valuesetsCount > 0">
-                    <div class="widget wblue">
-                        <div data-cc-widget-header title="{{vm.title}}"
-                             subtitle="{{vm.valuesetsFilteredCount}} / {{vm.valuesetsCount}}"
-                             right-text="Page {{vm.paging.currentPage}} of {{vm.paging.pageCount}}"></div>
-                        <div class="widget-content col-sm-12">
-                            <ul class="list-group">
-                                <div class="col-sm-6"
-                                     data-ng-repeat="v in vm.valuesets"
-                                     data-ng-click="vm.goToValueset(v)">
-                                    <fs-search-item name="{{v.content.name}}"
-                                                    summary="{{v.content.description | truncate:75}}"
-                                                    resourceid="{{v.content.id }}"
-                                                    edit="edit(v.$$hashKey)"></fs-search-item>
-                                </div>
-                            </ul>
-                        </div>
+            <div class="row">
+                <div class="widget wred" data-ng-show="vm.valuesetsCount > 0">
+                    <div data-cc-widget-header title="{{vm.title}}"
+                         subtitle="{{vm.valuesetsFilteredCount}} / {{vm.valuesetsCount}}"
+                         right-text="Page {{vm.paging.currentPage}} of {{vm.paging.pageCount}}"></div>
+                    <div class="widget-content col-sm-12">
+                        <ul class="list-group">
+                            <div class="col-sm-6"
+                                 data-ng-repeat="v in vm.valuesets"
+                                 data-ng-click="vm.goToValueset(v)">
+                                <fs-search-item name="{{v.content.name}}"
+                                                summary="{{v.content.description | truncate:75}}"
+                                                resourceid="{{v.content.id }}"
+                                                edit="edit(v.$$hashKey)"></fs-search-item>
+                            </div>
+                        </ul>
                     </div>
                     <div class="widget-foot">
                         <div class="clearfix"></div>
@@ -58,9 +56,10 @@
                     </div>
                 </div>
             </div>
-            <div data-ng-show="vm.isBusy" class="page-splash dissolve-animation">
-                <div class="page-splash-message page-splash-message-subtle">{{vm.busyMessage}}&nbsp;&nbsp;<i
-                        class="fa fa-cog fa-spin"></i></div>
-            </div>
+        </div>
+        <div data-ng-show="vm.isBusy" class="page-splash dissolve-animation">
+            <div class="page-splash-message page-splash-message-subtle">{{vm.busyMessage}}&nbsp;&nbsp;<i
+                    class="fa fa-cog fa-spin"></i></div>
+        </div>
     </section>
 </section>

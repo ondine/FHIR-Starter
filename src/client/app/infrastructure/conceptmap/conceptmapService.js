@@ -7,8 +7,8 @@
 
     function conceptmapService(common, dataCache, fhirClient) {
         var getLogFn = common.logger.getLogFn;
-        var dataCacheKey = 'localValuesets';
-        var linksCacheKey = 'linksValuesets';
+        var dataCacheKey = 'localConceptmaps';
+        var linksCacheKey = 'linksConceptmaps';
         var isLoaded = false;
         var log = getLogFn(serviceId);
         var logError = getLogFn(serviceId, 'error');
@@ -17,23 +17,23 @@
 
 
         var service = {
-            addValueset: addValueset,
-            deleteValueset: deleteValueset,
-            getCachedValueset: getCachedValueset,
+            addConceptmap: addConceptmap,
+            deleteConceptmap: deleteConceptmap,
+            getCachedConceptmap: getCachedConceptmap,
             getFilteredCount: getFilteredCount,
-            getRemoteValueset: getRemoteValueset,
-            getValuesetsCount: getValuesetsCount,
-            getValuesets: getValuesets,
-            updateValueset: updateValueset
+            getRemoteConceptmap: getRemoteConceptmap,
+            getConceptmapsCount: getConceptmapsCount,
+            getConceptmaps: getConceptmaps,
+            updateConceptmap: updateConceptmap
         };
 
         return service;
 
-        function addValueset(baseUrl) {
+        function addConceptmap(baseUrl) {
             var deferred = $q.defer();
             var id = common.generateUUID();
 
-            fhirClient.addResource(baseUrl + '/Valueset/' + id)
+            fhirClient.addResource(baseUrl + '/Conceptmap/' + id)
                 .then(function (data) {
                     deferred.resolve(data);
                 },
@@ -43,7 +43,7 @@
             return deferred.promise;
         }
 
-        function deleteValueset(resourceId) {
+        function deleteConceptmap(resourceId) {
             var deferred = $q.defer();
             fhirClient.deleteResource(resourceId)
                 .then(function (data) {
@@ -69,7 +69,7 @@
             return deferred.promise;
         }
 
-        function getRemoteValueset(resourceId) {
+        function getRemoteConceptmap(resourceId) {
             var deferred = $q.defer();
             fhirClient.getResource(resourceId)
                 .then(function (data) {
@@ -81,34 +81,34 @@
             return deferred.promise;
         }
 
-        function getCachedValueset(hashKey) {
+        function getCachedConceptmap(hashKey) {
             var deferred = $q.defer();
             _getAllLocal()
-                .then(getValueset,
+                .then(getConceptmap,
                 function () {
-                    deferred.reject('Valueset search results not found in cache.');
+                    deferred.reject('Conceptmap search results not found in cache.');
                 });
             return deferred.promise;
 
-            function getValueset(cachedEntries) {
-                var cachedValueset;
+            function getConceptmap(cachedEntries) {
+                var cachedConceptmap;
                 for (var i = 0, len = cachedEntries.length; i < len; i++) {
                     if (cachedEntries[i].$$hashKey === hashKey) {
-                        cachedValueset = cachedEntries[i];
+                        cachedConceptmap = cachedEntries[i];
                         break;
                     }
                 }
-                if (cachedValueset) {
-                    deferred.resolve(cachedValueset)
+                if (cachedConceptmap) {
+                    deferred.resolve(cachedConceptmap)
                 } else {
-                    deferred.reject('Valueset not found in cache: ' + hashKey);
+                    deferred.reject('Conceptmap not found in cache: ' + hashKey);
                 }
             }
         }
 
-        function getValuesetsCount() {
+        function getConceptmapsCount() {
             var deferred = $q.defer();
-            if (_areValuesetsLoaded()) {
+            if (_areConceptmapsLoaded()) {
                 _getAllLocal().then(function (data) {
                     deferred.resolve(data.length);
                 });
@@ -118,12 +118,12 @@
             return deferred.promise;
         }
 
-        function getValuesets(forceRemote, baseUrl, page, size, filter) {
+        function getConceptmaps(forceRemote, baseUrl, page, size, filter) {
             var deferred = $q.defer();
             var take = size || 20;
             var skip = page ? (page - 1) * take : 0;
 
-            if (_areValuesetsLoaded() && !forceRemote) {
+            if (_areConceptmapsLoaded() && !forceRemote) {
                 _getAllLocal().then(getByPage);
             } else {
                 fhirClient.getResource(baseUrl + '/ConceptMap/_search?_count=500')
@@ -134,7 +134,7 @@
             }
 
             function getByPage(entries) {
-                var pagedValuesets;
+                var pagedConceptmaps;
                 var filteredEntries = [];
 
                 if (filter) {
@@ -148,18 +148,18 @@
                 }
 
                 if (filteredEntries.length < size) {
-                    pagedValuesets = filteredEntries;
+                    pagedConceptmaps = filteredEntries;
                 } else {
                     var start = (skip < filteredEntries.length) ? skip : (filteredEntries - size);
                     var items = ((start + size) >= filteredEntries.length) ? (filteredEntries.length) : (start + size);
-                    pagedValuesets = filteredEntries.slice(start, items);
+                    pagedConceptmaps = filteredEntries.slice(start, items);
                 }
-                deferred.resolve(pagedValuesets);
+                deferred.resolve(pagedConceptmaps);
             }
 
             function querySucceeded(data) {
-                _areValuesetsLoaded(true);
-                log('Retrieved ' + data.entry.length + ' of ' + data.totalResults + ' available [Valuesets] from remote FHIR server', data.entry.length)
+                _areConceptmapsLoaded(true);
+                log('Retrieved ' + data.entry.length + ' of ' + data.totalResults + ' available [Conceptmaps] from remote FHIR server', data.entry.length)
                 dataCache.addToCache(dataCacheKey, data.entry);
                 return data.entry;
             }
@@ -167,7 +167,7 @@
             return deferred.promise;
         }
 
-        function updateValueset(resourceId, resource) {
+        function updateConceptmap(resourceId, resource) {
             var deferred = $q.defer();
 
             fhirClient.addResource(resourceId, resource)
@@ -181,11 +181,11 @@
         }
 
         function _getAllLocal() {
-            var cachedValuesets = dataCache.readFromCache(dataCacheKey);
-            return $q.when(cachedValuesets);
+            var cachedConceptmaps = dataCache.readFromCache(dataCacheKey);
+            return $q.when(cachedConceptmaps);
         }
 
-        function _areValuesetsLoaded(value) {
+        function _areConceptmapsLoaded(value) {
             if (value === undefined) {
                 return isLoaded;
             }

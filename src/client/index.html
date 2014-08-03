@@ -12,12 +12,23 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
 
+    <script>
+        // Must be first. IE10 mobile viewport fix
+        if ("-ms-user-select" in document.documentElement.style && navigator.userAgent.match(/IEMobile\/10\.0/)) {
+            var msViewportStyle = document.createElement("style");
+            var mq = "@-ms-viewport{width:auto!important}";
+            msViewportStyle.appendChild(document.createTextNode(mq));
+            document.getElementsByTagName("head")[0].appendChild(msViewportStyle);
+        }
+    </script>
+
     <link rel="shortcut icon" href="favicon.ico"/>
-    <link href="content/bootstrap.min.css" rel="stylesheet"/>
-    <link href="content/font-awesome.min.css" rel="stylesheet"/>
-    <link href="content/toastr.min.css" rel="stylesheet"/>
-    <link href="content/customtheme.css" rel="stylesheet"/>
-    <link href="content/styles.css" rel="stylesheet"/>
+    <link href="content/ie10mobile.css" rel="stylesheet" />
+    <link href="content/bootstrap.min.css" rel="stylesheet" />
+    <link href="content/font-awesome.min.css" rel="stylesheet" />
+    <link href="content/toastr.css" rel="stylesheet" />
+    <link href="content/customtheme.css" rel="stylesheet">
+    <link href="content/styles.css" rel="stylesheet" />
 </head>
 <body>
 <div>
@@ -97,5 +108,8 @@
 <script src="app/infrastructure/profile/profiles.js"></script>
 <script src="app/infrastructure/profile/profileDetail.js"></script>
 <script src="app/infrastructure/profile/profileService.js"></script>
+<script src="app/infrastructure/composition/compositions.js"></script>
+<script src="app/infrastructure/composition/compositionDetail.js"></script>
+<script src="app/infrastructure/composition/compositionService.js"></script>
 </body>
 </html>

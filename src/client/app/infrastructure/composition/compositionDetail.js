@@ -1,12 +1,12 @@
 (function () {
     'use strict';
 
-    var controllerId = 'profileDetail';
+    var controllerId = 'compositionDetail';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$routeParams', '$window', 'common', 'profileService', profileDetail]);
+        ['$routeParams', '$window', 'common', 'compositionService', compositionDetail]);
 
-    function profileDetail($routeParams, $window, common, profileService) {
+    function compositionDetail($routeParams, $window, common, compositionService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
 
@@ -16,14 +16,14 @@
         vm.goBack = goBack;
         vm.isSaving = false;
         vm.isEditing = true;
-        vm.profile = undefined;
-        vm.profileIdParameter = $routeParams.hashKey;
+        vm.composition = undefined;
+        vm.compositionIdParameter = $routeParams.hashKey;
         vm.save = save;
         vm.status = {
             isFirstOpen: true,
             isFirstDisabled: false
         };
-        vm.title = 'profileDetail';
+        vm.title = 'compositionDetail';
 
         Object.defineProperty(vm, 'canSave', {
             get: canSave
@@ -36,7 +36,7 @@
         activate();
 
         function activate() {
-            common.activateController([getRequestedProfile()], controllerId);
+            common.activateController([getRequestedComposition()], controllerId);
         }
 
         function cancel() {
@@ -51,12 +51,12 @@
             return !vm.isSaving;
         }
 
-        function getRequestedProfile() {
+        function getRequestedComposition() {
             var val = $routeParams.hashKey;
             if (val !== 'new') {
-                return profileService.getCachedProfile(val)
+                return compositionService.getCachedComposition(val)
                 .then(function(data) {
-                    vm.profile = data;
+                    vm.composition = data;
                 }, function(error) {
                     logError(error);
                 });
@@ -64,7 +64,7 @@
         }
 
         function getTitle() {
-            return 'Edit ' + ((vm.profile && vm.profile.fullName) || '');
+            return 'Edit ' + ((vm.composition && vm.composition.fullName) || '');
         }
 
         function goBack() {

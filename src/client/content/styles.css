@@ -1,28 +1,12 @@
 ﻿/*#region Override background color theme */
 
 /*For Bootstrap 3*/
-.nav, .pagination, .carousel, .panel-title a {
-    cursor: pointer;
-}
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
 
 body {
     background-color: #FFF;
 }
-/* During drag */
-body #file-drop {
-    z-index: 1000;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: none;
-}
-/* No drag */
-body.dragOver #file-drop {
-    display: block;
-}
-
 
 .navbar-inverse {
     background-color: #333;
@@ -40,29 +24,29 @@ body.dragOver #file-drop {
     color: #fff;
 }
 
-.sidebar .navi li ul li a:hover {
-    color: #52b9e9;
-}
+    .sidebar .navi li ul li a:hover {
+        color: #52b9e9;
+    }
 
-.sidebar .navi li ul li a:disabled {
-    color: #999;
-}
+    .sidebar .navi li ul li a:disabled {
+        color: #999;
+    }
 
 .navbar-inverse .btn-navbar {
     background-color: #333;
 }
 
-.navbar-inverse .btn-navbar:hover {
-    background-color: #333;
-}
+    .navbar-inverse .btn-navbar:hover {
+        background-color: #333;
+    }
 
 .sidebar {
     margin-top: -2px;
 }
 
-.sidebar .sidebar-inner {
-    background-color: #333;
-}
+    .sidebar .sidebar-inner {
+        background-color: #333;
+    }
 
 .sidebar-filler {
     z-index: -1;
@@ -80,7 +64,7 @@ body.dragOver #file-drop {
 
 .ng-cloak {
     display: none !important;
-}
+ }
 
 select > option {
     color: black;
@@ -101,13 +85,14 @@ textarea.form-control {
     height: 12em;
 }
 
-.widget .padd.padd-tight {
-    padding: 6px;
-}
+    .widget .padd.padd-tight {
+        padding: 6px;
+    }
 
 .list-flow.list-flow-tight {
     width: 90px;
 }
+
 
 .map {
     height: 228px;
@@ -122,13 +107,14 @@ textarea.form-control {
     margin-left: 4px;
 }
 
-.btn.btn-notext > i {
-    margin-right: 0;
-}
+    .btn.btn-notext > i {
+        margin-right: 0;
+    }
 
-.btn-group {
+.btn-group{
     margin: .2em;
 }
+
 
 small {
     font-size: 14px;
@@ -158,9 +144,9 @@ small {
     background-color: #52b9e9;
 }
 
-.widget-content .padd:hover * {
-    color: white;
-}
+    .widget-content .padd:hover * {
+        color: white;
+    }
 
 .list-flow {
     margin: 6px;
@@ -178,6 +164,7 @@ small {
     line-height: 18px !important;
 }
 
+
 .search-query {
     margin: 2px auto 8px auto !important;
 }
@@ -192,8 +179,7 @@ small {
 
 .input-group[class*="col-"] {
     width: 80%;
-    margin: 0 1.5em;
-}
+    margin: 0 1.5em;}
 
 .user .user-pic {
     display: block;
@@ -239,9 +225,9 @@ small {
     z-index: 99999 !important;
 }
 
-#splash-page .bar {
-    width: 100%;
-}
+    #splash-page .bar {
+        width: 100%;
+    }
 
 .page-splash {
     z-index: 99999 !important;
@@ -279,10 +265,10 @@ small {
     padding: 0;
 }
 
-.page-splash-message.page-splash-message-subtle {
-    margin: 30% auto 0 auto;
-    font-size: 200%;
-}
+    .page-splash-message.page-splash-message-subtle {
+        margin: 30% auto 0 auto;
+        font-size: 200%;
+    }
 
 .fa-asterisk.fa-asterisk-large {
     font-size: 180%;
@@ -298,6 +284,7 @@ small {
     padding: 0 4px 0 0;
 }
 
+
 .progress,
 .page-progress-bar {
     margin: 30px 10% !important;
@@ -308,7 +295,6 @@ small {
     left: auto;
     top: auto !important;
 }
-
 /*#endregion*/
 
 table th > a {
@@ -319,6 +305,7 @@ table th > a {
 .table-hover tbody tr:hover > th {
     cursor: pointer;
 }
+
 
 .widget-content.referrer {
     border-width: 0;
@@ -335,7 +322,6 @@ a {
     position: relative;
     overflow: hidden;
 }
-
 /*#endregion */
 
 /*#region Angular ng-include, ng-view, ng-repeat shuffle animations*/
@@ -354,10 +340,10 @@ a {
     opacity: 0;
 }
 
-.shuffle-animation.ng-enter.ng-enter-active {
-    left: 0;
-    opacity: 1;
-}
+    .shuffle-animation.ng-enter.ng-enter-active {
+        left: 0;
+        opacity: 1;
+    }
 
 .shuffle-animation.ng-leave {
     -moz-transition: 0.3s ease-out all;
@@ -368,11 +354,10 @@ a {
     opacity: 1;
 }
 
-.shuffle-animation.ng-leave.ng-leave-active {
-    left: 2em;
-    opacity: 0;
-}
-
+    .shuffle-animation.ng-leave.ng-leave-active {
+        left: 2em;
+        opacity: 0;
+    }
 /*#endregion*/
 
 /*#region Angular ng-include, ng-view, ng-repeat fader animation */
@@ -396,23 +381,22 @@ a {
     opacity: 0;
 }
 
-.fader-animation.ng-enter.ng-enter-active {
-    opacity: 1;
-}
+    .fader-animation.ng-enter.ng-enter-active {
+        opacity: 1;
+    }
 
 .fader-animation.ng-move {
-    opacity: 0.5;
+  opacity:0.5;
 }
-
 .fader-animation.ng-move.ng-move-active {
-    opacity: 1;
+  opacity:1;
 }
 
 /*#endregion*/
 
 /*#region Angular ng-show dissolve animation */
 .dissolve-animation.ng-hide-remove {
-    display: inline !important;
+    display: inline!important;
 }
 
 .dissolve-animation.ng-hide-remove,
@@ -423,23 +407,21 @@ a {
     transition: 0.8s linear all;
 }
 
-.dissolve-animation.ng-hide-remove.ng-hide-remove-active,
-.dissolve-animation.ng-hide-add {
-    opacity: 1;
-}
+    .dissolve-animation.ng-hide-remove.ng-hide-remove-active,
+    .dissolve-animation.ng-hide-add {
+        opacity: 1;
+    }
 
-.dissolve-animation.ng-hide-add.ng-hide-add-active,
-.dissolve-animation.ng-hide-remove {
-    opacity: 0;
-}
-
+        .dissolve-animation.ng-hide-add.ng-hide-add-active,
+        .dissolve-animation.ng-hide-remove {
+            opacity: 0;
+        }
 /*#endregion */
 
 /*#region toastr */
 #toast-container.toast-top-full-width > div, #toast-container.toast-bottom-full-width > div {
     margin: 4px auto;
 }
-
 /*#endregion */
 
 /*#region Responsive */
@@ -453,9 +435,9 @@ a {
         clear: none;
     }
 
-    .nav-collapse .nav > li {
-        float: left;
-    }
+        .nav-collapse .nav > li {
+            float: left;
+        }
 
     .navbar .btn-navbar {
         display: none;
@@ -486,9 +468,9 @@ a {
         clear: both;
     }
 
-    .nav-collapse .nav > li {
-        float: none;
-    }
+        .nav-collapse .nav > li {
+            float: none;
+        }
 
     .navbar .btn-navbar {
         display: block;
@@ -505,9 +487,9 @@ a {
         margin: 40% auto 0 auto;
     }
 
-    .page-splash-message.page-splash-message-subtle {
-        font-size: 150%;
-    }
+        .page-splash-message.page-splash-message-subtle {
+            font-size: 150%;
+        }
 
     .sidebar .sidebar-inner {
         height: inherit;
@@ -520,13 +502,13 @@ a {
         line-height: 1em;
     }
 
-    .today-datas li i {
-        font-size: 2em;
-    }
+        .today-datas li i {
+            font-size: 2em;
+        }
 
-    .today-datas li .datas-text span {
-        font-size: 1em;
-    }
+        .today-datas li .datas-text span {
+            font-size: 1em;
+        }
 
     .btn {
         margin: .2em;

@@ -1,12 +1,12 @@
-﻿<section class="mainbar" data-ng-controller="conceptmaps as vm">
+﻿<section class="mainbar" data-ng-controller="compositions as vm">
     <section class="matter">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
                     <input class="form-control search-query"
-                           data-ng-model="vm.conceptmapsSearch"
+                           data-ng-model="vm.compositionsSearch"
                            data-ng-keyup="vm.search($event)"
-                           placeholder="Filter local results by name ..."
+                           placeholder="Filter local results by title ..."
                             />
 
                     <div class="btn-group pull-right">
@@ -14,36 +14,36 @@
                             <a class="btn btn-info"
                                data-ng-click="vm.refresh()"><i
                                     class="fa fa-refresh"></i><span>Refresh</span></a>
-                            <a class="btn btn-info" href="/conceptmap/new"><i
-                                    class="fa fa-plus"></i><span>Add Custom ConceptMap</span></a>
+                            <a class="btn btn-info" href="/composition/new"><i
+                                    class="fa fa-plus"></i><span>Add Custom Composition</span></a>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="widget wblue" data-ng-show="vm.conceptmapsCount > 0">
+                <div class="widget wlightblue" data-ng-show="vm.compositionsCount > 0">
                     <div data-cc-widget-header title="{{vm.title}}"
-                         subtitle="{{vm.conceptmapsFilteredCount}} / {{vm.conceptmapsCount}}"
+                         subtitle="{{vm.compositionsFilteredCount}} / {{vm.compositionsCount}}"
                          right-text="Page {{vm.paging.currentPage}} of {{vm.paging.pageCount}}"></div>
                     <div class="widget-content col-sm-12">
                         <ul class="list-group">
                             <div class="col-sm-6"
-                                 data-ng-repeat="v in vm.conceptmaps"
-                                 data-ng-click="vm.goToConceptmap(v)">
-                                <fs-search-item name="{{v.content.name}}"
-                                                summary="{{v.content.description | truncate:75}}"
-                                                resourceid="{{v.content.id }}"
-                                                edit="edit(v.$$hashKey)"></fs-search-item>
+                                 data-ng-repeat="c in vm.compositions"
+                                 data-ng-click="vm.goToComposition(v)">
+                                <fs-search-item name="{{c.title}}"
+                                                summary="{{c.content.text.div | truncate:75}}"
+                                                resourceid="{{c.id }}"
+                                                edit="edit(c.$$hashKey)"></fs-search-item>
                             </div>
                         </ul>
                     </div>
                 </div>
                 <div class="widget-foot">
                     <div class="clearfix"></div>
-                    <div data-ng-show="vm.conceptmapsFilteredCount > vm.paging.pageSize">
+                    <div data-ng-show="vm.compositionsFilteredCount > vm.paging.pageSize">
                         <pagination boundary-links="true"
                                     ng-change="vm.pageChanged()"
-                                    total-items="vm.conceptmapsFilteredCount"
+                                    total-items="vm.compositionsFilteredCount"
                                     items-per-page="vm.paging.pageSize"
                                     ng-model="vm.paging.currentPage"
                                     max-size="vm.paging.maxPagesToShow"
