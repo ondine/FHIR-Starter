@@ -45,6 +45,14 @@
                 url: '/organization/:hashKey',
                 config: {
                     title: 'organization',
+                    templateUrl: '/app/administration/organization/organizationEdit.html',
+                    settings: { }
+                }
+            },
+            {
+                url: '/organization/view/:hashKey',
+                config: {
+                    title: 'organization',
                     templateUrl: '/app/administration/organization/organizationDetail.html',
                     settings: { }
                 }

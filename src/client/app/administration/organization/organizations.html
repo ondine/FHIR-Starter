@@ -30,8 +30,8 @@
                             <div class="col-sm-6"
                                  data-ng-repeat="p in vm.organizations"
                                  data-ng-click="vm.goToOrganization(p)">
-                                <fs-search-item name="{{p.title}}"
-                                                summary="{{p.summary}}"
+                                <fs-search-item name="{{p.content.name}}"
+                                                summary="{{p.summary | truncate:50}}"
                                                 resourceid="{{p.id}}"
                                                 edit="edit(p.$$hashKey)"></fs-search-item>
                             </div>

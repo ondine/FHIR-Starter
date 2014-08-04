@@ -28,73 +28,8 @@
 
         return service;
 
-
         function addPatient(resource) {
 
-        }
-
-        function deletePatient(resourceId) {
-            var deferred = $q.defer();
-            fhirClient.deleteResource(resourceId)
-                .then(function (data) {
-                    logSuccess(resourceId + ' deleted' + data);
-                    deferred.resolve();
-                }, function (outcome) {
-                    logError('Failed to delete' + resourceId + outcome);
-                    deferred.reject(outcome);
-                });
-            return deferred.promise;
-        }
-
-        function getCachedSearchResults() {
-            var deferred = $q.defer();
-            var cachedSearchResults = dataCache.readFromCache(dataCacheKey);
-            if (cachedSearchResults) {
-                deferred.resolve(cachedSearchResults);
-            } else {
-                deferred.reject('Search results not cached.');
-            }
-            return deferred.promise;
-        }
-
-        function getPatient(resourceId) {
-            var deferred = $q.defer();
-            fhirClient.getResource(resourceId)
-                .then(function (data) {
-                    dataCache.addToCache(dataCacheKey, data);
-                    deferred.resolve(data);
-                }, function (outcome) {
-                    deferred.reject(outcome);
-                });
-            return deferred.promise;
-        }
-
-        function getCachedPatient(hashKey) {
-            var deferred = $q.defer();
-            getCachedSearchResults()
-                .then(getPatient,
-                function () {
-                    deferred.reject('Patient search results not found in cache.');
-                });
-            return deferred.promise;
-
-            function getPatient(searchResults) {
-                var cachedPatient;
-                var cachedPatients = searchResults.entry;
-                for (var i = 0, len = cachedPatients.length; i < len; i++) {
-                    if (cachedPatients[i].$$hashKey === hashKey) {
-                        cachedPatient = cachedPatients[i];
-                        cachedPatient.content.resourceId = cachedPatient.id;
-                        cachedPatient.content.hashKey = cachedPatient.$$hashKey;
-                        break;
-                    }
-                }
-                if (cachedPatient) {
-                    deferred.resolve(cachedPatient.content)
-                } else {
-                    deferred.reject('Patient not found in cache: ' + hashKey);
-                }
-            }
         }
 
         function deleteCachedPatient(hashKey, resourceId) {
@@ -133,6 +68,70 @@
             }
         }
 
+        function deletePatient(resourceId) {
+            var deferred = $q.defer();
+            fhirClient.deleteResource(resourceId)
+                .then(function (data) {
+                    logSuccess(resourceId + ' deleted' + data);
+                    deferred.resolve();
+                }, function (outcome) {
+                    logError('Failed to delete' + resourceId + outcome);
+                    deferred.reject(outcome);
+                });
+            return deferred.promise;
+        }
+
+        function getCachedPatient(hashKey) {
+            var deferred = $q.defer();
+            getCachedSearchResults()
+                .then(getPatient,
+                function () {
+                    deferred.reject('Patient search results not found in cache.');
+                });
+            return deferred.promise;
+
+            function getPatient(searchResults) {
+                var cachedPatient;
+                var cachedPatients = searchResults.entry;
+                for (var i = 0, len = cachedPatients.length; i < len; i++) {
+                    if (cachedPatients[i].$$hashKey === hashKey) {
+                        cachedPatient = cachedPatients[i];
+                        cachedPatient.content.resourceId = cachedPatient.id;
+                        cachedPatient.content.hashKey = cachedPatient.$$hashKey;
+                        break;
+                    }
+                }
+                if (cachedPatient) {
+                    deferred.resolve(cachedPatient.content)
+                } else {
+                    deferred.reject('Patient not found in cache: ' + hashKey);
+                }
+            }
+        }
+
+        function getCachedSearchResults() {
+            var deferred = $q.defer();
+            var cachedSearchResults = dataCache.readFromCache(dataCacheKey);
+            if (cachedSearchResults) {
+                deferred.resolve(cachedSearchResults);
+            } else {
+                deferred.reject('Search results not cached.');
+            }
+            return deferred.promise;
+        }
+
+        function getPatient(resourceId) {
+            var deferred = $q.defer();
+            fhirClient.getResource(resourceId)
+                .then(function (data) {
+                    dataCache.addToCache(dataCacheKey, data);
+                    deferred.resolve(data);
+                }, function (outcome) {
+                    deferred.reject(outcome);
+                });
+            return deferred.promise;
+        }
+
         function getPatients(baseUrl, nameFilter, page, size) {
             var deferred = $q.defer();
             var params = '';
@@ -161,7 +160,6 @@
         }
 
         function updatePatient(resourceId, resource) {
-
         }
     }
 })();
