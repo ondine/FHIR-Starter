@@ -42,7 +42,7 @@
                 }
             },
             {
-                url: '/organization/:hashKey',
+                url: '/organization/edit/:hashKey',
                 config: {
                     title: 'organization',
                     templateUrl: '/app/administration/organization/organizationEdit.html',

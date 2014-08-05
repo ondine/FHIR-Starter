@@ -154,16 +154,16 @@
         }
 
         function initializeNewOrganization() {
-                return {
-                    "resourceType": "Organization",
-                    "identifier": null,
-                    "type": { "coding": [] },
-                    "telecom": null,
-                    "contact": null,
-                    "address": null,
-                    "partOf": null,
-                    "location": null,
-                    "active": true};
+            return {
+                "resourceType": "Organization",
+                "identifier": null,
+                "type": { "coding": [] },
+                "telecom": null,
+                "contact": null,
+                "address": null,
+                "partOf": null,
+                "location": null,
+                "active": true};
         }
 
         function updateOrganization(resourceId, resource) {

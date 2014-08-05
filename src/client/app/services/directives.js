@@ -237,8 +237,7 @@
             scope: {
                 name: "@name",
                 resourceid: "@resourceid",
-                summary: "@summary",
-                edit: "&"
+                summary: "@summary"
             }
         };
         return directive;

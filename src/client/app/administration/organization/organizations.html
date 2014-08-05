@@ -13,7 +13,7 @@
                     <div class="btn-group pull-right">
                         <a class="btn btn-info"
                            data-ng-click="vm.search($event)"><i class="fa fa-search"></i><span>Search</span></a>
-                        <a class="btn btn-info" href="/organization/new"><i
+                        <a class="btn btn-info" href="/organization/edit/new"><i
                                 class="fa fa-plus"></i><span>Add Organization</span></a>
                     </div>
                 </div>
@@ -28,12 +28,11 @@
                     <div class="widget-content col-sm-12">
                         <ul class="list-group">
                             <div class="col-sm-6"
-                                 data-ng-repeat="p in vm.organizations"
-                                 data-ng-click="vm.goToOrganization(p)">
-                                <fs-search-item name="{{p.content.name}}"
-                                                summary="{{p.summary | truncate:50}}"
-                                                resourceid="{{p.id}}"
-                                                edit="edit(p.$$hashKey)"></fs-search-item>
+                                 data-ng-repeat="o in vm.organizations"
+                                 data-ng-click="vm.goToDetail(o.$$hashKey)">
+                                <fs-search-item name="{{o.content.name}}"
+                                                summary="{{o.summary | truncate:50}}"
+                                                resourceid="{{o.id}}"></fs-search-item>
                             </div>
                         </ul>
                     </div>

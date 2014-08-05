@@ -12,18 +12,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
 
-    <script>
-        // Must be first. IE10 mobile viewport fix
-        if ("-ms-user-select" in document.documentElement.style && navigator.userAgent.match(/IEMobile\/10\.0/)) {
-            var msViewportStyle = document.createElement("style");
-            var mq = "@-ms-viewport{width:auto!important}";
-            msViewportStyle.appendChild(document.createTextNode(mq));
-            document.getElementsByTagName("head")[0].appendChild(msViewportStyle);
-        }
-    </script>
-
     <link rel="shortcut icon" href="favicon.ico"/>
-    <link href="content/ie10mobile.css" rel="stylesheet" />
     <link href="content/bootstrap.min.css" rel="stylesheet" />
     <link href="content/font-awesome.min.css" rel="stylesheet" />
     <link href="content/toastr.css" rel="stylesheet" />
@@ -79,6 +68,12 @@
 <!-- dashboard -->
 <script src="app/dashboard/dashboard.js"></script>
 <script src="app/dashboard/conformanceService.js"></script>
+
+<!-- FHIR Shared Services -->
+<script src="app/shared/identifier/identifier.js"></script>
+<script src="app/shared/identifier/identifierService.js"></script>
+<script src="app/shared/address/address.js"></script>
+<script src="app/shared/address/addressService.js"></script>
 
 <!-- FHIR Administration Services -->
 <script src="app/administration/organization/organizations.js"></script>

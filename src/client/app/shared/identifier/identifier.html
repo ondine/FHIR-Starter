@@ -1,0 +1,89 @@
+<div data-ng-controller="identifier as vm">
+    <div class="form-group col-md-12 well">
+        <div class="col-md-2 control-label">Identifiers</div>
+        <div class="controls col-md-10 col-md-offset-2">
+            <data-ng-form name="identifierEditForm" class="form-horizontal" data-ng-model="vm.identifier">
+                <div class="btn-group col-md-7" style="padding-bottom: 20px">
+                    <label class="btn btn-info btn-sm" data-ng-model="vm.identifier.use" btn-radio="'usual'"><i
+                            class="fa fa-bullseye"></i>&nbsp;Usual</label>
+                    <label class="btn btn-info btn-sm" data-ng-model="vm.identifier.use" btn-radio="'official'"><i
+                            class="fa fa-certificate"></i>&nbsp;Official</label>
+                    <label class="btn btn-info btn-sm" data-ng-model="vm.identifier.use" btn-radio="'temp'"><i
+                            class="fa fa-eraser"></i>&nbsp;Temp</label>
+                    <label class="btn btn-info btn-sm" data-ng-model="vm.identifier.use" btn-radio="'secondary'"><i
+                            class="fa fa-code-fork"></i>&nbsp;Secondary</label>
+                </div>
+                <div class="form-group col-md-7">
+                    <label class="control-label">System</label>&nbsp;&nbsp;<input required id="identifier-system"
+                                                                                  class="form-control"
+                                                                                  placeholder="The namespace for the identifier (must be a valid URI)"
+                                                                                  data-ng-model="vm.identifier.system">
+                </div>
+                <div class="form-group col-md-7">
+                    <label class="control-label">Value</label>&nbsp;&nbsp;<input
+                        required id="identifier-value"
+                        class="form-control"
+                        placeholder="Value"
+                        data-ng-model="vm.identifier.value">
+                </div>
+                <div class="form-group col-md-7">
+                    <label class="control-label">Description</label>&nbsp;&nbsp;<input
+                        class="form-control"
+                        id="identifier-label"
+                        placeholder="Description"
+                        data-ng-model="vm.identifier.label">
+                </div>
+                <div class="form-group col-md-7">
+                    <label class="control-label">Assigner</label>&nbsp;&nbsp;<input id="identifier-assigner"
+                                                                                    class="form-control"
+                                                                                    placeholder="Organization that issued the id"
+                                                                                    data-ng-model="vm.identifier.assigner">
+                </div>
+                <div class="btn-group col-md-7">
+                    <button type="button" class="btn btn-info" data-ng-click="vm.reset(identifierEditForm)"><i
+                            class="fa fa-refresh"></i>
+                        Reset Identifier
+                    </button>
+                    <button type="submit" data-ng-disabled="identifierEditForm.$invalid"
+                            class="btn btn-info"
+                            data-ng-click="vm.addToList(identifierEditForm, vm.identifier)"><i
+                            class="fa fa-plus-square-o"></i>Add to Identifier List
+                    </button>
+                </div>
+            </data-ng-form>
+
+            <div data-ng-show="vm.identifiers.length > 0" class="col-md-7">
+                <hr/>
+                <table class="table small table-responsive pull-left">
+                    <thead>
+                    <th></th>
+                    <th>System</th>
+                    <th>Value</th>
+                    <th>Description</th>
+                    <th>Assigner</th>
+                    <th>Use</th>
+                    </thead>
+                    <tr data-ng-repeat="id in vm.identifiers">
+                        <td>
+                            <div class="btn-default pull-left">
+                                <button type="button" class="btn btn-info btn-xs" data-ng-click="vm.editListItem(id)">
+                                    Edit
+                                </button>
+                                <button type="button" class="btn btn-danger btn-xs"
+                                        data-ng-click="vm.removeListItem(id)">
+                                    Remove
+                                </button>
+                            </div>
+                        </td>
+                        <td>{{id.system}}</td>
+                        <td>{{id.value}}</td>
+                        <td>{{id.label}}</td>
+                        <td>{{id.assigner}}</td>
+                        <td>{{id.use}}</td>
+
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

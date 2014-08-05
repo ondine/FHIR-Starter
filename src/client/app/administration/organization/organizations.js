@@ -18,7 +18,7 @@
         vm.filteredOrganizations = [];
         vm.filteredOrganizationsCount = 0;
         vm.isBusy = false;
-        vm.goToOrganization = goToOrganization;
+        vm.goToDetail = goToDetail;
         vm.organizations = [];
         vm.organizationsCount = 0;
         vm.errorOutcome = null;
@@ -66,9 +66,9 @@
             // TODO: filter results based on doB or address, etc.
         }
 
-        function goToOrganization(organization) {
-            if (organization && organization.$$hashKey) {
-                $location.path('/organization/' + organization.$$hashKey);
+        function goToDetail(hashKey) {
+            if (hashKey) {
+                $location.path('/organization/view/' + hashKey);
             }
         }
 

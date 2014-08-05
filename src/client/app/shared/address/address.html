@@ -1,0 +1,96 @@
+<div data-ng-controller="address as vm">
+    <div class="form-group col-md-12 well">
+        <div class="col-md-2 control-label">Address</div>
+        <div class="controls col-md-10 col-md-offset-2">
+            <data-ng-form name="addressEditForm" class="form-horizontal" data-ng-model="vm.address">
+                <div class="btn-group col-md-7" style="padding-bottom: 20px">
+                    <label class="btn btn-info btn-sm" data-ng-model="vm.address.use" btn-radio="'work'"><i
+                            class="fa fa-building"></i>&nbsp;Work</label>
+                    <label class="btn btn-info btn-sm" data-ng-model="vm.address.use" btn-radio="'home'"><i
+                            class="fa fa-home"></i>&nbsp;Home</label>
+                    <label class="btn btn-info btn-sm" data-ng-model="vm.address.use" btn-radio="'temp'"><i
+                            class="fa fa-eraser"></i>&nbsp;Temp</label>
+                    <label class="btn btn-info btn-sm" data-ng-model="vm.address.use" btn-radio="'old'"><i
+                            class="fa fa-code-fork"></i>&nbsp;Old</label>
+                </div>
+                <div class="form-group col-md-7">
+                    <label class="control-label pull-left">Street&nbsp;&nbsp;</label><textarea
+                        required id="address-street" class="form-control" rows="2"
+                        placeholder="Street"
+                        data-ng-model="vm.address.line"></textarea>
+                </div>
+                <div class="form-group col-md-5">
+                    <label class="control-label">City&nbsp;&nbsp;</label><input required
+                                                                                type="text"
+                                                                                id="address-city"
+                                                                                class="form-control"
+                                                                                placeholder="City"
+                                                                                data-ng-model="vm.address.city">
+                </div>
+                <div class="form-group col-md-3">
+                    <label class="control-label">State&nbsp;&nbsp;</label><input required
+                                                                                 type="text"
+                                                                                 data-ng-model="vm.address.state"
+                                                                                 typeahead="state for state in vm.states | filter:$viewValue | limitTo:3"
+                                                                                 class="form-control"
+                                                                                 placeholder="State or Province"
+                                                                                 id="address-state">
+                </div>
+                <div class="form-group col-md-3">
+                    <label class="control-label">Zip&nbsp;&nbsp;</label><input required
+                                                                               type="text"
+                                                                               id="address-zip"
+                                                                               class="form-control"
+                                                                               placeholder="Postal Code"
+                                                                               data-ng-model="vm.address.zip">
+                </div>
+                <div class="form-group col-md-3">
+                    <label class="control-label">Country&nbsp;&nbsp;</label><input required
+                                                                                   type="text"
+                                                                                   id="address-country"
+                                                                                   class="form-control"
+                                                                                   placeholder="Country"
+                                                                                   data-ng-model="vm.address.country">
+                </div>
+
+                <div class="btn-group col-md-7">
+                    <button type="button" class="btn btn-info" data-ng-click="vm.reset(addressEditForm)"><i
+                            class="fa fa-refresh"></i>
+                        Reset
+                    </button>
+                    <button type="submit" data-ng-disabled="addressEditForm.$invalid"
+                            class="btn btn-info"
+                            data-ng-click="vm.addToList(addressEditForm, vm.address)"><i
+                            class="fa fa-plus-square-o"></i>Add to Address List
+                    </button>
+                </div>
+            </data-ng-form>
+
+            <div data-ng-show="vm.addresses.length > 0" class="col-md-7">
+                <hr/>
+                <table class="table small table-responsive pull-left">
+                    <thead>
+                    <th></th>
+                    <th>Address</th>
+                    <th>Use</th>
+                    </thead>
+                    <tr data-ng-repeat="a in vm.addresses">
+                        <td>
+                            <div class="btn-default pull-left">
+                                <button type="button" class="btn btn-info btn-xs" data-ng-click="vm.editListItem(a)">
+                                    Edit
+                                </button>
+                                <button type="button" class="btn btn-danger btn-xs"
+                                        data-ng-click="vm.removeListItem(a)">
+                                    Remove
+                                </button>
+                            </div>
+                        </td>
+                        <td>{{a.line}},{{a.city}}, {{a.state}} {{a.zip}} {{a.country}}</td>
+                        <td>{{a.use}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

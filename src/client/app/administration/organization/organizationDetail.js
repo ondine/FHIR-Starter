@@ -4,9 +4,9 @@
     var controllerId = 'organizationDetail';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$location', '$routeParams', '$window', 'common', 'fhirServers', 'localValueSets', 'organizationService', organizationDetail]);
+        ['$location', '$routeParams', '$window', 'addressService', 'common', 'fhirServers', 'identifierService', 'localValueSets', 'organizationService', organizationDetail]);
 
-    function organizationDetail($location, $routeParams, $window, common, fhirServers, localValueSets, organizationService) {
+    function organizationDetail($location, $routeParams, $window, addressService, common, fhirServers, identifierService, localValueSets, organizationService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
 
@@ -69,7 +69,7 @@
 
         function edit(organization) {
             if (organization && organization.hashKey) {
-                $location.path('/organization/' + organization.hashKey);
+                $location.path('/organization/edit/' + organization.hashKey);
             }
         }
 
@@ -93,6 +93,12 @@
                 return organizationService.getCachedOrganization($routeParams.hashKey)
                     .then(function (data) {
                         vm.organization = data;
+                        if (angular.isUndefined(vm.organization.type)) {
+                            vm.organization.type =  { "coding": [] }
+                        }
+                        vm.title = vm.organization.name;
+                        identifierService.init(vm.organization.identifier);
+                        addressService.init(vm.organization.address);
                     }, function (error) {
                         logError(error);
                     });
@@ -101,6 +107,12 @@
                 return organizationService.getOrganization(resourceId)
                     .then(function (data) {
                         vm.organization = data;
+                        if (angular.isUndefined(vm.organization.type)) {
+                            vm.organization.type =  { "coding": [] }
+                        }
+                        vm.title = vm.organization.name;
+                        identifierService.init(vm.organization.identifier);
+                        addressService.init(vm.organization.address);
                     }, function (error) {
                         logError(error);
                     });
@@ -108,6 +120,7 @@
             else {
                 vm.organization = organizationService.initializeNewOrganization();
                 vm.title = 'Add New Organization';
+                vm.isEditing = false;
             }
         }
 
