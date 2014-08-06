@@ -1,223 +1,113 @@
 ﻿<section class="mainbar" data-ng-controller="organizationDetail as vm">
-<section class="matter">
-<div class="container">
-<div class="row">
-    <div class="btn-group col-md-12">
-        <button class="btn btn-info" data-ng-click="vm.goBack()"><i class="fa fa-hand-o-left"></i>Back
-        </button>
-        <div class="btn-group pull-right">
-            <button class="btn btn-danger" data-ng-click="vm.delete(vm.organization)"><i
-                    class="fa fa-trash-o"></i>Delete
-            </button>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="widget worange">
-        <div data-cc-widget-header title="{{vm.title}}"></div>
-        <div class="widget-content user">
-            <data-ng-form name="organizationEditForm" class="form-horizontal"
-                          data-ng-model="vm.organization">
-                <fieldset>
-                    <div class="form-group col-md-12">
-                        <div class="col-md-2 control-label">Name</div>
-                        <div class="controls col-md-10 col-md-offset-2">
-                            <div class="form-group col-md-7">
-                                <input required type="text" id="organization-name" class="form-control"
-                                       placeholder="The name associated with the organization"
-                                       data-ng-model="vm.organization.name">
-                            </div>
-                            <div class="form-group col-md-3">
-                                <label class="control-label pull-left">Type&nbsp;&nbsp;</label><select
-                                    class="form-control" id="organization-type"
-                                    data-ng-model="vm.organization.type.coding[0]">
-                                <option data-ng-repeat="coding in vm.organizationTypes"
-                                        value="{{coding}}"
-                                        data-ng-selected="coding.code===vm.organization.type.coding[0].code">
-                                    {{coding.display}}
-                                </option>
-                                <option value=""></option>
-                            </select>
-                            </div>
-                        </div>
+    <section class="matter">
+        <div class="container">
+            <div class="row">
+                <div class="btn-group col-md-12">
+                    <button class="btn btn-info" data-ng-click="vm.goBack()"><i class="fa fa-hand-o-left"></i>Back
+                    </button>
+                    <div class="btn-group pull-right" data-ng-hide="vm.title==='Add New Organization'">
+                        <button class="btn btn-danger" data-ng-click="vm.delete(vm.organization)"><i
+                                class="fa fa-trash-o"></i>Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="widget wlightblue">
+                    <div data-cc-widget-header title="{{vm.title}}"></div>
+                    <div class="widget-content user">
+                        <data-ng-form name="organizationEditForm" class="form-horizontal"
+                                      data-ng-model="vm.organization">
+                            <fieldset>
+                                <div class="form-group col-md-12">
+                                    <div class="col-md-2 control-label">Name</div>
+                                    <div class="controls col-md-10 col-md-offset-2">
+                                        <div class="form-group col-md-8">
+                                            <input required type="text" id="organization-name" class="form-control"
+                                                   placeholder="The name associated with the organization"
+                                                   data-ng-model="vm.organization.name">
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label class="control-label pull-left">Type&nbsp;&nbsp;</label><select
+                                                class="form-control" id="organization-type"
+                                                data-ng-model="vm.organization.type.coding[0]">
+                                            <option data-ng-repeat="coding in vm.organizationTypes"
+                                                    value="{{coding}}"
+                                                    data-ng-selected="coding.code===vm.organization.type.coding[0].code">
+                                                {{coding.display}}
+                                            </option>
+                                            <option value=""></option>
+                                        </select>
+                                        </div>
+                                    </div>
 
-                        <!--
-                        <div class="form-group col-md-12 well">
-                            <div class="col-md-2 control-label">Address</div>
-                            <div class="controls col-md-10 col-md-offset-2">
-                                <div class="form-group col-md-7">
-                                    <label class="control-label pull-left">Street&nbsp;&nbsp;</label><textarea
-                                        required id="address-street" class="form-control" rows="2"
-                                        placeholder="Street"
-                                        data-ng-model="vm.organization.address[0].line"></textarea>
-                                </div>
-                                <div class="form-group col-md-5">
-                                    <label class="control-label">City&nbsp;&nbsp;</label><input required
-                                                                                                type="text"
-                                                                                                id="address-city"
-                                                                                                class="form-control"
-                                                                                                placeholder="City"
-                                                                                                data-ng-model="vm.organization.address[0].city">
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label class="control-label">State&nbsp;&nbsp;</label><input required
-                                                                                                 type="text"
-                                                                                                 data-ng-model="vm.organization.address[0].state"
-                                                                                                 typeahead="state for state in vm.states | filter:$viewValue | limitTo:3"
-                                                                                                 class="form-control"
-                                                                                                 placeholder="State or Province"
-                                                                                                 id="address-state">
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label class="control-label">Zip&nbsp;&nbsp;</label><input required
-                                                                                               type="text"
-                                                                                               id="address-zip"
-                                                                                               class="form-control"
-                                                                                               placeholder="Postal Code"
-                                                                                               data-ng-model="vm.organization.address[0].zip">
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label class="control-label">Country&nbsp;&nbsp;</label><input required
-                                                                                                   type="text"
-                                                                                                   id="address-country"
-                                                                                                   class="form-control"
-                                                                                                   placeholder="Country"
-                                                                                                   data-ng-model="vm.organization.address[0].country">
-                                </div>
-                            </div>
-                        </div>
+                                    <div data-ng-include="'../../app/shared/address/addressTypeAhead.html'"></div>
+
+                                    <div data-ng-include="'../../app/shared/telecom/telecom.html'"></div>
+
+                                    <div data-ng-include="'../../app/shared/contact/contact.html'"></div>
+
+                                    <div class="form-group col-md-12 well">
+                                        <div class="col-md-2 control-label">Affiliated Organization</div>
+                                        <div class="controls col-md-10 col-md-offset-2">
+                                            <div class="form-group col-md-8">
+                                                <input required
+                                                       type="text"
+                                                       id="organization-partOf"
+                                                       class="form-control"
+                                                       placeholder="Organization search via web lookup"
+                                                       typeahead="item as item.display for item in vm.getOrganizationReference($viewValue) | filter:$viewValue"
+                                                       typeahead-loading="vm.loadingOrganizations"
+                                                       typeahead-wait-ms="300"
+                                                       typeahead-editable="false"
+                                                       typeahead-min-length="5"
+                                                       data-ng-model="vm.organization.partOf">
+                                            </div>
+                                            <div class="form-group col-md-10"
+                                                 data-ng-show="vm.organization.partOf.reference">
+                                                <a class="control-label" href="{{vm.organization.partOf.reference}}" target="_blank">Referenced Organization: {{vm.organization.partOf.display || "Name Not Specified" }}</a>
+                                            </div>
+                                        </div>
+                                    </div>
+<!--
+                                    <div class="form-group col-md-12 well">
+                                        <div class="col-md-2 control-label">Locations</div>
+                                        <div class="controls col-md-10 col-md-offset-2">
+                                            <div class="form-group col-md-8">
+                                                <select class="form-control" id="organization-location"
+                                                        data-ng-model="vm.organization.location[0]">
+                                                    <option data-ng-repeat="org in vm.organizations"
+                                                            value="{{display}}"
+                                                            data-ng-selected="org.id===vm.organization.location[0].reference">
+                                                        {{org.name}}
+                                                    </option>
+                                                    <option value=""></option>
+                                                </select>
+                                                <button class="btn btn-info"
+                                                        data-ng-click="vm.addToList(vm.location)"><i
+                                                        class="fa fa-plus-square-o"></i>Add to Location List
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
 -->
-                        <div data-ng-include="'../../app/shared/address/address.html'"></div>
+                                    <div data-ng-include="'../../app/shared/identifier/identifier.html'"></div>
 
-                        <div class="form-group col-md-12 well">
-                            <div class="col-md-2 control-label">Communication</div>
-                            <div class="controls col-md-10 col-md-offset-2">
-                                <div class="form-group col-md-5">
-                                    <label class="control-label">
-                                        <span class="fa fa-phone-square"></span></label>&nbsp;&nbsp;<input
-                                        class="form-control"
-                                        placeholder="primary telephone number of organization"
-                                        data-ng-model="vm.organizationPhone">
-                                </div>
-                                <div class="form-group col-md-5">
-                                    <label class="control-label">
-                                        <span class="fa fa-fax"></span></label>&nbsp;&nbsp;<input
-                                        class="form-control"
-                                        placeholder="primary fax number for organization"
-                                        data-ng-model="vm.organizationFax">
-                                </div>
-                                <div class="form-group col-md-5">
-                                    <label class="control-label">
-                                        <span class="fa fa-envelope"></span></label>&nbsp;&nbsp;<input
-                                        class="form-control"
-                                        placeholder="primary email address for organization"
-                                        data-ng-model="vm.organizationEmail">
-                                </div>
-                                <div class="form-group col-md-5">
-                                    <label class="control-label">
-                                        <span class="fa fa-chain"></span></label>&nbsp;&nbsp;<input
-                                        class="form-control"
-                                        placeholder="website address for organization"
-                                        data-ng-model="vm.organizationUrl">
-                                </div>
-                            </div>
-                            <hl/>
-                        </div>
-
-                        <div class="form-group col-md-12 well">
-                            <div class="col-md-2 control-label">Contact</div>
-                            <div class="controls col-md-10 col-md-offset-2">
-                                <div class="form-group col-md-4">
-                                    <label class="control-label">Name</label>&nbsp;&nbsp;<input
-                                        class="form-control"
-                                        placeholder="Full Name"
-                                        data-ng-model="vm.organizationContact.fullname">
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label class="control-label">Type</label>&nbsp;&nbsp;<select
-                                        class="form-control" id="contact-type"
-                                        data-ng-model="vm.organizationContact.type">
-                                    <option data-ng-repeat="coding in vm.contactTypes" value="{{coding}}"
-                                            data-ng-selected="coding.code===vm.organizationContact.type">
-                                        {{coding.display}}
-                                    </option>
-                                    <option value=""></option>
-                                </select>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label class="control-label">
-                                        <span class="fa fa-phone-square"></span></label>&nbsp;&nbsp;<input
-                                        class="form-control"
-                                        placeholder="Telephone"
-                                        data-ng-model="vm.organizationContact.phone">
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label class="control-label">
-                                        <span class="fa fa-mobile"></span></label>&nbsp;&nbsp;<input
-                                        class="form-control"
-                                        placeholder="Mobile"
-                                        data-ng-model="vm.organizationContact.mobile">
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label class="control-label">
-                                        <span class="fa fa-envelope"></span></label>&nbsp;&nbsp;<input
-                                        class="form-control"
-                                        placeholder="Email"
-                                        data-ng-model="vm.organizationContact.email">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group col-md-12 well">
-                            <div class="col-md-2 control-label">Affiliated Organization</div>
-                            <div class="controls col-md-10 col-md-offset-2">
-                                <div class="form-group col-md-4">
-                                    <select class="form-control" id="organization-affiliated"
-                                            data-ng-model="vm.organization.partOf">
-                                        <option data-ng-repeat="org in vm.organizations" value="{{display}}"
-                                                data-ng-selected="org.id===vm.organization.partOf.reference">
-                                            {{coding.display}}
-                                        </option>
-                                        <option value=""></option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group col-md-12 well">
-                            <div class="col-md-2 control-label">Locations</div>
-                            <div class="controls col-md-10 col-md-offset-2">
-                                <div class="form-group col-md-4">
-                                    <select class="form-control" id="organization-location"
-                                            data-ng-model="vm.organization.location[0]">
-                                        <option data-ng-repeat="org in vm.organizations" value="{{display}}"
-                                                data-ng-selected="org.id===vm.organization.location[0].reference">
-                                            {{org.name}}
-                                        </option>
-                                        <option value=""></option>
-                                    </select><button class="btn btn-info"
-                                                     data-ng-click="vm.addToList(vm.location)"><i
-                                        class="fa fa-plus-square-o"></i>Add to Location List
-                                </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div data-ng-include="'../../app/shared/identifier/identifier.html'"></div>
-
-                        <div class="col-lg-10 col-lg-offset-2">
-                            <div class="btn-group-large pull-right">
-                                <button class="btn btn-warning" data-ng-click="vm.reset()">Cancel</button>
-                                <button type="submit" class="btn btn-success" data-ng-click="vm.save()"><i
-                                        class="fa fa-cloud-upload"></i>Submit to Remote Server
-                                </button>
-                            </div>
-                        </div>
-                </fieldset>
-            </data-ng-form>
+                                    <div class="col-lg-10 col-lg-offset-2">
+                                        <div class="btn-group-large pull-right">
+                                            <button class="btn btn-danger" data-ng-click="vm.reset()">Cancel
+                                            </button>
+                                            <button type="submit" class="btn btn-success" data-ng-click="vm.save()" tooltip="Deliver to FHIR server">
+                                                <i class="fa fa-cloud-upload"></i>Submit
+                                            </button>
+                                        </div>
+                                    </div>
+                            </fieldset>
+                        </data-ng-form>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-</div>
-</section>
+
+    </section>
 </section>

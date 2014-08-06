@@ -4,11 +4,12 @@
     var controllerId = 'organizationDetail';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$location', '$routeParams', '$window', 'addressService', 'common', 'fhirServers', 'identifierService', 'localValueSets', 'organizationService', organizationDetail]);
+        ['$location', '$routeParams', '$window', 'addressService', 'common', 'contactService', 'fhirServers', 'identifierService', 'localValueSets', 'organizationService', 'telecomService', organizationDetail]);
 
-    function organizationDetail($location, $routeParams, $window, addressService, common, fhirServers, identifierService, localValueSets, organizationService) {
+    function organizationDetail($location, $routeParams, $window, addressService, common, contactService, fhirServers, identifierService, localValueSets, organizationService, telecomService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
+        var $q = common.$q;
 
         vm.activeServer;
         vm.cancel = cancel;
@@ -16,15 +17,18 @@
         vm.contactTypes = undefined;
         vm.delete = deleteOrganization;
         vm.edit = edit;
+        vm.getOrganizationReference = getOrganizationReference;
         vm.getTitle = getTitle;
         vm.goBack = goBack;
         vm.isSaving = false;
         vm.isEditing = true;
+        vm.loadingOrganizations = false;
         vm.organization = undefined;
         vm.organizationTypes = undefined;
         vm.save = save;
         vm.states = undefined;
         vm.title = 'organizationDetail';
+
 
         Object.defineProperty(vm, 'canSave', {
             get: canSave
@@ -37,7 +41,7 @@
         activate();
 
         function activate() {
-            common.activateController([getActiveServer(), getOrganizationTypes(), getContactTypes(), getStates()], controllerId).then(function () {
+            common.activateController([getActiveServer(), getOrganizationTypes()], controllerId).then(function () {
                 getRequestedOrganization();
             });
         }
@@ -80,8 +84,19 @@
                 });
         }
 
-        function getContactTypes() {
-            vm.contactTypes = localValueSets.contactEntityType();
+        function getOrganizationReference(input) {
+            var deferred = $q.defer();
+            vm.loadingOrganizations = true;
+            organizationService.getOrganizationReference(vm.activeServer.baseUrl, input)
+                .then(function (data) {
+                    vm.loadingOrganizations = false;
+                    deferred.resolve(data);
+                }, function (error) {
+                    vm.loadingOrganizations = false;
+                    logError(error);
+                    deferred.reject();
+                });
+            return deferred.promise;
         }
 
         function getOrganizationTypes() {
@@ -91,41 +106,34 @@
         function getRequestedOrganization() {
             if ($routeParams.hashKey && $routeParams.hashKey !== 'new') {
                 return organizationService.getCachedOrganization($routeParams.hashKey)
-                    .then(function (data) {
-                        vm.organization = data;
-                        if (angular.isUndefined(vm.organization.type)) {
-                            vm.organization.type =  { "coding": [] }
-                        }
-                        vm.title = vm.organization.name;
-                        identifierService.init(vm.organization.identifier);
-                        addressService.init(vm.organization.address);
-                    }, function (error) {
+                    .then(intitializeRelatedData, function (error) {
                         logError(error);
                     });
             } else if ($routeParams.id) {
                 var resourceId = vm.activeServer.baseUrl + '/Organization/' + $routeParams.id;
                 return organizationService.getOrganization(resourceId)
-                    .then(function (data) {
-                        vm.organization = data;
-                        if (angular.isUndefined(vm.organization.type)) {
-                            vm.organization.type =  { "coding": [] }
-                        }
-                        vm.title = vm.organization.name;
-                        identifierService.init(vm.organization.identifier);
-                        addressService.init(vm.organization.address);
-                    }, function (error) {
+                    .then(intitializeRelatedData, function (error) {
                         logError(error);
                     });
             }
             else {
-                vm.organization = organizationService.initializeNewOrganization();
+                var data = organizationService.initializeNewOrganization();
+                intitializeRelatedData(data)
                 vm.title = 'Add New Organization';
                 vm.isEditing = false;
             }
-        }
 
-        function getStates() {
-            vm.states = localValueSets.usaStates();
+            function intitializeRelatedData(data) {
+                vm.organization = data;
+                if (angular.isUndefined(vm.organization.type)) {
+                    vm.organization.type = { "coding": [] }
+                }
+                vm.title = vm.organization.name;
+                identifierService.init(vm.organization.identifier);
+                addressService.init(vm.organization.address, false);
+                contactService.init(vm.organization.contact);
+                telecomService.init(vm.organization.telecom, false, false);
+            }
         }
 
         function getTitle() {

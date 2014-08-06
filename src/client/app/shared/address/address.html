@@ -27,16 +27,16 @@
                                                                                 placeholder="City"
                                                                                 data-ng-model="vm.address.city">
                 </div>
-                <div class="form-group col-md-3">
+                <div class="form-group col-md-5">
                     <label class="control-label">State&nbsp;&nbsp;</label><input required
                                                                                  type="text"
-                                                                                 data-ng-model="vm.address.state"
+                                                                                 id="address-state"
                                                                                  typeahead="state for state in vm.states | filter:$viewValue | limitTo:3"
                                                                                  class="form-control"
                                                                                  placeholder="State or Province"
-                                                                                 id="address-state">
+                                                                                 data-ng-model="vm.address.state">
                 </div>
-                <div class="form-group col-md-3">
+                <div class="form-group col-md-5">
                     <label class="control-label">Zip&nbsp;&nbsp;</label><input required
                                                                                type="text"
                                                                                id="address-zip"
@@ -44,9 +44,8 @@
                                                                                placeholder="Postal Code"
                                                                                data-ng-model="vm.address.zip">
                 </div>
-                <div class="form-group col-md-3">
-                    <label class="control-label">Country&nbsp;&nbsp;</label><input required
-                                                                                   type="text"
+                <div class="form-group col-md-5">
+                    <label class="control-label">Country&nbsp;&nbsp;</label><input type="text"
                                                                                    id="address-country"
                                                                                    class="form-control"
                                                                                    placeholder="Country"
@@ -66,28 +65,28 @@
                 </div>
             </data-ng-form>
 
-            <div data-ng-show="vm.addresses.length > 0" class="col-md-7">
+            <div collapse="vm.addresses.length === 0" class="col-md-10">
                 <hr/>
                 <table class="table small table-responsive pull-left">
                     <thead>
                     <th></th>
                     <th>Address</th>
                     <th>Use</th>
+                    <th></th>
                     </thead>
                     <tr data-ng-repeat="a in vm.addresses">
                         <td>
-                            <div class="btn-default pull-left">
-                                <button type="button" class="btn btn-info btn-xs" data-ng-click="vm.editListItem(a)">
-                                    Edit
-                                </button>
-                                <button type="button" class="btn btn-danger btn-xs"
-                                        data-ng-click="vm.removeListItem(a)">
-                                    Remove
-                                </button>
-                            </div>
+                            <button type="button" class="btn btn-info btn-xs" data-ng-click="vm.editListItem(a)">
+                                Edit
+                            </button>
                         </td>
                         <td>{{a.line}},{{a.city}}, {{a.state}} {{a.zip}} {{a.country}}</td>
                         <td>{{a.use}}</td>
+                        <td>
+                            <button type="button" class="btn btn-default btn-xs"
+                                    data-ng-click="vm.removeListItem(a)" tooltip="delete">X
+                            </button>
+                        </td>
                     </tr>
                 </table>
             </div>

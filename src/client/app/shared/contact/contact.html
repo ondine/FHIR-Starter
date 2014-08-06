@@ -1,0 +1,86 @@
+<div data-ng-controller="contact as vm">
+    <div class="form-group col-md-12 well">
+        <div class="col-md-2 control-label">Contacts</div>
+        <div class="controls col-md-10 col-md-offset-2">
+            <data-ng-form name="contactEditForm" class="form-horizontal" data-ng-model="vm.contact">
+                <div class="form-group col-md-5">
+                    <label class="control-label">Name</label>&nbsp;&nbsp;<input
+                        class="form-control"
+                        placeholder="Full Name"
+                        data-ng-model="vm.contact.fullname"/>
+                </div>
+
+                <div class="form-group col-md-7">
+                    <label class="control-label">
+                        <span class="fa fa-envelope"></span></label>&nbsp;&nbsp;<input
+                        class="form-control"
+                        placeholder="Email"
+                        data-ng-model="vm.contact.email"/>
+                </div>
+
+                <div class="form-group col-md-5">
+                    <label class="control-label">
+                        <span class="fa fa-phone-square"></span></label>&nbsp;&nbsp;<input
+                        class="form-control"
+                        placeholder="Telephone"
+                        data-ng-model="vm.contact.phone"/>
+                </div>
+
+                <div class="form-group col-md-5">
+                    <label class="control-label">Purpose</label>&nbsp;&nbsp;<select
+                        class="form-control" id="contact-purpose"
+                        data-ng-model="vm.contact.purpose">
+                    <option data-ng-repeat="coding in vm.contactTypes" value="coding"
+                            data-ng-selected="coding.code===vm.contact.purpose.code[0]">
+                        {{coding.display}}
+                    </option>
+                    <option value=""></option>
+                </select>
+                </div>
+
+                <div class="btn-group col-md-7">
+                    <button type="button" class="btn btn-info" data-ng-click="vm.reset(contactEditForm)"><i
+                            class="fa fa-refresh"></i>
+                        Reset
+                    </button>
+                    <button type="submit" data-ng-disabled="contactEditForm.$invalid"
+                            class="btn btn-info"
+                            data-ng-click="vm.addToList(contactEditForm, vm.contact)"><i
+                            class="fa fa-plus-square-o"></i>Add to Contact List
+                    </button>
+                </div>
+            </data-ng-form>
+
+            <div collapse="vm.contacts.length < 1" class="col-md-10">
+                <hr/>
+                <table class="table small table-responsive pull-left">
+                    <thead>
+                    <th></th>
+
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Purpose</th>
+                    <th></th>
+                    </thead>
+                    <tr data-ng-repeat="c in vm.contacts">
+                        <td>
+                            <button type="button" class="btn btn-info btn-xs" data-ng-click="vm.editListItem(c)">
+                                Edit
+                            </button>
+                        </td>
+                        <td>{{c.fullname}}</td>
+                        <td>{{c.phone}}</td>
+                        <td>{{c.email}}</td>
+                        <td>{{c.purpose.display}}</td>
+                        <td>
+                            <button type="button" class="btn btn-default btn-xs pull-right"
+                                    data-ng-click="vm.removeListItem(c)" tooltip="delete">X
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

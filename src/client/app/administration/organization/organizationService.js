@@ -21,6 +21,7 @@
             deleteOrganization: deleteOrganization,
             getCachedOrganization: getCachedOrganization,
             getOrganization: getOrganization,
+            getOrganizationReference: getOrganizationReference,
             getOrganizations: getOrganizations,
             initializeNewOrganization: initializeNewOrganization,
             updateOrganization: updateOrganization
@@ -153,16 +154,36 @@
             return deferred.promise;
         }
 
+        function getOrganizationReference(baseUrl, input) {
+            var deferred = $q.defer();
+            fhirClient.getResource(baseUrl + '/Organization/_search?name=' + input + '&_count=20&_summary=true')
+                .then(function (data) {
+                    var organizations = [];
+                    if (data.entry) {
+                        angular.forEach(data.entry,
+                            function (item) {
+                                if (item.content && item.content.resourceType === 'Organization') {
+                                    organizations.push({display: item.content.name, reference: item.id});
+                                }
+                            });
+                    }
+                    deferred.resolve(organizations);
+                }, function (error) {
+                    deferred.reject(error);
+                });
+            return deferred.promise;
+        }
+
         function initializeNewOrganization() {
             return {
                 "resourceType": "Organization",
-                "identifier": null,
+                "identifier": [],
                 "type": { "coding": [] },
-                "telecom": null,
-                "contact": null,
-                "address": null,
+                "telecom": [],
+                "contact": [],
+                "address": [],
                 "partOf": null,
-                "location": null,
+                "location": [],
                 "active": true};
         }
 

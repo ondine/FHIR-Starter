@@ -15,12 +15,13 @@
         vm.identifiers = [];
         vm.removeListItem = removeListItem;
         vm.reset = reset;
+        vm.genId = generateIdentifier;
 
         activate();
 
         function activate() {
             common.activateController([getIdentifiers()], controllerId).then(function () {
-                // nothing yet
+                vm.identifier = { "use": "usual"};
             });
         }
 
@@ -37,6 +38,10 @@
             vm.identifier = item;
         }
 
+        function generateIdentifier() {
+            return common.generateUUID();
+        }
+
         function getIdentifiers() {
             vm.identifiers = identifierService.getAll();
         }
@@ -47,7 +52,7 @@
         }
 
         function reset(form) {
-            vm.identifier = {};
+            vm.identifier = { "use": "usual"};
             form.$setPristine();
         }
     }

@@ -3,7 +3,6 @@
 /*For Bootstrap 3*/
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
 
-
 body {
     background-color: #FFF;
 }
@@ -299,6 +298,14 @@ small {
 
 table th > a {
     font-weight: bold;
+}
+
+table thead th {
+    min-width: 80px;
+}
+
+table tbody td {
+    min-width: 80px;
 }
 
 .table-hover tbody tr:hover > td,
