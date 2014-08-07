@@ -19,7 +19,7 @@
                                                                                    type="text"
                                                                                    id="address"
                                                                                    class="form-control"
-                                                                                   placeholder="Addresses loading via web lookup"
+                                                                                   placeholder="Start typing and address will auto-complete"
                                                                                    typeahead="address for address in vm.getLocation($viewValue)"
                                                                                    typeahead-loading="vm.loadingLocations"
                                                                                    typeahead-wait-ms="300"
@@ -29,15 +29,15 @@
                                                                                    data-ng-keyup="vm.capture($event, addressEditForm, vm.address)">
                 </div>
 
-                <div class="btn-group col-md-7">
-                    <button type="button" class="btn btn-info" data-ng-click="vm.reset(addressEditForm)"><i
-                            class="fa fa-refresh"></i>
-                        Reset
-                    </button>
+                <div class="btn-group col-md-12">
                     <button type="submit" data-ng-disabled="addressEditForm.$invalid"
                             class="btn btn-info"
                             data-ng-click="vm.addToList(addressEditForm, vm.address)"><i
-                            class="fa fa-plus-square-o"></i>Add to Address List
+                            class="fa fa-plus-square-o"></i>Save to List
+                    </button>
+                    <button type="button" class="btn btn-info pull-right" data-ng-click="vm.reset(addressEditForm)"><i
+                            class="fa fa-refresh"></i>
+                        Reset
                     </button>
                 </div>
             </data-ng-form>

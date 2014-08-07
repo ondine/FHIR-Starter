@@ -9,6 +9,7 @@
     function organizationDetail($location, $routeParams, $window, addressService, common, contactService, fhirServers, identifierService, localValueSets, organizationService, telecomService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
+        var logSuccess = common.logger.getLogFn(controllerId, 'success');
         var $q = common.$q;
 
         vm.activeServer;
@@ -144,7 +145,6 @@
                 title = vm.title = 'Add New Organization';
             }
             return vm.title = title;
-
         }
 
         function goBack() {
@@ -152,7 +152,39 @@
         }
 
         function save() {
-
+            if (vm.organization.name.length < 5) {
+                logError("Organization must have name greater than 5 characters");
+                return;
+            }
+            var organization = organizationService.initializeNewOrganization();
+            organization.name = vm.organization.name;
+            organization.type = vm.organization.type;
+            organization.address = addressService.mapFromViewModel();
+            organization.telecom = telecomService.mapFromViewModel();
+            organization.contact = contactService.mapFromViewModel();
+            organization.partOf = vm.organization.partOf;
+            organization.identifier = identifierService.getAll();
+            organization.active = vm.organization.active;
+            if (vm.isEditing) {
+                organizationService.updateOrganization(vm.organization.resourceId, organization)
+                    .then(function () {
+                        logSuccess("Organization updated successfully");
+                    }, function (outcome) {
+                        logError("Update failed: " + outcome.details);
+                    });
+            } else {
+                organizationService.addOrganization(organization)
+                    .then(function (results) {
+                        var resourceId = results.url;
+                        logSuccess("Organization created at " + resourceId);
+                        vm.organization.resourceId = resourceId;
+                        vm.organization.fullName = organization.name;
+                        vm.isEditing = true;
+                        getTitle();
+                    }, function (outcome) {
+                        logError("Add failed: " + outcome.details);
+                    });
+            }
         }
     }
 })();

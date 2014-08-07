@@ -31,7 +31,7 @@
         }
 
         function getAll() {
-            return identifiers;
+            return _.compact(identifiers);
         }
 
         function getIndex(hashKey) {

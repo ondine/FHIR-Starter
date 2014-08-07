@@ -3,9 +3,9 @@
 
     var serviceId = 'contactService';
 
-    angular.module('FHIRStarter').factory(serviceId, ['common', contactService]);
+    angular.module('FHIRStarter').factory(serviceId, ['common', 'localValueSets', contactService]);
 
-    function contactService(common) {
+    function contactService(common, localValueSets) {
         var contacts = [];
         var getLogFn = common.logger.getLogFn;
         var log = getLogFn(serviceId);
@@ -16,17 +16,20 @@
             remove: remove,
             getAll: getAll,
             init: init,
+            mapFromViewModel: mapFromViewModel,
             reset: reset
         }
 
         return service;
 
         function add(item) {
-            var index = getIndex(item.$$hashKey);
-            if (index > -1) {
-                contacts[index] = item;
-            } else {
-                contacts.push(item);
+            if (item) {
+                var index = getIndex(item.$$hashKey);
+                if (index > -1) {
+                    contacts[index] = item;
+                } else {
+                    contacts.push(item);
+                }
             }
         }
 
@@ -53,6 +56,43 @@
             }
         }
 
+        function mapFromViewModel() {
+            var mappedContacts;
+            if (contacts) {
+                mappedContacts = [];
+                for (var i = 0, len = contacts.length; i < len; i++) {
+                    var mappedItem = mapItem(contacts[i]);
+                    mappedContacts.push(mappedItem);
+                }
+            }
+            return mappedContacts;
+
+            function mapItem(item) {
+                var mappedItem = { "telecom": [], "purpose": {} };
+                if (item) {
+                    if (item.name) {
+                        mappedItem.name = common.makeHumanName(item.name);
+                    }
+                    if (item.email) {
+                        var email = { "value": item.email, "use": "work", "system": "email" };
+                        mappedItem.telecom.push(email);
+                    }
+                    if (item.phone) {
+                        var phone = { "value": item.phone, "use": "work", "system": "phone" };
+                        mappedItem.telecom.push(email);
+                    }
+                    if (item.purpose) {
+                        var coding = common.mapDisplayToCoding(item.purpose, localValueSets.contactEntityType());
+                        if (coding) {
+                            mappedItem.purpose.coding = [];
+                            mappedItem.purpose.coding.push(coding);
+                        }
+                    }
+                }
+                return mappedItem;
+            }
+        }
+
         function remove(item) {
             var index = getIndex(item.$$hashKey);
             contacts.splice(index, 1);
@@ -64,4 +104,5 @@
             }
         }
     }
+
 })();

@@ -17,6 +17,7 @@
             remove: remove,
             getAll: getAll,
             init: init,
+            mapFromViewModel: mapFromViewModel,
             reset: reset,
             searchGoogle: searchGoogle,
             supportHome: supportHome
@@ -52,7 +53,7 @@
         }
 
         function getAll() {
-            return addresses;
+            return _.compact(addresses);
         }
 
         function getIndex(hashKey) {
@@ -69,15 +70,50 @@
         function init(items, supportHome) {
             home = supportHome;
             addresses = [];
-            for (var i = 0, len = items.length; i < len; i++) {
-                var item = items[i];
-                item.text =
-                    (angular.isArray(item.line) ? item.line.join(' ') + ', ' : '')
-                        + (item.city ? (item.city + ', ') : '')
-                        + (item.state ? (item.state + ' ') : '')
-                        + (item.zip ? (item.zip + ', ') : '')
-                        + (item.country ? (item.country) : '');
-                addresses.push(item);
+            if (items && angular.isArray(items)) {
+                for (var i = 0, len = items.length; i < len; i++) {
+                    var item = { "address": items[i] };
+                    item.use = item.address.use;
+                    item.text =
+                        (angular.isArray(item.address.line) ? item.address.line.join(' ') + ', ' : '')
+                            + (item.address.city ? (item.address.city + ', ') : '')
+                            + (item.address.state ? (item.address.state + ' ') : '')
+                            + (item.address.zip ? (item.address.zip + ', ') : '')
+                            + (item.address.country ? (item.address.country) : '');
+                    addresses.push(item);
+                }
+            }
+        }
+
+        function mapFromViewModel() {
+            var mappedAddresses;
+            if (addresses) {
+                mappedAddresses = [];
+                for (var i = 0, len = addresses.length; i < len; i++) {
+                    var mappedItem = mapItem(addresses[i]);
+                    mappedAddresses.push(mappedItem);
+                }
+            }
+            return mappedAddresses;
+
+            function mapItem(item) {
+                var mappedItem = { "line": [] };
+                if (item) {
+                    if (item.use) {
+                        mappedItem.use = item.use;
+                    }
+                    if (item.text) {
+                        mappedItem.text = item.text;
+                    }
+                    if (item.address) {
+                        mappedItem.line = item.address.line;
+                        mappedItem.city = item.address.city;
+                        mappedItem.state = item.address.state;
+                        mappedItem.zip = item.address.zip;
+                        mappedItem.country = item.address.country;
+                    }
+                }
+                return mappedItem;
             }
         }
 

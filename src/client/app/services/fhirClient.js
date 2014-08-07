@@ -19,10 +19,15 @@
 
         function addResource(resourceUrl, resource) {
             var deferred = $q.defer();
-
-            $http.put(resourceUrl, resource)
-                .success(function (status) {
-                    deferred.resolve(status);
+            $http.put(resourceUrl, common.removeNullProperties(resource))
+                .success(function (data, status, headers, config) {
+                    var results = [];
+                    results.data = data;
+                    results.headers = headers();
+                    results.status = status;
+                    results.config = config;
+                    results.url = resourceUrl;
+                    deferred.resolve(results);
                 })
                 .error(function (data, status) {
                     var error = { "status": status, "outcome": data };
@@ -62,7 +67,7 @@
         function updateResource(resourceUrl, resource) {
             var deferred = $q.defer();
 
-            $http.post(resourceUrl, resource)
+            $http.post(resourceUrl, common.removeNullProperties(resource))
                 .success(function (data) {
                     deferred.resolve(data);
                 })

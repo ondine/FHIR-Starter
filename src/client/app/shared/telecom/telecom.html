@@ -25,7 +25,7 @@
 
                 <div class="form-group col-md-5">
                     <label class="control-label">
-                        <span class="fa fa-mobile-phone"></span></label>&nbsp;&nbsp;<input class="form-control"
+                        <span class="fa fa-fax"></span></label>&nbsp;&nbsp;<input class="form-control"
                                                                                            placeholder="Fax"
                                                                                            data-ng-model="vm.telecom.fax"/>
                 </div>
@@ -44,15 +44,15 @@
                                                                                     data-ng-model="vm.telecom.url"/>
                 </div>
 
-                <div class="btn-group col-md-7">
-                    <button type="button" class="btn btn-info" data-ng-click="vm.reset(telecomEditForm)"><i
-                            class="fa fa-refresh"></i>
-                        Reset
-                    </button>
+                <div class="btn-group col-md-12">
                     <button type="submit" data-ng-disabled="telecomEditForm.$invalid"
                             class="btn btn-info"
                             data-ng-click="vm.addToList(telecomEditForm, vm.telecom)"><i
-                            class="fa fa-plus-square-o"></i>Add to Telecom List
+                            class="fa fa-plus-square-o"></i>Save to List
+                    </button>
+                    <button type="button" class="btn btn-info pull-right" data-ng-click="vm.reset(telecomEditForm)"><i
+                            class="fa fa-refresh"></i>
+                        Reset
                     </button>
                 </div>
             </data-ng-form>
@@ -63,7 +63,7 @@
                     <thead>
                     <th></th>
                     <th style="width: 100px">Phone</th>
-                    <th style="width: 100px">Mobile</th>
+                    <th style="width: 100px">Fax</th>
                     <th style="width: 100px">Email</th>
                     <th style="width: 100px">Web</th>
                     <th>Use</th>
@@ -76,7 +76,7 @@
                             </button>
                         </td>
                         <td>{{t.phone}}</td>
-                        <td>{{t.mobile}}</td>
+                        <td>{{t.fax}}</td>
                         <td>{{t.email}}</td>
                         <td>{{t.url}}</td>
                         <td>{{t.use}}</td>

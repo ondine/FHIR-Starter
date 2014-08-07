@@ -55,7 +55,7 @@
                                                        type="text"
                                                        id="organization-partOf"
                                                        class="form-control"
-                                                       placeholder="Organization search via web lookup"
+                                                       placeholder="Start typing and name will auto-complete"
                                                        typeahead="item as item.display for item in vm.getOrganizationReference($viewValue) | filter:$viewValue"
                                                        typeahead-loading="vm.loadingOrganizations"
                                                        typeahead-wait-ms="300"
@@ -93,13 +93,18 @@
 -->
                                     <div data-ng-include="'../../app/shared/identifier/identifier.html'"></div>
 
-                                    <div class="col-lg-10 col-lg-offset-2">
-                                        <div class="btn-group-large pull-right">
-                                            <button class="btn btn-danger" data-ng-click="vm.reset()">Cancel
-                                            </button>
-                                            <button type="submit" class="btn btn-success" data-ng-click="vm.save()" tooltip="Deliver to FHIR server">
+                                    <div class="col-lg-12">
+                                        <div class="btn-group-large">
+                                            <button type="submit"
+                                                    class="btn btn-success"
+                                                    data-ng-click="vm.save()"
+                                                    data-ng-disabled="organizationEditForm.$pristine"
+                                                    tooltip="Deliver to FHIR server">
                                                 <i class="fa fa-cloud-upload"></i>Submit
                                             </button>
+                                            <button class="btn btn-danger pull-right" data-ng-click="vm.reset()">Cancel
+                                            </button>
+
                                         </div>
                                     </div>
                             </fieldset>

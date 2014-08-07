@@ -3,9 +3,9 @@
 
     var serviceId = 'organizationService';
 
-    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', organizationService]);
+    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', 'fhirServers', organizationService]);
 
-    function organizationService(common, dataCache, fhirClient) {
+    function organizationService(common, dataCache, fhirClient, fhirServers) {
         var dataCacheKey = 'localOrganizations';
         var linksCacheKey = 'linksOrganizations';
         var itemCacheKey = 'contextOrganization';
@@ -30,7 +30,22 @@
         return service;
 
         function addOrganization(resource) {
-
+            _prepArrays(resource)
+                .then(function (resource) {
+                    resource.type.coding = _prepCoding(resource.type.coding);
+                });
+            var deferred = $q.defer();
+            fhirServers.getActiveServer()
+                .then(function (server) {
+                    var url = server.baseUrl + "/Organization/" + common.generateUUID();
+                    fhirClient.addResource(url, resource)
+                        .then(function (results) {
+                            deferred.resolve(results);
+                        }, function (outcome) {
+                            deferred.reject(outcome);
+                        });
+                });
+            return deferred.promise
         }
 
         function deleteCachedOrganization(hashKey, resourceId) {
@@ -188,7 +203,57 @@
         }
 
         function updateOrganization(resourceId, resource) {
+            var deferred = $q.defer();
+            _prepArrays(resource)
+                .then(function (result) {
+                    resource = result;
+                    _prepCoding(resource.type.coding)
+                        .then(function (result) {
+                            resource.type.coding = result;
+                            fhirClient.updateResource(resourceId, resource)
+                                .then(function (data) {
+                                    deferred.resolve(data);
+                                }, function (outcome) {
+                                    deferred.reject(outcome);
+                                });
+                        })
+                });
+            return deferred.promise;
+        }
 
+        function _prepArrays(resource) {
+            if (resource.address.length === 0) {
+                resource.address = null;
+            }
+            if (resource.identifier.length === 0) {
+                resource.identifier = null;
+            }
+            if (resource.contact.length === 0) {
+                resource.contact = null;
+            }
+            if (resource.telecom.length === 0) {
+                resource.telecom = null;
+            }
+            if (resource.location.length === 0) {
+                resource.location = null;
+            }
+            return $q.when(resource);
+        }
+
+        function _prepCoding(coding) {
+            var result = null;
+            if (angular.isArray(coding) && angular.isDefined(coding[0])) {
+                if (angular.isObject(coding[0])) {
+                    result = coding;
+                } else {
+                    var parsedCoding = JSON.parse(coding[0]);
+                    result = [];
+                    result.push( parsedCoding ? parsedCoding : null);
+                }
+            } else {
+                return $q.when(null);
+            }
+            return $q.when(result);
         }
     }
 })();

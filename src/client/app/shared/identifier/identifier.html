@@ -43,15 +43,15 @@
                                                                                     placeholder="Organization that issued the id"
                                                                                     data-ng-model="vm.identifier.assigner">
                 </div>
-                <div class="btn-group col-md-7">
-                    <button type="button" class="btn btn-info" data-ng-click="vm.reset(identifierEditForm)"><i
-                            class="fa fa-refresh"></i>
-                        Reset Identifier
-                    </button>
+                <div class="btn-group col-md-12">
                     <button type="submit" data-ng-disabled="identifierEditForm.$invalid"
                             class="btn btn-info"
                             data-ng-click="vm.addToList(identifierEditForm, vm.identifier)"><i
-                            class="fa fa-plus-square-o"></i>Add to Identifier List
+                            class="fa fa-plus-square-o"></i>Save to List
+                    </button>
+                    <button type="button" class="btn btn-info pull-right" data-ng-click="vm.reset(identifierEditForm)"><i
+                            class="fa fa-refresh"></i>
+                        Reset
                     </button>
                 </div>
             </data-ng-form>

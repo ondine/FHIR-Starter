@@ -43,6 +43,9 @@
             generateUUID: generateUUID,
             isNumber: isNumber,
             logger: logger, // for accessibility
+            makeHumanName: makeHumanName,
+            mapDisplayToCoding: mapDisplayToCoding,
+            removeNullProperties: removeNullProperties,
             textContains: textContains
         };
 
@@ -78,7 +81,7 @@
                 // translates to ...
                 // vm.filteredSessions 
                 //      = vm.sessions.filter(function(item( { returns vm.sessionFilter (item) } );
-                viewmodel[filteredList] = viewmodel[list].filter(function(item) {
+                viewmodel[filteredList] = viewmodel[list].filter(function (item) {
                     return viewmodel[filter](item);
                 });
             };
@@ -89,7 +92,7 @@
                 var filterInputTimeout;
 
                 // return what becomes the 'applyFilter' function in the controller
-                return function(searchNow) {
+                return function (searchNow) {
                     if (filterInputTimeout) {
                         $timeout.cancel(filterInputTimeout);
                         filterInputTimeout = null;
@@ -140,7 +143,42 @@
                 });
         }
 
-        function removeNullProperties (target) {
+        function makeHumanName(nameText) {
+            var humanName = {
+                "given": [],
+                "family": [],
+                "text": nameText
+            };
+            if (nameText) {
+                var nameParts = nameText.split(" ");
+                var len = parseInt(nameParts.length, 10);
+                var mid = parseInt(Math.ceil(len / 2), 10);
+                for (var i = 0; i < mid; i++) {
+                    humanName.given.push(nameParts[i]);
+                    if (nameParts[mid + i]) {
+                        if (len % 2 > 0 && i > 0) {
+                            humanName.family.push(nameParts[mid + i]);
+                        } else {
+                            humanName.family.push(nameParts[mid + i]);
+                        }
+                    }
+                }
+            }
+            return humanName;
+        }
+
+        function mapDisplayToCoding(display, coding) {
+            var foundItem;
+            for (var i = 0; i < coding.length; i++) {
+                if (display === coding[i].display) {
+                    foundItem = coding[i];
+                    break;
+                }
+            }
+            return foundItem;
+        }
+
+        function removeNullProperties(target) {
             Object.keys(target).map(function (key) {
                 if (target[key] instanceof Object) {
                     if (!Object.keys(target[key]).length && typeof target[key].getMonth !== 'function') {
@@ -153,6 +191,6 @@
                 }
             });
             return target;
-        };
+        }
     }
 })();
