@@ -159,7 +159,7 @@
             }
             params = nameFilter + '&search-offset=' + skip + '&_count=' + take;
 
-            fhirClient.getResource(baseUrl + '/Organization/_search?name=' + params)
+            fhirClient.getResource(baseUrl + '/Organization/?name=' + nameFilter)
                 .then(function (data) {
                     dataCache.addToCache(dataCacheKey, data);
                     deferred.resolve(data);

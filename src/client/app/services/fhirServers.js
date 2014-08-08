@@ -61,22 +61,28 @@
                     },
                     {
                         "id": 3,
+                        "name": "Health Intersections (DEV)",
+                        "baseUrl": "http://fhir-dev.healthintersections.com.au/open",
+                        "secure": false
+                    },
+                    {
+                        "id": 4,
                         "name": "Oridashi",
                         "baseUrl": "http://demo.oridashi.com.au:8190",
                         "secure": false
                     },
                     {
-                        "id": 4,
+                        "id": 5,
                         "name": "Orion Health Blaze",
                         "baseUrl": "https://fhir.orionhealth.com/blaze/fhir",
                         "secure": false
                     },
                     {
-                        "id": 5,
+                        "id": 6,
                         "name": "SMART",
                         "baseUrl": "https://fhir-open-api.smartplatforms.org",
                         "secure": false
-                    }
+                    },
                 ];
                 var servers = dataCache.readFromCache('servers');
                 if (angular.isUndefined(servers)) {
