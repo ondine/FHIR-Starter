@@ -37,7 +37,7 @@
             var deferred = $q.defer();
             fhirServers.getActiveServer()
                 .then(function (server) {
-                    var url = server.baseUrl + "/Organization/" + common.generateUUID();
+                    var url = server.baseUrl + "/Organization";
                     fhirClient.addResource(url, resource)
                         .then(function (results) {
                             deferred.resolve(results);
@@ -120,13 +120,11 @@
             function getOrganization(searchResults) {
                 var cachedOrganization;
                 var cachedOrganizations = searchResults.entry;
-                for (var i = 0, len = cachedOrganizations.length; i < len; i++) {
-                    if (cachedOrganizations[i].$$hashKey === hashKey) {
-                        cachedOrganization = cachedOrganizations[i];
-                        cachedOrganization.content.resourceId = cachedOrganization.id;
-                        cachedOrganization.content.hashKey = cachedOrganization.$$hashKey;
-                        break;
-                    }
+                cachedOrganization = _.find(cachedOrganizations, { '$$hashKey': hashKey});
+                if (cachedOrganization) {
+                    var selfLink = _.find(cachedOrganization.link, { 'rel': 'self' });
+                    cachedOrganization.content.resourceId = selfLink.href;
+                    cachedOrganization.content.hashKey = cachedOrganization.$$hashKey;
                 }
                 if (cachedOrganization) {
                     deferred.resolve(cachedOrganization.content)
@@ -171,7 +169,7 @@
 
         function getOrganizationReference(baseUrl, input) {
             var deferred = $q.defer();
-            fhirClient.getResource(baseUrl + '/Organization/_search?name=' + input + '&_count=20&_summary=true')
+            fhirClient.getResource(baseUrl + '/Organization/?name=' + input + '&_count=20&_summary=true')
                 .then(function (data) {
                     var organizations = [];
                     if (data.entry) {
@@ -248,7 +246,7 @@
                 } else {
                     var parsedCoding = JSON.parse(coding[0]);
                     result = [];
-                    result.push( parsedCoding ? parsedCoding : null);
+                    result.push(parsedCoding ? parsedCoding : null);
                 }
             } else {
                 return $q.when(null);

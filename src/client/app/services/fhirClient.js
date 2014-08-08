@@ -17,16 +17,15 @@
 
         return service;
 
-        function addResource(resourceUrl, resource) {
+        function addResource(baseUrl, resource) {
             var deferred = $q.defer();
-            $http.put(resourceUrl, common.removeNullProperties(resource))
+            $http.post(baseUrl, common.removeNullProperties(resource))
                 .success(function (data, status, headers, config) {
                     var results = [];
                     results.data = data;
                     results.headers = headers();
                     results.status = status;
                     results.config = config;
-                    results.url = resourceUrl;
                     deferred.resolve(results);
                 })
                 .error(function (data, status) {
@@ -67,7 +66,7 @@
         function updateResource(resourceUrl, resource) {
             var deferred = $q.defer();
 
-            $http.post(resourceUrl, common.removeNullProperties(resource))
+            $http.put(resourceUrl, common.removeNullProperties(resource))
                 .success(function (data) {
                     deferred.resolve(data);
                 })
