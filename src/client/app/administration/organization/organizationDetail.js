@@ -113,13 +113,13 @@
                 vm.isEditing = false;
             } else {
                 if ($routeParams.hashKey) {
-                    return organizationService.getCachedOrganization($routeParams.hashKey)
+                    organizationService.getCachedOrganization($routeParams.hashKey)
                         .then(intitializeRelatedData, function (error) {
                             logError(error);
                         });
                 } else if ($routeParams.id) {
                     var resourceId = vm.activeServer.baseUrl + '/Organization/' + $routeParams.id;
-                    return organizationService.getOrganization(resourceId)
+                    organizationService.getOrganization(resourceId)
                         .then(intitializeRelatedData, function (error) {
                             logError(error);
                         });

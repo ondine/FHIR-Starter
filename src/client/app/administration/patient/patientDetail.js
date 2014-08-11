@@ -9,17 +9,22 @@
     function patientDetail($location, $routeParams, $window, addressService, attachmentService, common, demographicsService, fhirServers, humanNameService, identifierService, localValueSets, organizationService, patientService, telecomService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
+        var logSuccess = common.logger.getLogFn(controllerId, 'success');
+        var logWarning = common.logger.getLogFn(controllerId, 'warning');
+        var $q = common.$q;
 
-        vm.activeServer;
+        vm.activeServer = null;
         vm.calculateAge = calculateAge;
         vm.cancel = cancel;
         vm.activate = activate;
         vm.delete = deletePatient;
         vm.edit = edit;
+        vm.getOrganizationReference = getOrganizationReference;
         vm.getTitle = getTitle;
         vm.goBack = goBack;
         vm.isSaving = false;
         vm.isEditing = true;
+        vm.loadingOrganizations = false;
         vm.patient = undefined;
         vm.save = save;
         vm.title = 'patientDetail';
@@ -31,7 +36,6 @@
         Object.defineProperty(vm, 'canDelete', {
             get: canDelete
         });
-
 
         activate();
 
@@ -67,6 +71,7 @@
             if (patient && patient.resourceId && patient.hashKey) {
                 patientService.deleteCachedPatient(patient.hashKey, patient.resourceId)
                     .then(function () {
+                        logSuccess("Deleted patient " + patient.resourceId);
                         $location.path('/patients');
                     },
                     function (error) {
@@ -89,6 +94,21 @@
                 });
         }
 
+        function getOrganizationReference(input) {
+            var deferred = $q.defer();
+            vm.loadingOrganizations = true;
+            organizationService.getOrganizationReference(vm.activeServer.baseUrl, input)
+                .then(function (data) {
+                    vm.loadingOrganizations = false;
+                    deferred.resolve(data);
+                }, function (error) {
+                    vm.loadingOrganizations = false;
+                    logError(error);
+                    deferred.reject();
+                });
+            return deferred.promise;
+        }
+
         function getRequestedPatient() {
             if ($routeParams.hashKey === 'new') {
                 var data = patientService.initializeNewPatient();
@@ -97,13 +117,13 @@
                 vm.isEditing = false;
             } else {
                 if ($routeParams.hashKey) {
-                    return patientService.getCachedPatient($routeParams.hashKey)
+                    patientService.getCachedPatient($routeParams.hashKey)
                         .then(intitializeRelatedData, function (error) {
                             logError(error);
                         });
                 } else if ($routeParams.id) {
                     var resourceId = vm.activeServer.baseUrl + '/Patient/' + $routeParams.id;
-                    return patientService.getPatient(resourceId)
+                    patientService.getPatient(resourceId)
                         .then(intitializeRelatedData, function (error) {
                             logError(error);
                         });
@@ -112,23 +132,34 @@
 
             function intitializeRelatedData(data) {
                 vm.patient = data;
-                vm.title = vm.patient.name;
+                humanNameService.init(vm.patient.name);
                 demographicsService.init(vm.patient.birthDate, vm.patient.multipleBirth, vm.patient.gender, vm.patient.maritalStatus);
                 attachmentService.init(vm.patient.photo, "Photos");
                 identifierService.init(vm.patient.identifier);
                 addressService.init(vm.patient.address, true);
                 telecomService.init(vm.patient.telecom, true, true);
+                vm.patient.fullName = humanNameService.getFullName();
+                if (vm.patient.managingOrganization && vm.patient.managingOrganization.reference) {
+                    var reference = vm.patient.managingOrganization.reference;
+                    if (common.isAbsoluteUri(reference) === false) {
+                        vm.patient.managingOrganization.reference = vm.activeServer.baseUrl + '/' + reference;
+                    }
+                    if (angular.isUndefined(vm.patient.managingOrganization.display)) {
+                        vm.patient.managingOrganization.display = reference;
+                    }
+                }
+                vm.title = getTitle();
             }
         }
 
         function getTitle() {
             var title = '';
             if (vm.patient) {
-                title = vm.title = 'Edit ' + ((vm.patient && vm.patient.fullName) || '');
+                title = 'Edit ' + (vm.patient.fullName || 'Unknown');
             } else {
-                title = vm.title = 'Add New Patient';
+                title = 'Add New Patient';
             }
-            return vm.title = title;
+            return title;
 
         }
 
@@ -137,7 +168,48 @@
         }
 
         function save() {
+            var patient = patientService.initializeNewPatient();
+            patient.name = humanNameService.mapFromViewModel();
+            patient.photo = attachmentService.getAll();
 
+            patient.birthDate = demographicsService.getBirthDate();
+            patient.gender = demographicsService.getGender();
+            patient.maritalStatus = demographicsService.getMaritalStatus();
+            patient.multiplBirth = demographicsService.getMultipleBirth();
+
+            patient.address = addressService.mapFromViewModel();
+            patient.telecom = telecomService.mapFromViewModel();
+            patient.identifier = identifierService.getAll();
+
+            patient.managingOrganization = vm.patient.managingOrganization;
+
+            patient.active = vm.patient.active;
+            if (vm.isEditing) {
+                patientService.updatePatient(vm.patient.resourceId, patient)
+                    .then(processResult,
+                    function (error) {
+                        logError("Update failed: " + error.outcome.details);
+                    });
+            } else {
+                patientService.addPatient(patient)
+                    .then(processResult,
+                    function (error) {
+                        logError("Add failed: " + error.outcome.details);
+                    });
+            }
+
+            function processResult(results) {
+                var resourceVersionId = results.headers.location || results.headers["content-location"];
+                if (angular.isUndefined(resourceVersionId)) {
+                    logWarning("Patient saved, but location is unavailable. CORS not implemented correctly at remote host.");
+                } else {
+                    logSuccess("Patient saved at " + resourceVersionId);
+                }
+                vm.patient.resourceVersionId = resourceVersionId;
+                vm.patient.fullName = humanNameService.getFullName();
+                vm.isEditing = true;
+                vm.title = getTitle();
+            }
         }
     }
 })();

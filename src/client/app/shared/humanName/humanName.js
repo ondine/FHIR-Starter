@@ -42,8 +42,7 @@
         }
 
         function removeListItem(item) {
-            humanNameService.remove(item);
-            vm.humanNames = humanNameService.getAll();
+           vm.humanNames = humanNameService.remove(item);
         }
 
         function reset(form) {

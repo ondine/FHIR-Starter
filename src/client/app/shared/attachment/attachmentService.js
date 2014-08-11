@@ -7,8 +7,6 @@
 
     function attachmentService(common, fileReader) {
         var attachments = [];
-        var getLogFn = common.logger.getLogFn;
-        var log = getLogFn(serviceId);
         var title = '';
         var $q = common.$q;
 
@@ -84,5 +82,4 @@
             }
         }
     }
-
 })();

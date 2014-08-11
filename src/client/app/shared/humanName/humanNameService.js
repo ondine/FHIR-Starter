@@ -7,15 +7,14 @@
 
     function humanNameService(common) {
         var humanNames = [];
-        var getLogFn = common.logger.getLogFn;
-        var log = getLogFn(serviceId);
-
 
         var service = {
             add: add,
             remove: remove,
             getAll: getAll,
+            getFullName: getFullName,
             init: init,
+            mapViewToModel: mapViewToModel,
             reset: reset
         }
 
@@ -34,6 +33,14 @@
             return _.compact(humanNames);
         }
 
+        function getFullName() {
+            var fullName = 'Unspecified Name';
+            if (humanNames.length > 0) {
+                fullName = humanNames[0].given + ' ' + humanNames[0].family;
+            }
+            return fullName;
+        }
+
         function getIndex(hashKey) {
             if (angular.isUndefined(hashKey) === false) {
                 for (var i = 0, len = humanNames.length; i < len; i++) {
@@ -47,15 +54,60 @@
 
         function init(items) {
             if (angular.isArray(items)) {
-                humanNames = items;
+                humanNames = [];
+                _.forEach(items, function (item) {
+                    var humanName = {};
+                    if (angular.isArray(item.given)) {
+                        humanName.given = item.given.join(' ');
+                    }
+                    if (angular.isArray(item.family)) {
+                        humanName.family = item.family.join(' ');
+                    }
+                    if (angular.isArray(item.prefix)) {
+                        humanName.prefix = item.prefix.join(' ');
+                    }
+                    if (angular.isArray(item.suffix)) {
+                        humanName.suffix = item.suffix.join(' ');
+                    }
+                    humanName.text = item.text;
+                    humanName.period = item.period;
+                    humanName.use = item.use;
+                    humanNames.push(humanName);
+                });
             } else {
                 humanNames = [];
             }
+            return humanNames;
+        }
+
+        function mapViewToModel() {
+            var model = [];
+            _.forEach(humanNames, function (item) {
+                var humanName = {};
+                if (item.given) {
+                    humanName.given = item.given.split(' ');
+                }
+                if (item.family) {
+                    humanName.family = item.family.split(' ');
+                }
+                if (item.prefix) {
+                    humanName.prefix = item.prefix.split(' ');
+                }
+                if (item.suffix) {
+                    humanName.suffix = item.suffix.split(' ');
+                }
+                humanName.text = item.text;
+                humanName.period = item.period;
+                humanName.use = item.use;
+                humanNames.push(humanName);
+            });
+            return model;
         }
 
         function remove(item) {
             var index = getIndex(item.$$hashKey);
             humanNames.splice(index, 1);
+            return humanNames;
         }
 
         function reset() {

@@ -41,6 +41,7 @@
             createSearchThrottle: createSearchThrottle,
             debouncedThrottle: debouncedThrottle,
             generateUUID: generateUUID,
+            isAbsoluteUri: isAbsoluteUri,
             isNumber: isNumber,
             logger: logger, // for accessibility
             makeHumanName: makeHumanName,
@@ -141,6 +142,19 @@
                     d = Math.floor(d / 16);
                     return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
                 });
+        }
+
+        function isAbsoluteUri(input) {
+            // ^(?:[a-z]+:)?//
+            //    ^ - beginning of the string
+            //        (?: - beginning of a non-captured group
+            //            [a-z]+ - any character of 'a' to 'z' 1 or more times
+            //            : - string (colon character)
+            //    )? - end of the non-captured group. Group appearing 0 or 1 times
+            //// - string (two forward slash characters)
+            //        'i' - non case-sensitive flag
+            var r = new RegExp('^(?:[a-z]+:)?//', 'i');
+            return r.test(input);
         }
 
         function makeHumanName(nameText) {
