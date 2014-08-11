@@ -10,9 +10,10 @@
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
         var logSuccess = common.logger.getLogFn(controllerId, 'success');
+        var logWarning = common.logger.getLogFn(controllerId, 'warning');
         var $q = common.$q;
 
-        vm.activeServer;
+        vm.activeServer = null;
         vm.cancel = cancel;
         vm.activate = activate;
         vm.contactTypes = undefined;
@@ -29,7 +30,6 @@
         vm.save = save;
         vm.states = undefined;
         vm.title = 'organizationDetail';
-
 
         Object.defineProperty(vm, 'canSave', {
             get: canSave
@@ -63,6 +63,7 @@
             if (organization && organization.resourceId && organization.hashKey) {
                 organizationService.deleteCachedOrganization(organization.hashKey, organization.resourceId)
                     .then(function () {
+                        logSuccess("Deleted organization " + organization.resourceId);
                         $location.path('/organizations');
                     },
                     function (error) {
@@ -105,23 +106,24 @@
         }
 
         function getRequestedOrganization() {
-            if ($routeParams.hashKey && $routeParams.hashKey !== 'new') {
-                return organizationService.getCachedOrganization($routeParams.hashKey)
-                    .then(intitializeRelatedData, function (error) {
-                        logError(error);
-                    });
-            } else if ($routeParams.id) {
-                var resourceId = vm.activeServer.baseUrl + '/Organization/' + $routeParams.id;
-                return organizationService.getOrganization(resourceId)
-                    .then(intitializeRelatedData, function (error) {
-                        logError(error);
-                    });
-            }
-            else {
+            if ($routeParams.hashKey === 'new') {
                 var data = organizationService.initializeNewOrganization();
-                intitializeRelatedData(data)
+                intitializeRelatedData(data);
                 vm.title = 'Add New Organization';
                 vm.isEditing = false;
+            } else {
+                if ($routeParams.hashKey) {
+                    return organizationService.getCachedOrganization($routeParams.hashKey)
+                        .then(intitializeRelatedData, function (error) {
+                            logError(error);
+                        });
+                } else if ($routeParams.id) {
+                    var resourceId = vm.activeServer.baseUrl + '/Organization/' + $routeParams.id;
+                    return organizationService.getOrganization(resourceId)
+                        .then(intitializeRelatedData, function (error) {
+                            logError(error);
+                        });
+                }
             }
 
             function intitializeRelatedData(data) {
@@ -153,7 +155,7 @@
 
         function save() {
             if (vm.organization.name.length < 5) {
-                logError("Organization must have name greater than 5 characters");
+                logError("Organization Name must be at least 5 characters");
                 return;
             }
             var organization = organizationService.initializeNewOrganization();
@@ -167,23 +169,29 @@
             organization.active = vm.organization.active;
             if (vm.isEditing) {
                 organizationService.updateOrganization(vm.organization.resourceId, organization)
-                    .then(function () {
-                        logSuccess("Organization updated successfully");
-                    }, function (outcome) {
-                        logError("Update failed: " + outcome.details);
+                    .then(processResult,
+                    function (error) {
+                        logError("Update failed: " + error.outcome.details);
                     });
             } else {
                 organizationService.addOrganization(organization)
-                    .then(function (results) {
-                        var resourceId = results.url;
-                        logSuccess("Organization created at " + resourceId);
-                        vm.organization.resourceId = resourceId;
-                        vm.organization.fullName = organization.name;
-                        vm.isEditing = true;
-                        getTitle();
-                    }, function (outcome) {
-                        logError("Add failed: " + outcome.details);
+                    .then(processResult,
+                    function (error) {
+                        logError("Add failed: " + error.outcome.details);
                     });
+            }
+
+            function processResult(results) {
+                var resourceVersionId = results.headers.location || results.headers["content-location"];
+                if (angular.isUndefined(resourceVersionId)) {
+                    logWarning("Organization saved, but location is unavailable. CORS not implemented correctly at remote host.");
+                } else {
+                    logSuccess("Organization saved at " + resourceVersionId);
+                }
+                vm.organization.resourceVersionId = resourceVersionId;
+                vm.organization.fullName = organization.name;
+                vm.isEditing = true;
+                getTitle();
             }
         }
     }

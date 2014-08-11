@@ -4,9 +4,9 @@
     var controllerId = 'patientDetail';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$location', '$routeParams', '$window', 'common', 'fhirServers', 'patientService', patientDetail]);
+        ['$location', '$routeParams', '$window', 'addressService', 'attachmentService', 'common', 'demographicsService', 'fhirServers', 'humanNameService', 'identifierService', 'localValueSets', 'organizationService', 'patientService', 'telecomService', patientDetail]);
 
-    function patientDetail($location, $routeParams, $window, common, fhirServers, patientService) {
+    function patientDetail($location, $routeParams, $window, addressService, attachmentService, common, demographicsService, fhirServers, humanNameService, identifierService, localValueSets, organizationService, patientService, telecomService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
 
@@ -90,24 +90,34 @@
         }
 
         function getRequestedPatient() {
-            if ($routeParams.hashKey && $routeParams.hashKey !== 'new') {
-                return patientService.getCachedPatient($routeParams.hashKey)
-                    .then(function (data) {
-                        vm.patient = data;
-                    }, function (error) {
-                        logError(error);
-                    });
-            } else if ($routeParams.id) {
-                var resourceId = vm.activeServer.baseUrl + '/Patient/' + $routeParams.id;
-                return patientService.getPatient(resourceId)
-                    .then(function (data) {
-                        vm.patient = data;
-                    }, function (error) {
-                        logError(error);
-                    });
-            }
-            else {
+            if ($routeParams.hashKey === 'new') {
+                var data = patientService.initializeNewPatient();
+                intitializeRelatedData(data);
                 vm.title = 'Add New Patient';
+                vm.isEditing = false;
+            } else {
+                if ($routeParams.hashKey) {
+                    return patientService.getCachedPatient($routeParams.hashKey)
+                        .then(intitializeRelatedData, function (error) {
+                            logError(error);
+                        });
+                } else if ($routeParams.id) {
+                    var resourceId = vm.activeServer.baseUrl + '/Patient/' + $routeParams.id;
+                    return patientService.getPatient(resourceId)
+                        .then(intitializeRelatedData, function (error) {
+                            logError(error);
+                        });
+                }
+            }
+
+            function intitializeRelatedData(data) {
+                vm.patient = data;
+                vm.title = vm.patient.name;
+                demographicsService.init(vm.patient.birthDate, vm.patient.multipleBirth, vm.patient.gender, vm.patient.maritalStatus);
+                attachmentService.init(vm.patient.photo, "Photos");
+                identifierService.init(vm.patient.identifier);
+                addressService.init(vm.patient.address, true);
+                telecomService.init(vm.patient.telecom, true, true);
             }
         }
 

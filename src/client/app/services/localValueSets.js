@@ -8,12 +8,24 @@
     function localValueSets() {
 
         var service = {
+            administrativeGender: administrativeGender,
             contactEntityType: contactEntityType,
+            maritalStatus: maritalStatus,
             organizationType: organizationType,
             usaStates: usaStates
         };
 
         return service;
+
+        //
+        function administrativeGender() {
+            return [
+                {"code": "F", "display": "Female", "system": "http://hl7.org/fhir/vs/administrative-gender"},
+                {"code": "M", "display": "Male", "system": "http://hl7.org/fhir/vs/administrative-gender"},
+                {"code": "UN", "display": "Undifferentiated", "system": "http://hl7.org/fhir/vs/administrative-gender"},
+                {"code": "UNK", "display": "Unknown", "system": "http://hl7.org/fhir/v3/NullFlavor"}
+            ];
+        }
 
         // http://hl7.org/fhir/contactentity-type
         function contactEntityType() {
@@ -24,6 +36,22 @@
                 {"code": "PAYOR", "display": "Payor", "system": "http://hl7.org/fhir/contactentity-type"},
                 {"code": "PATINF", "display": "Patient", "system": "http://hl7.org/fhir/contactentity-type"},
                 {"code": "PRESS", "display": "Press", "system": "http://hl7.org/fhir/contactentity-type"}
+            ];
+        }
+
+        function maritalStatus() {
+            return [
+                {"code": "A", "display": "Annulled", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "D", "display": "Divorced", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "I", "display": "Interlocutory", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "L", "display": "Legally Seperated", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "M", "display": "Married", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "P", "display": "Polygamous", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "S", "display": "Never Married", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "T", "display": "Domestic Partner", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "U", "display": "Unmarried", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "W", "display": "Widowed", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "UNK", "display": "Unknown", "system": "http://hl7.org/fhir/v3/NullFlavor"}
             ];
         }
 

@@ -9,7 +9,7 @@
     function organizations($location, common, config, fhirServers, organizationService) {
         var getLogFn = common.logger.getLogFn;
         var keyCodes = config.keyCodes;
-        var log = getLogFn(controllerId);
+        var logInfo = getLogFn(controllerId, 'info');
         var logError = getLogFn(controllerId, 'error');
         var vm = this;
 
@@ -45,14 +45,19 @@
         activate();
 
         function activate() {
-            common.activateController([getActiveServer()], controllerId)
+            common.activateController([getActiveServer(), getCachedSearchResults()], controllerId)
                 .then(function () {
-                    // nothing to do
+
                 });
         }
 
         function applyFilter() {
             vm.filteredOrganizations = vm.organizations.filter(organizationFilter);
+        }
+
+        function getCachedSearchResults() {
+            organizationService.getCachedSearchResults()
+                .then(processSearchResults);
         }
 
         function getActiveServer() {
@@ -63,7 +68,7 @@
         }
 
         function getOrganizationsFilteredCount() {
-            // TODO: filter results based on doB or address, etc.
+            // TODO: filter results based on name.
         }
 
         function goToDetail(hashKey) {
@@ -92,7 +97,7 @@
         }
 
         function refresh() {
-
+           // TODO: refresh search results
         }
 
         function search($event) {
@@ -109,7 +114,7 @@
                 toggleSpinner(true);
                 organizationService.getOrganizations(vm.activeServer.baseUrl, vm.searchText, vm.paging.currentPage, vm.paging.pageSize)
                     .then(function (data) {
-                        log('Returned ' + (angular.isArray(data.entry) ? data.entry.length : 0) + ' Organizations from ' + vm.activeServer.name, true);
+                        logInfo('Returned ' + (angular.isArray(data.entry) ? data.entry.length : 0) + ' Organizations from ' + vm.activeServer.name, true);
                         return data;
                     }, function (error) {
                         toggleSpinner(false);

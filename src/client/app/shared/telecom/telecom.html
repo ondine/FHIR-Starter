@@ -1,36 +1,24 @@
 <div data-ng-controller="telecom as vm">
     <div class="form-group col-md-12 well">
         <div class="col-md-2 control-label">Communication</div>
-        <div class="controls col-md-10 col-md-offset-2">
+        <div class="controls col-md-12 col-md-offset-2">
             <data-ng-form name="telecomEditForm" class="form-horizontal" data-ng-model="vm.telecom">
                 <div class="btn-group col-md-10" style="padding-bottom: 20px">
                     <label class="btn btn-default btn-sm" data-ng-model="vm.telecom.use" btn-radio="'work'">
                         <i class="fa fa-building"></i>&nbsp;Work</label>
-                    <label data-ng-show="vm.showHome" class="btn btn-default btn-sm" data-ng-model="vm.telecom.use" btn-radio="'home'">
+                    <label data-ng-show="vm.showHome" class="btn btn-default btn-sm" data-ng-model="vm.telecom.use"
+                           btn-radio="'home'">
                         <i class="fa fa-home"></i>&nbsp;Home</label>
-                    <label data-ng-show="vm.showMobile" class="btn btn-default btn-sm" data-ng-model="vm.telecom.use" btn-radio="'fax'">
-                        <i class="fa fa-fax"></i>&nbsp;MobileHome</label>
+                    <label data-ng-show="vm.showMobile" class="btn btn-default btn-sm" data-ng-model="vm.telecom.use"
+                           btn-radio="'mobile'">
+                        <i class="fa fa-car"></i>&nbsp;Mobile</label>
                     <label class="btn btn-default btn-sm" data-ng-model="vm.telecom.use" btn-radio="'temp'">
-                        <i class="fa fa-eraser"></i>&nbsp;Temp</label>
+                        <i class="fa fa-recycle"></i>&nbsp;Temp</label>
                     <label class="btn btn-default btn-sm" data-ng-model="vm.telecom.use" btn-radio="'old'">
-                        <i class="fa fa-code-fork"></i>&nbsp;Old</label>
+                        <i class="fa fa-history"></i>&nbsp;Former</label>
                 </div>
 
-                <div class="form-group col-md-5">
-                    <label class="control-label">
-                        <span class="fa fa-phone"></span></label>&nbsp;&nbsp;<input required class="form-control"
-                                                                                    placeholder="Telephone"
-                                                                                    data-ng-model="vm.telecom.phone"/>
-                </div>
-
-                <div class="form-group col-md-5">
-                    <label class="control-label">
-                        <span class="fa fa-fax"></span></label>&nbsp;&nbsp;<input class="form-control"
-                                                                                           placeholder="Fax"
-                                                                                           data-ng-model="vm.telecom.fax"/>
-                </div>
-
-                <div class="form-group col-md-5">
+                <div class="form-group col-md-6">
                     <label class="control-label">
                         <span class="fa fa-envelope"></span></label>&nbsp;&nbsp;<input class="form-control"
                                                                                        placeholder="Email"
@@ -39,12 +27,43 @@
 
                 <div class="form-group col-md-5">
                     <label class="control-label">
+                        <span class="fa fa-phone"></span></label>&nbsp;&nbsp;<input class="form-control"
+                                                                                    placeholder="Telephone"
+                                                                                    data-ng-model="vm.telecom.phone"/>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label">
                         <span class="fa fa-chain"></span></label>&nbsp;&nbsp;<input class="form-control"
                                                                                     placeholder="Web Url"
                                                                                     data-ng-model="vm.telecom.url"/>
                 </div>
+                <div class="form-group col-md-5">
+                    <label class="control-label">
+                        <span class="fa fa-fax"></span></label>&nbsp;&nbsp;<input class="form-control"
+                                                                                  placeholder="Fax"
+                                                                                  data-ng-model="vm.telecom.fax"/>
+                </div>
 
-                <div class="btn-group col-md-12">
+                <div collapse="vm.telecom.use !== 'old'" class="form-group col-md-10">
+                    <div class="col-md-10 control-label">Period</div>
+                    <div class="form-group col-md-6 col-md-offset-4">
+                        <label class="control-label" for="telecom-period-start">Start</label>&nbsp;&nbsp;
+                        <input type="date"
+                               id="telecom-period-start"
+                               class="form-control"
+                               tooltip="Start date of telecom item"
+                               data-ng-model="vm.telecom.period.start">
+
+                        <label class="control-label" for="telecom-period-start">End</label>&nbsp;&nbsp;
+                        <input type="date"
+                               id="telecom-period-end"
+                               class="form-control"
+                               tooltip="End date - leave blank if current"
+                               data-ng-model="vm.telecom.period.end">
+                    </div>
+                </div>
+
+                <div class="btn-group col-md-10">
                     <button type="submit" data-ng-disabled="telecomEditForm.$invalid"
                             class="btn btn-info"
                             data-ng-click="vm.addToList(telecomEditForm, vm.telecom)"><i
@@ -55,6 +74,8 @@
                         Reset
                     </button>
                 </div>
+
+
             </data-ng-form>
 
             <div collapse="vm.telecoms.length === 0" class="col-md-10">
@@ -62,10 +83,11 @@
                 <table class="table-hover small table-responsive pull-left">
                     <thead>
                     <th></th>
-                    <th style="width: 100px">Phone</th>
-                    <th style="width: 100px">Fax</th>
-                    <th style="width: 100px">Email</th>
-                    <th style="width: 100px">Web</th>
+                    <th>Phone</th>
+                    <th>Fax</th>
+                    <th>Email</th>
+                    <th>Web</th>
+                    <th>Period</th>
                     <th>Use</th>
                     <th></th>
                     </thead>
@@ -79,6 +101,7 @@
                         <td>{{t.fax}}</td>
                         <td>{{t.email}}</td>
                         <td>{{t.url}}</td>
+                        <td>{{t.period.start | date: 'MMM`yy'}}-{{t.period.end ? (t.period.end | date: 'MMM`yy') : 'current' }}</td>
                         <td>{{t.use}}</td>
                         <th>
                             <button type="button" class="btn btn-default btn-xs"

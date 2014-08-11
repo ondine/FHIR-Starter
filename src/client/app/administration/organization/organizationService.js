@@ -10,9 +10,7 @@
         var linksCacheKey = 'linksOrganizations';
         var itemCacheKey = 'contextOrganization';
         var getLogFn = common.logger.getLogFn;
-        var log = getLogFn(serviceId);
-        var logError = getLogFn(serviceId, 'error');
-        var logSuccess = getLogFn(serviceId, 'success');
+        var logWarning = getLogFn(serviceId, 'warning');
         var $q = common.$q;
 
         var service = {
@@ -20,6 +18,7 @@
             deleteCachedOrganization: deleteCachedOrganization,
             deleteOrganization: deleteOrganization,
             getCachedOrganization: getCachedOrganization,
+            getCachedSearchResults: getCachedSearchResults,
             getOrganization: getOrganization,
             getOrganizationReference: getOrganizationReference,
             getOrganizations: getOrganizations,
@@ -78,7 +77,7 @@
                 if (removed) {
                     deferred.resolve();
                 } else {
-                    logError('Organization not found in cache: ' + hashKey);
+                    logWarning('Organization not found in cache: ' + hashKey);
                     deferred.resolve();
                 }
             }
@@ -87,11 +86,9 @@
         function deleteOrganization(resourceId) {
             var deferred = $q.defer();
             fhirClient.deleteResource(resourceId)
-                .then(function (data) {
-                    logSuccess(resourceId + ' deleted' + data);
-                    deferred.resolve();
+                .then(function (results) {
+                    deferred.resolve(results);
                 }, function (outcome) {
-                    logError('Failed to delete' + resourceId + outcome);
                     deferred.reject(outcome);
                 });
             return deferred.promise;
@@ -123,7 +120,8 @@
                 cachedOrganization = _.find(cachedOrganizations, { '$$hashKey': hashKey});
                 if (cachedOrganization) {
                     var selfLink = _.find(cachedOrganization.link, { 'rel': 'self' });
-                    cachedOrganization.content.resourceId = selfLink.href;
+                    cachedOrganization.content.resourceId = cachedOrganization.id;
+                    cachedOrganization.content.resourceVersionId = selfLink.href;
                     cachedOrganization.content.hashKey = cachedOrganization.$$hashKey;
                 }
                 if (cachedOrganization) {
@@ -137,9 +135,9 @@
         function getOrganization(resourceId) {
             var deferred = $q.defer();
             fhirClient.getResource(resourceId)
-                .then(function (data) {
-                    dataCache.addToCache(dataCacheKey, data);
-                    deferred.resolve(data);
+                .then(function (results) {
+                    dataCache.addToCache(dataCacheKey, results.data);
+                    deferred.resolve(results.data);
                 }, function (outcome) {
                     deferred.reject(outcome);
                 });
@@ -155,12 +153,12 @@
             if (angular.isUndefined(nameFilter)) {
                 deferred.reject('Invalid search input');
             }
-            params = nameFilter + '&search-offset=' + skip + '&_count=' + take;
+            params = nameFilter + '&_offset=' + skip + '&_count=' + take;
 
             fhirClient.getResource(baseUrl + '/Organization/?name=' + nameFilter)
-                .then(function (data) {
-                    dataCache.addToCache(dataCacheKey, data);
-                    deferred.resolve(data);
+                .then(function (results) {
+                    dataCache.addToCache(dataCacheKey, results.data);
+                    deferred.resolve(results.data);
                 }, function (outcome) {
                     deferred.reject(outcome);
                 });
@@ -170,10 +168,10 @@
         function getOrganizationReference(baseUrl, input) {
             var deferred = $q.defer();
             fhirClient.getResource(baseUrl + '/Organization/?name=' + input + '&_count=20&_summary=true')
-                .then(function (data) {
+                .then(function (results) {
                     var organizations = [];
-                    if (data.entry) {
-                        angular.forEach(data.entry,
+                    if (results.data.entry) {
+                        angular.forEach(results.data.entry,
                             function (item) {
                                 if (item.content && item.content.resourceType === 'Organization') {
                                     organizations.push({display: item.content.name, reference: item.id});
@@ -181,8 +179,8 @@
                             });
                     }
                     deferred.resolve(organizations);
-                }, function (error) {
-                    deferred.reject(error);
+                }, function (outcome) {
+                    deferred.reject(outcome);
                 });
             return deferred.promise;
         }
@@ -200,21 +198,17 @@
                 "active": true};
         }
 
-        function updateOrganization(resourceId, resource) {
-            var deferred = $q.defer();
+        function updateOrganization(resourceVersionId, resource) {
             _prepArrays(resource)
-                .then(function (result) {
-                    resource = result;
-                    _prepCoding(resource.type.coding)
-                        .then(function (result) {
-                            resource.type.coding = result;
-                            fhirClient.updateResource(resourceId, resource)
-                                .then(function (data) {
-                                    deferred.resolve(data);
-                                }, function (outcome) {
-                                    deferred.reject(outcome);
-                                });
-                        })
+                .then(function (resource) {
+                    resource.type.coding = _prepCoding(resource.type.coding);
+                });
+            var deferred = $q.defer();
+            fhirClient.updateResource(resourceVersionId, resource)
+                .then(function (results) {
+                    deferred.resolve(results);
+                }, function (outcome) {
+                    deferred.reject(outcome);
                 });
             return deferred.promise;
         }
@@ -248,10 +242,8 @@
                     result = [];
                     result.push(parsedCoding ? parsedCoding : null);
                 }
-            } else {
-                return $q.when(null);
             }
-            return $q.when(result);
+            return result;
         }
     }
 })();

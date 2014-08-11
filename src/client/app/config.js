@@ -51,7 +51,6 @@
         if ($logProvider.debugEnabled) {
             $logProvider.debugEnabled(true);
         }
-
     }]);
 
     app.config(['$locationProvider', function ($locationProvider) {
@@ -59,12 +58,9 @@
     }]);
 
     app.config(['$httpProvider', function ($httpProvider) {
-        // app-specific header X-FHIR-Starter for CORS
         $httpProvider.defaults.headers.common = { 'Accept': 'application/json+fhir, application/json, text/plain, */*'};
-        $httpProvider.defaults.headers.put = { 'Content-Type': 'application/json+fhir', 'X-FHIR-Starter': 'urn:fhir.starter' };
-        $httpProvider.defaults.headers.post = { 'Content-Type': 'application/json+fhir', 'X-FHIR-Starter': 'urn:fhir.starter' };
-        $httpProvider.defaults.headers.delete = { 'X-FHIR-Starter': 'urn:fhir.starter' };
-        $httpProvider.defaults.headers.options = { 'Access-Control-Request-Headers': 'X-FHIR-Starter', 'Content-Location': 'urn:fhir.starter'};
+        $httpProvider.defaults.headers.put = { 'Content-Type': 'application/json+fhir' };
+        $httpProvider.defaults.headers.post = { 'Content-Type': 'application/json+fhir' };
     }]);
 
     app.config(['commonConfigProvider', function (cfg) {

@@ -23,6 +23,7 @@
             getCachedSearchResults: getCachedSearchResults,
             getPatient: getPatient,
             getPatients: getPatients,
+            initializeNewPatient: initializeNewPatient,
             updatePatient: updatePatient
         };
 
@@ -147,16 +148,35 @@
             } else {
                 params = 'given=' + names[0] + '&family=' + names[1];
             }
-            params = params + '&_offset=' + skip + '&_count=' + take;
+            params = params + '&_count=' + take;
 
-            fhirClient.getResource(baseUrl + '/Patient/_search?' + params)
-                .then(function (data) {
-                    dataCache.addToCache(dataCacheKey, data);
-                    deferred.resolve(data);
+            fhirClient.getResource(baseUrl + '/Patient/?' + params)
+                .then(function (results) {
+                    dataCache.addToCache(dataCacheKey, results.data);
+                    deferred.resolve(results.data);
                 }, function (outcome) {
                     deferred.reject(outcome);
                 });
             return deferred.promise;
+        }
+
+        function initializeNewPatient() {
+            return {
+                "resourceType": "Patient",
+                "identifier": [],
+                "name":  [],
+                "gender": {},
+                "birthDate": null,
+                "maritalStatus": {},
+                "multipleBirth": false,
+                "telecom": [],
+                "address": [],
+                "photo": [],
+                "communication": {},
+                "managingOrganization": null,
+                "contact": [],
+                "link": [],
+                "active": true};
         }
 
         function updatePatient(resourceId, resource) {

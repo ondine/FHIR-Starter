@@ -243,45 +243,31 @@
         return directive;
     });
 
-    app.directive("fsImageDrop", function ($parse) {
+    app.directive('fsFileInput', function($parse) {
         // Description:
         //
-        // Usage:
-        return {
+        // Usage: <div fs-file-input="file" on-change="readFile()"></div>
+        var directive = {
             restrict: "EA",
-            link: function (scope, element, attrs) {
-                //The on-image-drop event attribute
-                var onImageDrop = $parse(attrs.onImageDrop);
-
-                //When an item is dragged over the document, add .dragOver to the body
-                var onDragOver = function (e) {
-                    e.preventDefault();
-                    $('body').addClass("dragOver");
-                };
-
-                //When the user leaves the window, cancels the drag or drops the item
-                var onDragEnd = function (e) {
-                    e.preventDefault();
-                    $('body').removeClass("dragOver");
-                };
-
-                //When a file is dropped on the overlay
-                var loadFile = function (file) {
-                    scope.uploadedFile = file;
-                    scope.$apply(onImageDrop(scope));
-                };
-
-                //Dragging begins on the document (shows the overlay)
-                $(document).bind("dragover", onDragOver);
-
-                //Dragging ends on the overlay, which takes the whole window
-                element.bind("dragleave", onDragEnd)
-                    .bind("drop", function (e) {
-                        onDragEnd(e);
-                        loadFile(e.originalEvent.dataTransfer.files[0]);
-                        /* This is the file */
-                    });
-            }
+            template: "<input multiple='false' type='file' />",
+            replace: true,
+            link: link
         };
+        return directive;
+
+        function link (scope, element, attrs) {
+            var modelGet = $parse(attrs.fsFileInput);
+            var modelSet = modelGet.assign;
+            var onChange = $parse(attrs.onChange);
+
+            var updateModel = function () {
+                scope.$apply(function () {
+                    modelSet(scope, element[0].files[0]);
+                    onChange(scope);
+                });
+            };
+            element.bind('change', updateModel);
+        }
     });
+
 })();

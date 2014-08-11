@@ -1,0 +1,23 @@
+<div data-ng-controller="attachment as vm">
+    <div class="form-group col-md-12 well">
+        <div class="col-md-2 control-label">{{vm.title}}</div>
+        <div class="controls col-md-10 col-md-offset-2">
+            <data-ng-form name="attachmentEditForm" class="form-horizontal" data-ng-model="vm.attachment">
+                <div class="form-group col-md-7">
+                    <label class="control-label pull-left">Add {{vm.title}}&nbsp;&nbsp;</label>
+
+                    <div class="form-control" fs-file-input="vm.selectedFile" on-change="vm.readFile()">
+                    </div>
+                </div>
+            </data-ng-form>
+        </div>
+        <div collapse="vm.attachments.length < 1" class="col-md-10">
+            <div class="btn-group" data-ng-repeat="photo in vm.attachments">
+                <img class="img-polaroid" fs-img-person="photo"/>
+                <button type="button" class="btn btn-default btn-xs pull-right"
+                        data-ng-click="vm.removeListItem(photo)" tooltip="delete">X
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

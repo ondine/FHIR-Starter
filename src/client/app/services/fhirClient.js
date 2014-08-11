@@ -39,12 +39,26 @@
             var deferred = $q.defer();
 
             $http.delete(resourceUrl)
-                .success(function (data, status, url) {
-                    deferred.resolve(data, status, url);
+                .success(function (data, status, headers, config) {
+                    var results = [];
+                    results.data = data;
+                    results.headers = headers();
+                    results.status = status;
+                    results.config = config;
+                    deferred.resolve(results);
                 })
                 .error(function (data, status, headers) {
-                    var error = { "status": status, "outcome": data };
-                    deferred.reject(error);
+                    if (status === 410) {
+                        // already deleted
+                        var results = [];
+                        results.data = data;
+                        results.status = status;
+                        results.headers = headers;
+                        deferred.resolve(results);
+                    } else {
+                        var error = { "status": status, "outcome": data };
+                        deferred.reject(error);
+                    }
                 });
             return deferred.promise;
         }
@@ -53,8 +67,13 @@
             var deferred = $q.defer();
 
             $http.get(resourceUrl)
-                .success(function (data) {
-                    deferred.resolve(data);
+                .success(function (data, status, headers, config) {
+                    var results = [];
+                    results.data = data;
+                    results.headers = headers();
+                    results.status = status;
+                    results.config = config;
+                    deferred.resolve(results);
                 })
                 .error(function (data, status) {
                     var error = { "status": status, "outcome": data };
@@ -67,8 +86,13 @@
             var deferred = $q.defer();
 
             $http.put(resourceUrl, common.removeNullProperties(resource))
-                .success(function (data) {
-                    deferred.resolve(data);
+                .success(function (data, status, headers, config) {
+                    var results = [];
+                    results.data = data;
+                    results.headers = headers();
+                    results.status = status;
+                    results.config = config;
+                    deferred.resolve(results);
                 })
                 .error(function (data, status) {
                     var error = { "status": status, "outcome": data };
