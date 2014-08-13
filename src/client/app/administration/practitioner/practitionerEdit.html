@@ -1,4 +1,4 @@
-<section class="mainbar" data-ng-controller="patientDetail as vm">
+<section class="mainbar" data-ng-controller="practitionerDetail as vm">
     <section class="matter">
         <div class="container-fluid">
             <div>
@@ -9,31 +9,28 @@
                 <button class="btn btn-info" data-ng-click="vm.save()" data-ng-disabled="!vm.canSave"><i
                         class="fa fa-save"></i>Save
                 </button>
-                <div class="pull-right" data-ng-hide="!vm.isEditing">
-                    <button class="btn btn-danger" data-ng-click="vm.delete()"><i
+                <div class="pull-right">
+                    <button class="btn btn-danger" data-ng-click="vm.delete()" data-ng-disabled="!vm.canDelete"><i
                             class="fa fa-trash-o"></i>Delete
                     </button>
                 </div>
             </div>
-            <div class="widget wblue">
+            <div class="widget wgreen">
                 <div data-cc-widget-header title="{{vm.title}}"></div>
                 <div class="widget-content user">
-                    <data-ng-form name="patientEditForm" class="form-horizontal"
-                                  data-ng-model="vm.patient">
+                    <data-ng-form name="practitionerEditForm" class="form-horizontal"
+                                  data-ng-model="vm.practitioner">
                         <fieldset>
                             <div class="form-group col-md-12">
-                                <div data-ng-include="'../../app/shared/humanName/humanName.html'"></div>
 
                                 <div data-ng-include="'../../app/shared/attachment/attachment.html'"></div>
-
-                                <div data-ng-include="'../../app/shared/demographics/demographics.html'"></div>
 
                                 <div data-ng-include="'../../app/shared/address/addressTypeAhead.html'"></div>
 
                                 <div data-ng-include="'../../app/shared/telecom/telecom.html'"></div>
 
-                                <div class="form-group col-md-12">
-                                    <legend>Care&nbsp;Providers</legend>
+                                <div class="form-group col-md-12 well">
+                                    <div class="col-md-2 control-label">Roles</div>
                                     <div class="controls col-md-10 col-md-offset-2">
                                         <div class="form-group col-md-10">
                                             <input required
@@ -41,24 +38,24 @@
                                                    id="care-provider"
                                                    class="form-control"
                                                    placeholder="Start typing provider name to begin search"
-                                                   typeahead="item as item.display for item in vm.getPractionerReference($viewValue) | filter:$viewValue"
+                                                   typeahead="item as item.display for item in vm.getRolesReference($viewValue) | filter:$viewValue"
                                                    typeahead-loading="vm.loadingPractitioners"
                                                    typeahead-wait-ms="300"
                                                    typeahead-editable="false"
                                                    typeahead-min-length="5"
-                                                   data-ng-model="vm.patient.careProvider">
+                                                   data-ng-model="vm.practitioner.careProvider">
                                         </div>
                                         <div class="form-group col-md-10"
-                                             data-ng-show="vm.patient.careProvider.reference">
-                                            <a class="control-label" href="{{vm.patient.careProvider.reference}}"
+                                             data-ng-show="vm.practitioner.careProvider.reference">
+                                            <a class="control-label" href="{{vm.practitioner.careProvider.reference}}"
                                                target="_blank">Referenced Provider:
-                                                {{vm.patient.managingOrganization.display || "Name Not Specified" }}</a>
+                                                {{vm.practitioner.managingOrganization.display || "Name Not Specified" }}</a>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="form-group col-md-12">
-                                    <legend>Managing&nbsp;Organization</legend>
+                                <div class="form-group col-md-12 well">
+                                    <div class="col-md-2 control-label">Managing&nbsp;Organization</div>
                                     <div class="controls col-md-10 col-md-offset-2">
                                         <div class="form-group col-md-10">
                                             <input required
@@ -71,18 +68,32 @@
                                                    typeahead-wait-ms="300"
                                                    typeahead-editable="false"
                                                    typeahead-min-length="5"
-                                                   data-ng-model="vm.patient.managingOrganization">
+                                                   data-ng-model="vm.practitioner.managingOrganization">
                                         </div>
                                         <div class="form-group col-md-10"
-                                             data-ng-show="vm.patient.managingOrganization.reference">
+                                             data-ng-show="vm.practitioner.managingOrganization.reference">
                                             <a class="control-label"
-                                               data-ng-href="{{vm.patient.managingOrganization.reference}}"
-                                               target="_blank">Referenced Organization: {{vm.patient.managingOrganization.display || "Name Not Specified" }}</a>
+                                               data-ng-href="{{vm.practitioner.managingOrganization.reference}}"
+                                               target="_blank">Referenced Organization: {{vm.practitioner.managingOrganization.display || "Name Not Specified" }}</a>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div data-ng-include="'../../app/shared/identifier/identifier.html'"></div>
+
+                                <div class="col-lg-12">
+                                    <div class="btn-group-large">
+                                        <button type="submit"
+                                                class="btn btn-success"
+                                                data-ng-click="vm.save()"
+                                                data-ng-disabled="practitionerEditForm.$pristine"
+                                                tooltip="Deliver to FHIR server">
+                                            <i class="fa fa-cloud-upload"></i>Submit
+                                        </button>
+                                        <button class="btn btn-danger pull-right" data-ng-click="vm.reset()">Cancel
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </fieldset>
                     </data-ng-form>

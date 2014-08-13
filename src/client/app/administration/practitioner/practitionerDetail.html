@@ -1,7 +1,121 @@
 <section class="mainbar" data-ng-controller="practitionerDetail as vm">
     <section class="matter">
-        <div class="container-fluid">
-            Practitioner param = {{(vm.practitionerHashKey || vm.practitionerId)}}
+        <div class="container">
+            <div class="row">
+                <div class="btn-group col-md-12">
+                    <button class="btn btn-info" data-ng-click="vm.goBack()"><i class="fa fa-hand-o-left"></i>Back
+                    </button>
+                    <button class="btn btn-info" data-ng-click="vm.edit(vm.practitioner)"><i class="fa fa-edit"></i>Edit
+                    </button>
+                    <div class="btn-group pull-right">
+                        <button class="btn btn-danger" data-ng-click="vm.delete(vm.practitioner)"><i
+                                class="fa fa-trash-o"></i>Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="widget wgreen">
+                    <div data-cc-widget-header title="{{ vm.practitioner.name | fullName }}">
+                    </div>
+                    <div class="widget-content user col-md-12">
+                        <div class="col-md-2">
+                            <img fs-img-person="vm.practitioner.photo[0]"
+                                 class="img-polaroid" src="/content/images/unknown_person.jpg"/>
+                        </div>
+                        <div class="col-md-10">
+                            <table class="table table-striped table-hover">
+                                <tr>
+                                    <td>Name</td>
+                                    <td>{{vm.practitioner.name | fullName }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Date of Birth</td>
+                                    <td>
+                                        <div data-ng-show="vm.practitioner.birthDate">
+                                            {{vm.practitioner.birthDate | date: longDate}}
+                                        </div>
+
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Gender</td>
+                                    <td>
+                                        {{vm.practitioner.gender.coding[0].display}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Addresses</td>
+                                    <td>
+                                        <p class="small" data-ng-repeat="a in vm.practitioner.address">
+                                            <strong>{{a.use}}</strong>: {{a.line.join(', ')}}, {{a.city}}, {{a.state}}
+                                            {{a.zip}} {{a.country}}
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Telecommunication</td>
+                                    <td>
+                                        <p class="small" data-ng-repeat="t in vm.practitioner.telecom">
+                                            <strong>{{t.use}} {{t.system}}</strong>: {{t.value}}
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Role</td>
+                                    <td>
+                                        <p class="small" data-ng-repeat="r in vm.practitioner.role">
+                                            {{r}}
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Specialty</td>
+                                    <td>
+                                        <p class="small" data-ng-repeat="s in vm.practitioner.specialty">
+                                            {{s}}
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Period</td>
+                                    <td>
+                                        {{vm.practitioner.period.start | date: 'MMM`yy'}}-{{vm.practitioner.period.end ? (vm.practitioner.period.end | date: 'MMM`yy') :
+                                        'current' }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Organization</td>
+                                    <td>
+                                        <a href="{{vm.practitioner.organization.reference}}">{{vm.practitioner.organization.display}}</a>
+                                    </td>
+                                </tr>
+                                <tr data-ng-show="vm.practitioner.identifier">
+                                    <td>Identifiers</td>
+                                    <td>
+                                        <table class="table table-striped table-hover small">
+                                            <thead>
+                                            <th>System</th>
+                                            <th>Value</th>
+                                            <th>Label</th>
+                                            <th>Use</th>
+                                            </thead>
+                                            <tr data-ng-repeat="id in vm.practitioner.identifier">
+                                                <td>{{id.system}}</td>
+                                                <td>{{id.value}}</td>
+                                                <td>{{id.label}}</td>
+                                                <td>{{id.use}}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 </section>

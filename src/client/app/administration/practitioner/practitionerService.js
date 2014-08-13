@@ -3,36 +3,129 @@
 
     var serviceId = 'practitionerService';
 
-    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', practitionerService]);
+    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', 'fhirServers', practitionerService]);
 
-    function practitionerService(common, dataCache, fhirClient) {
-        var getLogFn = common.logger.getLogFn;
-        var log = getLogFn(serviceId);
-        var logError = getLogFn(serviceId, 'error');
-        var logSuccess = getLogFn(serviceId, 'success');
+    function practitionerService(common, dataCache, fhirClient, fhirServers) {
+        var dataCacheKey = 'localPractitioners';
+        var linksCacheKey = 'linksPractitioners';
+        var itemCacheKey = 'contextPractitioner';
         var $q = common.$q;
 
         var service = {
             addPractitioner: addPractitioner,
-            updatePractitioner: updatePractitioner,
-            getPractitioner: getPractitioner,
+            deleteCachedPractitioner: deleteCachedPractitioner,
             deletePractitioner: deletePractitioner,
-            getPractitioners: getPractitioners
+            getCachedPractitioner: getCachedPractitioner,
+            getCachedSearchResults: getCachedSearchResults,
+            getPractitioner: getPractitioner,
+            getPractitioners: getPractitioners,
+            initializeNewPractitioner: initializeNewPractitioner,
+            updatePractitioner: updatePractitioner
         };
 
         return service;
 
-
         function addPractitioner(resource) {
+            _prepArrays(resource);
+            var deferred = $q.defer();
+            fhirServers.getActiveServer()
+                .then(function (server) {
+                    var url = server.baseUrl + "/Practitioner";
+                    fhirClient.addResource(url, resource)
+                        .then(function (results) {
+                            deferred.resolve(results);
+                        }, function (outcome) {
+                            deferred.reject(outcome);
+                        });
+                });
+            return deferred.promise
+        }
 
+        function deleteCachedPractitioner(hashKey, resourceId) {
+            var deferred = $q.defer();
+            deletePractitioner(resourceId)
+                .then(getCachedSearchResults,
+                function (error) {
+                    deferred.reject(error);
+                })
+                .then(removeFromCache)
+                .then(function () {
+                    deferred.resolve()
+                });
+            return deferred.promise;
+
+            function removeFromCache(searchResults) {
+                var cachedPractitioners = searchResults.entry;
+                searchResults.entry = _.remove(cachedPractitioners, function (item) {
+                    return item.$$hashKey !== hashKey;
+                });
+                searchResults.totalResults = (searchResults.totalResults - 1);
+                dataCache.addToCache(dataCacheKey, searchResults);
+
+                deferred.resolve();
+            }
         }
 
         function deletePractitioner(resourceId) {
+            var deferred = $q.defer();
+            fhirClient.deleteResource(resourceId)
+                .then(function (results) {
+                    deferred.resolve(results);
+                }, function (outcome) {
+                    deferred.reject(outcome);
+                });
+            return deferred.promise;
+        }
 
+        function getCachedPractitioner(hashKey) {
+            var deferred = $q.defer();
+            getCachedSearchResults()
+                .then(getPractitioner,
+                function () {
+                    deferred.reject('Practitioner search results not found in cache.');
+                });
+            return deferred.promise;
+
+            function getPractitioner(searchResults) {
+                var cachedPractitioner;
+                var cachedPractitioners = searchResults.entry;
+                for (var i = 0, len = cachedPractitioners.length; i < len; i++) {
+                    if (cachedPractitioners[i].$$hashKey === hashKey) {
+                        cachedPractitioner = cachedPractitioners[i];
+                        cachedPractitioner.content.resourceId = cachedPractitioner.id;
+                        cachedPractitioner.content.hashKey = cachedPractitioner.$$hashKey;
+                        break;
+                    }
+                }
+                if (cachedPractitioner) {
+                    deferred.resolve(cachedPractitioner.content)
+                } else {
+                    deferred.reject('Practitioner not found in cache: ' + hashKey);
+                }
+            }
+        }
+
+        function getCachedSearchResults() {
+            var deferred = $q.defer();
+            var cachedSearchResults = dataCache.readFromCache(dataCacheKey);
+            if (cachedSearchResults) {
+                deferred.resolve(cachedSearchResults);
+            } else {
+                deferred.reject('Search results not cached.');
+            }
+            return deferred.promise;
         }
 
         function getPractitioner(resourceId) {
-
+            var deferred = $q.defer();
+            fhirClient.getResource(resourceId)
+                .then(function (data) {
+                    dataCache.addToCache(dataCacheKey, data);
+                    deferred.resolve(data);
+                }, function (outcome) {
+                    deferred.reject(outcome);
+                });
+            return deferred.promise;
         }
 
         function getPractitioners(baseUrl, nameFilter, page, size) {
@@ -50,20 +143,89 @@
             } else {
                 params = 'given=' + names[0] + '&family=' + names[1];
             }
-            params = params + '&_offset=' + skip + '&_count=' + take;
+            params = params + '&_count=' + take;
 
-            fhirClient.getResource(baseUrl + '/Practitioner/_search?' + params)
-                .then(function (data) {
-                    dataCache.addToCache('practitioners', data.entry);
-                    deferred.resolve(data);
+            fhirClient.getResource(baseUrl + '/Practitioner/?' + params)
+                .then(function (results) {
+                    dataCache.addToCache(dataCacheKey, results.data);
+                    deferred.resolve(results.data);
                 }, function (outcome) {
                     deferred.reject(outcome);
                 });
             return deferred.promise;
         }
 
-        function updatePractitioner(resourceId, resource) {
+        function initializeNewPractitioner() {
+            return {
+                "resourceType": "Practitioner",
+                "name": [],
+                "gender": undefined,
+                "birthDate": null,
+                "maritalStatus": undefined,
+                //              "multipleBirth": false,
+                "telecom": [],
+                "address": [],
+                "photo": [],
+                "communication": {},
+                "managingOrganization": null,
+                "contact": [],
+                "link": [],
+                "active": true};
+        }
 
+        function updatePractitioner(resourceVersionId, resource) {
+            _prepArrays(resource);
+            var deferred = $q.defer();
+            fhirClient.updateResource(resourceVersionId, resource)
+                .then(function (results) {
+                    deferred.resolve(results);
+                }, function (outcome) {
+                    deferred.reject(outcome);
+                });
+            return deferred.promise;
+        }
+
+        function _addToCache(practitioner) {
+            var cachedPractitioners = searchResults.entry;
+            _.remove(cachedPractitioners,function (item) {
+                return item.$$hashKey !== hashKey;
+            }).then(function (reducedItems) {
+                    searchResults.entry = reducedItems;
+                    searchResults.totalResults = (searchResults.totalResults - 1);
+                    dataCache.addToCache(dataCacheKey, searchResults);
+                });
+            deferred.resolve();
+        }
+
+        function _prepArrays(resource) {
+            if (resource.address.length === 0) {
+                resource.address = null;
+            }
+            if (resource.identifier.length === 0) {
+                resource.identifier = null;
+            }
+            if (resource.contact.length === 0) {
+                resource.contact = null;
+            }
+            if (resource.telecom.length === 0) {
+                resource.telecom = null;
+            }
+            if (resource.photo.length === 0) {
+                resource.photo = null;
+            }
+            if (resource.communication.length === 0) {
+                resource.communication = null;
+            }
+            if (resource.link.length === 0) {
+                resource.link = null;
+            }
+            if (resource.maritalStatus.coding && resource.maritalStatus.coding.length === 0) {
+                resource.maritalStatus = null;
+            }
+            if (resource.gender.coding && resource.gender.coding.length === 0) {
+                resource.gender = null;
+            }
+            return $q.when(resource);
         }
     }
 })();

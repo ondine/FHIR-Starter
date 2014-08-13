@@ -83,13 +83,13 @@
                                 <tr>
                                     <td>Marital Status</td>
                                     <td>
-                                        {{vm.patient.maritalStatus.text}}
+                                        {{vm.patient.maritalStatus.coding[0].display}}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Multiple Birth</td>
                                     <td>
-                                        {{vm.patient.multipleBirth}}
+                                        {{vm.patient.multipleBirthBoolean}}
                                     </td>
                                 </tr>
                                 <tr>

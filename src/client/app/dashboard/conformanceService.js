@@ -23,9 +23,9 @@
                 deferred.resolve(cachedData);
             } else {
                 fhirClient.getResource(baseUrl + '/metadata')
-                    .then(function (data) {
-                        dataCache.addToCache('conformance', data);
-                        deferred.resolve(data);
+                    .then(function (results) {
+                        dataCache.addToCache('conformance', results.data);
+                        deferred.resolve(results.data);
                     }, function (outcome) {
                         deferred.reject(outcome);
                     });

@@ -14,7 +14,7 @@
             getAll: getAll,
             getFullName: getFullName,
             init: init,
-            mapViewToModel: mapViewToModel,
+            mapFromViewModel: mapFromViewModel,
             reset: reset
         }
 
@@ -80,26 +80,26 @@
             return humanNames;
         }
 
-        function mapViewToModel() {
+        function mapFromViewModel() {
             var model = [];
             _.forEach(humanNames, function (item) {
-                var humanName = {};
+                var mappedItem = {};
                 if (item.given) {
-                    humanName.given = item.given.split(' ');
+                    mappedItem.given = item.given.split(' ');
                 }
                 if (item.family) {
-                    humanName.family = item.family.split(' ');
+                    mappedItem.family = item.family.split(' ');
                 }
                 if (item.prefix) {
-                    humanName.prefix = item.prefix.split(' ');
+                    mappedItem.prefix = item.prefix.split(' ');
                 }
                 if (item.suffix) {
-                    humanName.suffix = item.suffix.split(' ');
+                    mappedItem.suffix = item.suffix.split(' ');
                 }
-                humanName.text = item.text;
-                humanName.period = item.period;
-                humanName.use = item.use;
-                humanNames.push(humanName);
+                mappedItem.text = item.text;
+                mappedItem.period = item.period;
+                mappedItem.use = item.use;
+                model.push(mappedItem);
             });
             return model;
         }

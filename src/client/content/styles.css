@@ -300,14 +300,6 @@ table th > a {
     font-weight: bold;
 }
 
-table thead th {
-    min-width: 80px;
-}
-
-table tbody td {
-    min-width: 80px;
-}
-
 .table-hover tbody tr:hover > td,
 .table-hover tbody tr:hover > th {
     cursor: pointer;

@@ -50,6 +50,8 @@
                 identifiers = items;
             } else {
                 identifiers = [];
+                var defaultId = {"use": "usual", "system": "urn:fhir-starter:id", "value": common.generateUUID(), "label": "Auto-generated FHIR Starter identifier"};
+                identifiers.push(defaultId);
             }
         }
 

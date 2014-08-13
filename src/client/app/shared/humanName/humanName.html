@@ -1,6 +1,6 @@
 <div data-ng-controller="humanName as vm">
-    <div class="form-group col-md-12 well">
-        <div class="col-md-2 control-label">Name</div>
+    <div class="form-group col-md-12">
+        <legend>Names</legend>
         <div class="controls col-md-12 col-md-offset-2">
             <data-ng-form name="humanNameEditForm" class="form-horizontal" data-ng-model="vm.humanName">
                 <div class="btn-group col-md-12" style="padding-bottom: 20px">
@@ -36,10 +36,10 @@
                 <div class="form-group col-md-10">
                     <label class="control-label" for="name-family">Family Name</label>&nbsp;&nbsp;
                     <input
-                           id="name-family"
-                           class="form-control"
-                           placeholder="Family name (often called 'Surname')"
-                           data-ng-model="vm.humanName.family">
+                            id="name-family"
+                            class="form-control"
+                            placeholder="Family name (often called 'Surname')"
+                            data-ng-model="vm.humanName.family">
                 </div>
                 <div class="form-group col-md-6">
                     <label class="control-label" for="name-suffix">Suffix</label>&nbsp;&nbsp;
@@ -48,22 +48,26 @@
                            placeholder="Parts that come after the name"
                            data-ng-model="vm.humanName.suffix">
                 </div>
-                <div collapse="vm.humanName.use !== ('old') && vm.humanName.use !== ('temp')" class="form-group col-md-12">
-                    <div class="col-md-12 control-label">Period</div>
-                    <div class="form-group col-md-6 col-md-offset-4">
-                        <label class="control-label" for="name-period-start">Start</label>&nbsp;&nbsp;
-                        <input type="date"
-                               id="name-period-start"
-                               class="form-control"
-                               tooltip="Start date of name"
-                               data-ng-model="vm.humanName.period.start">
-
-                        <label class="control-label" for="name-period-start">End</label>&nbsp;&nbsp;
-                        <input type="date"
-                               id="name-period-end"
-                               class="form-control"
-                               tooltip="Leave blank if current"
-                               data-ng-model="vm.humanName.period.end">
+                <div collapse="vm.humanName.use !== ('old') && vm.humanName.use !== ('temp')"
+                     class="form-group col-md-10">
+                    <legend>Period</legend>
+                    <div class="form-group col-md-12">
+                        <div class="col-md-6">
+                            <label class="control-label" for="name-period-start">Start</label>&nbsp;&nbsp;
+                            <input type="date"
+                                   id="name-period-start"
+                                   class="form-control"
+                                   tooltip="Start date of name"
+                                   data-ng-model="vm.humanName.period.start">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="control-label" for="name-period-start">End</label>&nbsp;&nbsp;
+                            <input type="date"
+                                   id="name-period-end"
+                                   class="form-control"
+                                   tooltip="Leave blank if current"
+                                   data-ng-model="vm.humanName.period.end">
+                        </div>
                     </div>
                 </div>
 
@@ -80,37 +84,46 @@
                 </div>
             </data-ng-form>
 
-            <div collapse="vm.humanNames.length === 0" class="col-md-10">
-                <hr/>
-                <table class="table small table-responsive pull-left">
-                    <thead>
-                    <th></th>
-                    <th>Prefix</th>
-                    <th>Given</th>
-                    <th>Family</th>
-                    <th>Suffix</th>
-                    <th>Period</th>
-                    <th>Use</th>
-                    </thead>
-                    <tr data-ng-repeat="name in vm.humanNames">
-                        <td>
-                            <button type="button" class="btn btn-info btn-xs" data-ng-click="vm.editListItem(name)">
-                                Edit
-                            </button>
-                        </td>
-                        <td>{{name.prefix}}</td>
-                        <td>{{name.given}}</td>
-                        <td>{{name.family}}</td>
-                        <td>{{name.suffix}}</td>
-                        <td>{{name.period.start | date: 'MMM`yy'}}-{{name.period.end ? (name.period.end | date: 'MMM`yy') : 'current' }}</td>
-                        <td>{{name.use}}</td>
-                        <td>
-                            <button type="button" class="btn btn-default btn-xs"
-                                    data-ng-click="vm.removeListItem(name)" tooltip="delete">X
-                            </button>
-                        </td>
-                    </tr>
-                </table>
+            <div collapse="vm.humanNames.length === 0" class="form-group col-md-12">
+                <form>
+                    <legend>List of Names</legend>
+                    <table class="table table-responsive">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Prefix</th>
+                            <th>Given</th>
+                            <th>Family</th>
+                            <th>Suffix</th>
+                            <th>Period</th>
+                            <th>Use</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr data-ng-repeat="name in vm.humanNames">
+                            <td>
+                                <button type="button" class="btn btn-info btn-xs" data-ng-click="vm.editListItem(name)">
+                                    Edit
+                                </button>
+                            </td>
+                            <td>{{name.prefix}}</td>
+                            <td>{{name.given}}</td>
+                            <td>{{name.family}}</td>
+                            <td>{{name.suffix}}</td>
+                            <td>{{name.period.start | date: 'MMM`yy'}}-{{name.period.end ? (name.period.end | date:
+                                'MMM`yy') :
+                                'current' }}
+                            </td>
+                            <td>{{name.use}}</td>
+                            <td>
+                                <button type="button" class="btn btn-default btn-xs"
+                                        data-ng-click="vm.removeListItem(name)" tooltip="delete">X
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </form>
             </div>
         </div>
     </div>

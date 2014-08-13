@@ -1,27 +1,30 @@
 ﻿<section class="mainbar" data-ng-controller="organizationDetail as vm">
     <section class="matter">
-        <div class="container">
-            <div class="row">
-                <div class="btn-group col-md-12">
-                    <button class="btn btn-info" data-ng-click="vm.goBack()"><i class="fa fa-hand-o-left"></i>Back
+        <div class="container-fluid">
+            <div>
+                <button class="btn btn-info" data-ng-click="vm.goBack()"><i class="fa fa-hand-o-left"></i>Back</button>
+                <button class="btn btn-info" data-ng-click="vm.cancel()" data-ng-disabled="!vm.canSave"><i
+                        class="fa fa-undo"></i>Cancel
+                </button>
+                <button class="btn btn-info" data-ng-click="vm.save()" data-ng-disabled="!vm.canSave"><i
+                        class="fa fa-save"></i>Save
+                </button>
+                <div class="pull-right" data-ng-hide="!vm.isEditing">
+                    <button class="btn btn-danger" data-ng-click="vm.delete()"><i
+                            class="fa fa-trash-o"></i>Delete
                     </button>
-                    <div class="btn-group pull-right" data-ng-hide="vm.title==='Add New Organization'">
-                        <button class="btn btn-danger" data-ng-click="vm.delete(vm.organization)"><i
-                                class="fa fa-trash-o"></i>Delete
-                        </button>
-                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="widget wlightblue">
-                    <div data-cc-widget-header title="{{vm.title}}"></div>
-                    <div class="widget-content user">
-                        <data-ng-form name="organizationEditForm" class="form-horizontal"
-                                      data-ng-model="vm.organization">
-                            <fieldset>
+            <div class="widget wlightblue">
+                <div data-cc-widget-header title="{{vm.title}}"></div>
+                <div class="widget-content user">
+                    <data-ng-form name="organizationEditForm" class="form-horizontal"
+                                  data-ng-model="vm.organization">
+                        <fieldset>
+                            <div class="form-group col-md-12">
                                 <div class="form-group col-md-12">
-                                    <div class="col-md-2 control-label">Name</div>
-                                    <div class="controls col-md-10 col-md-offset-2">
+                                    <legend>Name</legend>
+                                    <div class="controls col-md-12 col-md-offset-2">
                                         <div class="form-group col-md-8">
                                             <input required type="text" id="organization-name" class="form-control"
                                                    placeholder="The name associated with the organization"
@@ -40,79 +43,66 @@
                                         </select>
                                         </div>
                                     </div>
+                                </div>
+                                <div data-ng-include="'../../app/shared/address/addressTypeAhead.html'"></div>
 
-                                    <div data-ng-include="'../../app/shared/address/addressTypeAhead.html'"></div>
+                                <div data-ng-include="'../../app/shared/telecom/telecom.html'"></div>
 
-                                    <div data-ng-include="'../../app/shared/telecom/telecom.html'"></div>
+                                <div data-ng-include="'../../app/shared/contact/contact.html'"></div>
 
-                                    <div data-ng-include="'../../app/shared/contact/contact.html'"></div>
-
-                                    <div class="form-group col-md-12 well">
-                                        <div class="col-md-2 control-label">Affiliated Organization</div>
-                                        <div class="controls col-md-10 col-md-offset-2">
-                                            <div class="form-group col-md-8">
-                                                <input required
-                                                       type="text"
-                                                       id="organization-partOf"
-                                                       class="form-control"
-                                                       placeholder="Start typing and name will auto-complete"
-                                                       typeahead="item as item.display for item in vm.getOrganizationReference($viewValue) | filter:$viewValue"
-                                                       typeahead-loading="vm.loadingOrganizations"
-                                                       typeahead-wait-ms="300"
-                                                       typeahead-editable="false"
-                                                       typeahead-min-length="5"
-                                                       data-ng-model="vm.organization.partOf">
-                                            </div>
-                                            <div class="form-group col-md-10"
-                                                 data-ng-show="vm.organization.partOf.reference">
-                                                <a class="control-label" href="{{vm.organization.partOf.reference}}" target="_blank">Referenced Organization: {{vm.organization.partOf.display || "Name Not Specified" }}</a>
-                                            </div>
+                                <div class="form-group col-md-12">
+                                    <legend>Affiliated Organization</legend>
+                                    <div class="controls col-md-10 col-md-offset-2">
+                                        <div class="form-group col-md-8">
+                                            <input required
+                                                   type="text"
+                                                   id="organization-partOf"
+                                                   class="form-control"
+                                                   placeholder="Start typing and name will auto-complete"
+                                                   typeahead="item as item.display for item in vm.getOrganizationReference($viewValue) | filter:$viewValue"
+                                                   typeahead-loading="vm.loadingOrganizations"
+                                                   typeahead-wait-ms="300"
+                                                   typeahead-editable="false"
+                                                   typeahead-min-length="5"
+                                                   data-ng-model="vm.organization.partOf">
+                                        </div>
+                                        <div class="form-group col-md-10"
+                                             data-ng-show="vm.organization.partOf.reference">
+                                            <a class="control-label" href="{{vm.organization.partOf.reference}}"
+                                               target="_blank">Referenced Organization:
+                                                {{vm.organization.partOf.display || "Name Not Specified" }}</a>
                                         </div>
                                     </div>
-<!--
-                                    <div class="form-group col-md-12 well">
-                                        <div class="col-md-2 control-label">Locations</div>
-                                        <div class="controls col-md-10 col-md-offset-2">
-                                            <div class="form-group col-md-8">
-                                                <select class="form-control" id="organization-location"
-                                                        data-ng-model="vm.organization.location[0]">
-                                                    <option data-ng-repeat="org in vm.organizations"
-                                                            value="{{display}}"
-                                                            data-ng-selected="org.id===vm.organization.location[0].reference">
-                                                        {{org.name}}
-                                                    </option>
-                                                    <option value=""></option>
-                                                </select>
-                                                <button class="btn btn-info"
-                                                        data-ng-click="vm.addToList(vm.location)"><i
-                                                        class="fa fa-plus-square-o"></i>Add to Location List
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
--->
-                                    <div data-ng-include="'../../app/shared/identifier/identifier.html'"></div>
-
-                                    <div class="col-lg-12">
-                                        <div class="btn-group-large">
-                                            <button type="submit"
-                                                    class="btn btn-success"
-                                                    data-ng-click="vm.save()"
-                                                    data-ng-disabled="organizationEditForm.$pristine"
-                                                    tooltip="Deliver to FHIR server">
-                                                <i class="fa fa-cloud-upload"></i>Submit
-                                            </button>
-                                            <button class="btn btn-danger pull-right" data-ng-click="vm.reset()">Cancel
-                                            </button>
-
-                                        </div>
-                                    </div>
-                            </fieldset>
-                        </data-ng-form>
-                    </div>
+                                </div>
+                                <!--
+                                                                    <div class="form-group col-md-12 well">
+                                                                        <div class="col-md-2 control-label">Locations</div>
+                                                                        <div class="controls col-md-10 col-md-offset-2">
+                                                                            <div class="form-group col-md-8">
+                                                                                <select class="form-control" id="organization-location"
+                                                                                        data-ng-model="vm.organization.location[0]">
+                                                                                    <option data-ng-repeat="org in vm.organizations"
+                                                                                            value="{{display}}"
+                                                                                            data-ng-selected="org.id===vm.organization.location[0].reference">
+                                                                                        {{org.name}}
+                                                                                    </option>
+                                                                                    <option value=""></option>
+                                                                                </select>
+                                                                                <button class="btn btn-info"
+                                                                                        data-ng-click="vm.addToList(vm.location)"><i
+                                                                                        class="fa fa-plus-square-o"></i>Add to Location List
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                -->
+                                <div data-ng-include="'../../app/shared/identifier/identifier.html'"></div>
+                            </div>
+                        </fieldset>
+                    </data-ng-form>
                 </div>
             </div>
         </div>
-
+        </div>
     </section>
 </section>

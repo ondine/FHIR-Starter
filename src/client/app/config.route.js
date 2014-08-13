@@ -72,6 +72,14 @@
                 url: '/practitioner/:hashKey',
                 config: {
                     title: 'practitioner',
+                    templateUrl: '/app/administration/practitioner/practitionerEdit.html',
+                    settings: { }
+                }
+            },
+            {
+                url: '/practitioner/view/:hashKey',
+                config: {
+                    title: 'practitioner',
                     templateUrl: '/app/administration/practitioner/practitionerDetail.html',
                     settings: { }
                 }

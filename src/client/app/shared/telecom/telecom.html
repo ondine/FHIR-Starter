@@ -1,6 +1,6 @@
 <div data-ng-controller="telecom as vm">
-    <div class="form-group col-md-12 well">
-        <div class="col-md-2 control-label">Communication</div>
+    <div class="form-group col-md-12">
+        <legend>Telecommunications</legend>
         <div class="controls col-md-12 col-md-offset-2">
             <data-ng-form name="telecomEditForm" class="form-horizontal" data-ng-model="vm.telecom">
                 <div class="btn-group col-md-10" style="padding-bottom: 20px">
@@ -20,47 +20,56 @@
 
                 <div class="form-group col-md-6">
                     <label class="control-label">
-                        <span class="fa fa-envelope"></span></label>&nbsp;&nbsp;<input class="form-control"
+                        <span class="fa fa-envelope"></span></label>&nbsp;&nbsp;<input type="email"
+                                                                                       class="form-control"
                                                                                        placeholder="Email"
                                                                                        data-ng-model="vm.telecom.email"/>
                 </div>
 
                 <div class="form-group col-md-5">
                     <label class="control-label">
-                        <span class="fa fa-phone"></span></label>&nbsp;&nbsp;<input class="form-control"
+                        <span class="fa fa-phone"></span></label>&nbsp;&nbsp;<input type="tel"
+                                                                                    class="form-control"
                                                                                     placeholder="Telephone"
                                                                                     data-ng-model="vm.telecom.phone"/>
                 </div>
                 <div class="form-group col-md-6">
                     <label class="control-label">
-                        <span class="fa fa-chain"></span></label>&nbsp;&nbsp;<input class="form-control"
+                        <span class="fa fa-chain"></span></label>&nbsp;&nbsp;<input type="url"
+                                                                                    class="form-control"
                                                                                     placeholder="Web Url"
                                                                                     data-ng-model="vm.telecom.url"/>
                 </div>
                 <div class="form-group col-md-5">
                     <label class="control-label">
-                        <span class="fa fa-fax"></span></label>&nbsp;&nbsp;<input class="form-control"
+                        <span class="fa fa-fax"></span></label>&nbsp;&nbsp;<input type="tel"
+                                                                                  class="form-control"
                                                                                   placeholder="Fax"
                                                                                   data-ng-model="vm.telecom.fax"/>
                 </div>
 
                 <div collapse="vm.telecom.use !== 'old'" class="form-group col-md-10">
-                    <div class="col-md-10 control-label">Period</div>
-                    <div class="form-group col-md-6 col-md-offset-4">
-                        <label class="control-label" for="telecom-period-start">Start</label>&nbsp;&nbsp;
-                        <input type="date"
-                               id="telecom-period-start"
-                               class="form-control"
-                               tooltip="Start date of telecom item"
-                               data-ng-model="vm.telecom.period.start">
-
-                        <label class="control-label" for="telecom-period-start">End</label>&nbsp;&nbsp;
-                        <input type="date"
-                               id="telecom-period-end"
-                               class="form-control"
-                               tooltip="End date - leave blank if current"
-                               data-ng-model="vm.telecom.period.end">
-                    </div>
+                    <form>
+                        <legend>Period</legend>
+                        <div class="form-group col-md-12">
+                            <div class="col-md-6">
+                                <label class="control-label" for="telecom-period-start">Start</label>&nbsp;&nbsp;
+                                <input type="date"
+                                       id="telecom-period-start"
+                                       class="form-control"
+                                       tooltip="Start date of telecom item"
+                                       data-ng-model="vm.telecom.period.start">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="control-label" for="telecom-period-start">End</label>&nbsp;&nbsp;
+                                <input type="date"
+                                       id="telecom-period-end"
+                                       class="form-control"
+                                       tooltip="End date - leave blank if current"
+                                       data-ng-model="vm.telecom.period.end">
+                            </div>
+                        </div>
+                    </form>
                 </div>
 
                 <div class="btn-group col-md-10">
@@ -74,42 +83,48 @@
                         Reset
                     </button>
                 </div>
-
-
             </data-ng-form>
 
-            <div collapse="vm.telecoms.length === 0" class="col-md-10">
-                <hr/>
-                <table class="table-hover small table-responsive pull-left">
-                    <thead>
-                    <th></th>
-                    <th>Phone</th>
-                    <th>Fax</th>
-                    <th>Email</th>
-                    <th>Web</th>
-                    <th>Period</th>
-                    <th>Use</th>
-                    <th></th>
-                    </thead>
-                    <tr data-ng-repeat="t in vm.telecoms" data-ng-click="vm.editListItem(t)">
-                        <td>
-                            <button type="button" class="btn btn-info btn-xs" data-ng-click="vm.editListItem(t)">
-                                Edit
-                            </button>
-                        </td>
-                        <td>{{t.phone}}</td>
-                        <td>{{t.fax}}</td>
-                        <td>{{t.email}}</td>
-                        <td>{{t.url}}</td>
-                        <td>{{t.period.start | date: 'MMM`yy'}}-{{t.period.end ? (t.period.end | date: 'MMM`yy') : 'current' }}</td>
-                        <td>{{t.use}}</td>
-                        <th>
-                            <button type="button" class="btn btn-default btn-xs"
-                                    data-ng-click="vm.removeListItem(t)" tooltip="delete">X
-                            </button>
-                        </th>
-                    </tr>
-                </table>
+            <div collapse="vm.telecoms.length === 0" class="form-group col-md-12">
+                <form>
+                    <legend>Telecommunications List</legend>
+                    <table class="table table-responsive">
+                        <thead>
+                        <tr>
+                        <th></th>
+                        <th>Phone</th>
+                        <th>Fax</th>
+                        <th>Email</th>
+                        <th>Web</th>
+                        <th>Period</th>
+                        <th>Use</th>
+                        <th></th>
+                        </thead>
+                        </tr>
+                        <tbody>
+                        <tr data-ng-repeat="t in vm.telecoms" data-ng-click="vm.editListItem(t)">
+                            <td>
+                                <button type="button" class="btn btn-info btn-xs" data-ng-click="vm.editListItem(t)">
+                                    Edit
+                                </button>
+                            </td>
+                            <td>{{t.phone}}</td>
+                            <td>{{t.fax}}</td>
+                            <td>{{t.email}}</td>
+                            <td>{{t.url}}</td>
+                            <td>{{t.period.start | date: 'MMM`yy'}}-{{t.period.end ? (t.period.end | date: 'MMM`yy') :
+                                'current' }}
+                            </td>
+                            <td>{{t.use}}</td>
+                            <th>
+                                <button type="button" class="btn btn-default btn-xs"
+                                        data-ng-click="vm.removeListItem(t)" tooltip="delete">X
+                                </button>
+                            </th>
+                        </tr>
+                        </tbody>
+                    </table>
+                </form>
             </div>
         </div>
     </div>

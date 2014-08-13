@@ -21,18 +21,21 @@
                 }
             }
 
-            if (resultString.length > len && resultString.indexOf(' ')){
+            if (resultString.length > len && resultString.indexOf(' ')) {
                 resultString = (resultString.substring(0, len)) + ' ...';
             }
             return resultString;
         };
     });
 
-    app.filter('fullName', function() {
-        return function(humanName) {
-            if (humanName && angular.isArray(humanName)){
+    app.filter('fullName', function () {
+        return function (humanName) {
+            if (humanName && angular.isArray(humanName)) {
                 return buildName(humanName[0].given) + ' ' + buildName(humanName[0].family);
-            } else {
+            } else if (humanName && humanName.given) {
+                return buildName(humanName.given) + ' ' + buildName(humanName.family);
+            }
+            else {
                 return 'Name Unknown';
             }
 

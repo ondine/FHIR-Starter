@@ -22,6 +22,7 @@
         vm.getOrganizationReference = getOrganizationReference;
         vm.getTitle = getTitle;
         vm.goBack = goBack;
+        vm.isBusy = false;
         vm.isSaving = false;
         vm.isEditing = true;
         vm.loadingOrganizations = false;
@@ -133,7 +134,12 @@
             function intitializeRelatedData(data) {
                 vm.patient = data;
                 humanNameService.init(vm.patient.name);
-                demographicsService.init(vm.patient.birthDate, vm.patient.multipleBirth, vm.patient.gender, vm.patient.maritalStatus);
+                demographicsService.init(vm.patient.gender, vm.patient.maritalStatus);
+                demographicsService.setBirthDate(vm.patient.birthDate);
+                demographicsService.setBirthOrder(vm.patient.multipleBirthInteger);
+                demographicsService.setMultipleBirth(vm.patient.multipleBirthBoolean);
+                demographicsService.setDeceased(vm.patient.deceasedBoolean);
+                demographicsService.setDeceasedDate(vm.patient.deceasedDateTime);
                 attachmentService.init(vm.patient.photo, "Photos");
                 identifierService.init(vm.patient.identifier);
                 addressService.init(vm.patient.address, true);
@@ -169,13 +175,21 @@
 
         function save() {
             var patient = patientService.initializeNewPatient();
+            if (humanNameService.getAll().length === 0) {
+                logError("Patient must have at least one name entry.");
+                return;
+            }
+            toggleSpinner(true);
             patient.name = humanNameService.mapFromViewModel();
             patient.photo = attachmentService.getAll();
 
             patient.birthDate = demographicsService.getBirthDate();
             patient.gender = demographicsService.getGender();
             patient.maritalStatus = demographicsService.getMaritalStatus();
-            patient.multiplBirth = demographicsService.getMultipleBirth();
+            patient.multipleBirthBoolean = demographicsService.getMultipleBirth();
+            patient.multipleBirthInteger =  demographicsService.getBirthOrder();
+            patient.deceasedBoolean = demographicsService.getDeceased();
+            patient.deceasedDateTime = demographicsService.getDeceasedDate();
 
             patient.address = addressService.mapFromViewModel();
             patient.telecom = telecomService.mapFromViewModel();
@@ -189,12 +203,14 @@
                     .then(processResult,
                     function (error) {
                         logError("Update failed: " + error.outcome.details);
+                        toggleSpinner(false);
                     });
             } else {
                 patientService.addPatient(patient)
                     .then(processResult,
                     function (error) {
                         logError("Add failed: " + error.outcome.details);
+                        toggleSpinner(false);
                     });
             }
 
@@ -209,7 +225,12 @@
                 vm.patient.fullName = humanNameService.getFullName();
                 vm.isEditing = true;
                 vm.title = getTitle();
+                toggleSpinner(false);
             }
+        }
+
+        function toggleSpinner(on) {
+            vm.isBusy = on;
         }
     }
 })();

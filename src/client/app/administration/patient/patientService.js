@@ -3,16 +3,12 @@
 
     var serviceId = 'patientService';
 
-    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', patientService]);
+    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', 'fhirServers', patientService]);
 
-    function patientService(common, dataCache, fhirClient) {
+    function patientService(common, dataCache, fhirClient, fhirServers) {
         var dataCacheKey = 'localPatients';
         var linksCacheKey = 'linksPatients';
         var itemCacheKey = 'contextPatient';
-        var getLogFn = common.logger.getLogFn;
-        var log = getLogFn(serviceId);
-        var logError = getLogFn(serviceId, 'error');
-        var logSuccess = getLogFn(serviceId, 'success');
         var $q = common.$q;
 
         var service = {
@@ -30,7 +26,19 @@
         return service;
 
         function addPatient(resource) {
-
+            _prepArrays(resource);
+            var deferred = $q.defer();
+            fhirServers.getActiveServer()
+                .then(function (server) {
+                    var url = server.baseUrl + "/Patient";
+                    fhirClient.addResource(url, resource)
+                        .then(function (results) {
+                            deferred.resolve(results);
+                        }, function (outcome) {
+                            deferred.reject(outcome);
+                        });
+                });
+            return deferred.promise
         }
 
         function deleteCachedPatient(hashKey, resourceId) {
@@ -44,39 +52,26 @@
                 .then(function () {
                     deferred.resolve()
                 });
-
             return deferred.promise;
 
             function removeFromCache(searchResults) {
-                var removed = false;
                 var cachedPatients = searchResults.entry;
-                for (var i = 0, len = cachedPatients.length; i < len; i++) {
-                    if (cachedPatients[i].$$hashKey === hashKey) {
-                        cachedPatients.splice(i, 1);
-                        searchResults.entry = cachedPatients;
-                        searchResults.totalResults = (searchResults.totalResults - 1);
-                        dataCache.addToCache(dataCacheKey, searchResults);
-                        removed = true;
-                        break;
-                    }
-                }
-                if (removed) {
-                    deferred.resolve();
-                } else {
-                    logError('Patient not found in cache: ' + hashKey);
-                    deferred.resolve();
-                }
+                searchResults.entry = _.remove(cachedPatients, function (item) {
+                    return item.$$hashKey !== hashKey;
+                });
+                searchResults.totalResults = (searchResults.totalResults - 1);
+                dataCache.addToCache(dataCacheKey, searchResults);
+
+                deferred.resolve();
             }
         }
 
         function deletePatient(resourceId) {
             var deferred = $q.defer();
             fhirClient.deleteResource(resourceId)
-                .then(function (data) {
-                    logSuccess(resourceId + ' deleted' + data);
-                    deferred.resolve();
+                .then(function (results) {
+                    deferred.resolve(results);
                 }, function (outcome) {
-                    logError('Failed to delete' + resourceId + outcome);
                     deferred.reject(outcome);
                 });
             return deferred.promise;
@@ -163,12 +158,11 @@
         function initializeNewPatient() {
             return {
                 "resourceType": "Patient",
-                "identifier": [],
-                "name":  [],
-                "gender": {},
+                "name": [],
+                "gender": undefined,
                 "birthDate": null,
-                "maritalStatus": {},
-                "multipleBirth": false,
+                "maritalStatus": undefined,
+                //              "multipleBirth": false,
                 "telecom": [],
                 "address": [],
                 "photo": [],
@@ -179,7 +173,59 @@
                 "active": true};
         }
 
-        function updatePatient(resourceId, resource) {
+        function updatePatient(resourceVersionId, resource) {
+            _prepArrays(resource);
+            var deferred = $q.defer();
+            fhirClient.updateResource(resourceVersionId, resource)
+                .then(function (results) {
+                    deferred.resolve(results);
+                }, function (outcome) {
+                    deferred.reject(outcome);
+                });
+            return deferred.promise;
+        }
+
+        function _addToCache(patient) {
+            var cachedPatients = searchResults.entry;
+            _.remove(cachedPatients,function (item) {
+                return item.$$hashKey !== hashKey;
+            }).then(function (reducedItems) {
+                    searchResults.entry = reducedItems;
+                    searchResults.totalResults = (searchResults.totalResults - 1);
+                    dataCache.addToCache(dataCacheKey, searchResults);
+                });
+            deferred.resolve();
+        }
+
+        function _prepArrays(resource) {
+            if (resource.address.length === 0) {
+                resource.address = null;
+            }
+            if (resource.identifier.length === 0) {
+                resource.identifier = null;
+            }
+            if (resource.contact.length === 0) {
+                resource.contact = null;
+            }
+            if (resource.telecom.length === 0) {
+                resource.telecom = null;
+            }
+            if (resource.photo.length === 0) {
+                resource.photo = null;
+            }
+            if (resource.communication.length === 0) {
+                resource.communication = null;
+            }
+            if (resource.link.length === 0) {
+                resource.link = null;
+            }
+            if (resource.maritalStatus.coding && resource.maritalStatus.coding.length === 0) {
+                resource.maritalStatus = null;
+            }
+            if (resource.gender.coding && resource.gender.coding.length === 0) {
+                resource.gender = null;
+            }
+            return $q.when(resource);
         }
     }
 })();

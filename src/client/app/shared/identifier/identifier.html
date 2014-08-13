@@ -1,7 +1,7 @@
 <div data-ng-controller="identifier as vm">
-    <div class="form-group col-md-12 well">
-        <div class="col-md-2 control-label">Identifier</div>
-        <div class="controls col-md-10 col-md-offset-2">
+    <div class="form-group col-md-12">
+        <legend>Identifiers</legend>
+        <div class="controls col-md-12 col-md-offset-2">
             <data-ng-form name="identifierEditForm" class="form-horizontal" data-ng-model="vm.identifier">
                 <div class="btn-group col-md-7" style="padding-bottom: 20px">
                     <label class="btn btn-default btn-sm" data-ng-model="vm.identifier.use" btn-radio="'usual'"><i
@@ -20,15 +20,16 @@
                                                                                   data-ng-model="vm.identifier.system">
                 </div>
                 <div class="form-group col-md-10">
-                        <label class="control-label">Value</label>&nbsp;&nbsp;
-                        <input
-                                type="text"
-                                required
-                                id="identifier-value"
-                                class="form-control"
-                                placeholder="The value that is unique"
-                                data-ng-model="vm.identifier.value">
-                        <label class="btn btn-default btn-mini" data-ng-click="vm.identifier.value=vm.genId()"><i class="fa fa-cog"></i>New</label>
+                    <label class="control-label">Value</label>&nbsp;&nbsp;
+                    <input
+                            type="text"
+                            required
+                            id="identifier-value"
+                            class="form-control"
+                            placeholder="The value that is unique"
+                            data-ng-model="vm.identifier.value">
+                    <label class="btn btn-default btn-mini" data-ng-click="vm.identifier.value=vm.genId()"><i
+                            class="fa fa-cog"></i>New</label>
                 </div>
                 <div class="form-group col-md-9">
                     <label class="control-label">Description</label>&nbsp;&nbsp;<input
@@ -43,48 +44,57 @@
                                                                                     placeholder="Organization that issued the id"
                                                                                     data-ng-model="vm.identifier.assigner">
                 </div>
-                <div class="btn-group col-md-12">
+                <div class="btn-group col-md-10">
                     <button type="submit" data-ng-disabled="identifierEditForm.$invalid"
                             class="btn btn-info"
                             data-ng-click="vm.addToList(identifierEditForm, vm.identifier)"><i
                             class="fa fa-plus-square-o"></i>Save to List
                     </button>
-                    <button type="button" class="btn btn-info pull-right" data-ng-click="vm.reset(identifierEditForm)"><i
-                            class="fa fa-refresh"></i>
+                    <button type="button" class="btn btn-info pull-right" data-ng-click="vm.reset(identifierEditForm)">
+                        <i
+                                class="fa fa-refresh"></i>
                         Reset
                     </button>
                 </div>
             </data-ng-form>
 
-            <div collapse="vm.identifiers.length === 0" class="col-md-10">
-                <hr/>
-                <table class="table small table-responsive pull-left">
-                    <thead>
-                    <th></th>
-                    <th>System</th>
-                    <th>Value</th>
-                    <th>Description</th>
-                    <th>Assigner</th>
-                    <th>Use</th>
-                    </thead>
-                    <tr data-ng-repeat="id in vm.identifiers">
-                        <td>
-                            <button type="button" class="btn btn-info btn-xs" data-ng-click="vm.editListItem(id)">
-                                Edit
-                            </button>
-                        </td>
-                        <td>{{id.system}}</td>
-                        <td>{{id.value}}</td>
-                        <td>{{id.label}}</td>
-                        <td>{{id.assigner}}</td>
-                        <td>{{id.use}}</td>
-                        <td>
-                            <button type="button" class="btn btn-default btn-xs"
-                                    data-ng-click="vm.removeListItem(id)" tooltip="delete">X
-                            </button>
-                        </td>
-                    </tr>
-                </table>
+            <div collapse="vm.identifiers.length === 0" class="col-md-12">
+                <form>
+                    <legend>Identifier List</legend>
+                    <table class="table table-responsive">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>System</th>
+                            <th>Value</th>
+                            <th>Description</th>
+                            <th>Assigner</th>
+                            <th>Use</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr data-ng-repeat="id in vm.identifiers">
+                            <td>
+                                <button type="button" class="btn btn-info btn-xs"
+                                        data-ng-click="vm.editListItem(id)">
+                                    Edit
+                                </button>
+                            </td>
+                            <td>{{id.system}}</td>
+                            <td>{{id.value}}</td>
+                            <td>{{id.label}}</td>
+                            <td>{{id.assigner}}</td>
+                            <td>{{id.use}}</td>
+                            <td>
+                                <button type="button" class="btn btn-default btn-xs"
+                                        data-ng-click="vm.removeListItem(id)" tooltip="delete">X
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </form>
             </div>
         </div>
     </div>

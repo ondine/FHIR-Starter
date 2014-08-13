@@ -7,7 +7,8 @@
 
     function dashboard(common, conformanceService, fhirServers) {
         var getLogFn = common.logger.getLogFn;
-        var log = getLogFn(controllerId);
+        var logError = getLogFn(controllerId, "error");
+        var logSuccess = getLogFn(controllerId, "success");
         var vm = this;
 
         vm.activeServer = null;
@@ -36,10 +37,9 @@
             conformanceService.clearCache();
             fhirServers.getServerById(id)
                 .then(function (selectedServer) {
-                    log('Updated active server to ' + selectedServer.name);
                     return vm.activeServer = selectedServer;
                 }, function (error) {
-                    log('Error ' + error);
+                    logError('Error ' + error);
                     toggleSpinner(false);
                 })
                 .then(setActiveServer)
@@ -53,8 +53,10 @@
             if (server) {
                 conformanceService.getConformance(server.baseUrl)
                     .then(function (conformance) {
-                        log('Loaded conformance statement for ' + vm.activeServer.name);
+                        logSuccess('Loaded conformance statement for ' + vm.activeServer.name);
                         return vm.conformance = conformance;
+                    }, function(error) {
+                        logError(error);
                     });
             }
         }

@@ -10,11 +10,17 @@
 
         vm.demographics = {
             "birthDate": null,
+            "birthOrder" : null,
+            "deceased": false,
+            "deceasedDate": null,
             "gender": null,
             "maritalStatus": null,
             "multipleBirth": false
         };
         vm.updateBirthDate = updateBirthDate;
+        vm.updateBirthOrder = updateBirthOrder;
+        vm.updateDeceased = updateDeceased;
+        vm.updateDeceasedDate = updateDeceasedDate;
         vm.updateGender = updateGender;
         vm.updateMaritalStatus = updateMaritalStatus;
         vm.updateMultipleBirth = updateMultipleBirth;
@@ -37,6 +43,9 @@
 
         function initData() {
             vm.demographics.birthDate = demographicsService.getBirthDate();
+            vm.demographics.birthOrder = demographicsService.getBirthOrder();
+            vm.demographics.deceased = demographicsService.getDeceased();
+            vm.demographics.deceasedDate = demographicsService.getDeceasedDate();
             vm.demographics.gender = demographicsService.getGender();
             vm.demographics.maritalStatus = demographicsService.getMaritalStatus();
             vm.demographics.multipleBirth = demographicsService.getMultipleBirth();
@@ -44,6 +53,21 @@
 
         function updateBirthDate() {
             demographicsService.setBirthDate(vm.demographics.birthDate);
+        }
+
+
+        function updateBirthOrder() {
+            demographicsService.setBirthOrder(vm.demographics.birthOrder);
+        }
+
+
+        function updateDeceased() {
+            demographicsService.setDeceased(vm.demographics.deceased);
+        }
+
+
+        function updateDeceasedDate() {
+            demographicsService.setDeceasedDate(vm.demographics.deceasedDate);
         }
 
         function updateGender() {

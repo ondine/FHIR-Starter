@@ -7,10 +7,10 @@
         ['$location', 'common', 'config', 'fhirServers', 'practitionerService', practitioners]);
 
     function practitioners($location, common, config, fhirServers, practitionerService) {
+        var vm = this;
         var getLogFn = common.logger.getLogFn;
         var keyCodes = config.keyCodes;
         var log = getLogFn(controllerId);
-        var vm = this;
 
         vm.activeServer = null;
         vm.busyMessage = "Contacting remote server ...";
@@ -24,8 +24,8 @@
         vm.paging = {
             currentPage: 1,
             links: null,
-            maxPagesToShow: 5,
-            pageSize: 15,
+            maxPagesToShow: 10,
+            pageSize: 30,
             totalResults: 0
         };
         vm.refresh = refresh;
@@ -43,9 +43,11 @@
         activate();
 
         function activate() {
-            common.activateController([getActiveServer()], controllerId)
+            common.activateController([getActiveServer(), getCachedPractitioners()], controllerId)
                 .then(function () {
                     // nothing to do
+                }, function (error) {
+                    log('Error ' + error);
                 });
         }
 
@@ -60,13 +62,42 @@
                 });
         }
 
+        function getCachedPractitioners() {
+            practitionerService.getCachedSearchResults()
+                .then(function (data) {
+                    log('Returned ' + (angular.isArray(data.entry) ? data.entry.length : 0) + ' Practitioners from cache');
+                    return data;
+                }, function (error) {
+                    // proceed
+                })
+                .then(processSearchResults);
+        }
+
         function getPractitionersFilteredCount() {
             // TODO: filter results based on doB or address, etc.
         }
 
-         function goToPractitioner(practitioner) {
+        function fetchLinkedPage(url) {
+            if (url.length > 0) {
+                toggleSpinner(true);
+                practitionerService.getLink(url)
+                    .then(function (data) {
+                        log('Returned ' + (angular.isArray(data.entry) ? data.entry.length : 0) + ' Practitioners from ' + vm.activeServer.name, true);
+                        return data;
+                    }, function (error) {
+                        log('Error ' + error);
+                        toggleSpinner(false);
+                    })
+                    .then(processSearchResults)
+                    .then(function () {
+                        toggleSpinner(false);
+                    });
+            }
+        }
+
+        function goToPractitioner(practitioner) {
             if (practitioner && practitioner.$$hashKey) {
-                $location.path('/practitioner/' + practitioner.$$hashKey);
+                $location.path('/practitioner/view/' + practitioner.$$hashKey);
             }
         }
 
@@ -82,9 +113,11 @@
         }
 
         function processSearchResults(searchResults) {
-            vm.practitioners = searchResults.entry;
-            vm.paging.links = searchResults.link;
-            vm.paging.totalResults = searchResults.totalResults;
+            if (searchResults) {
+                vm.practitioners = (searchResults.entry || []);
+                vm.paging.links = (searchResults.link || []);
+                vm.paging.totalResults = (searchResults.totalResults || 0);
+            }
         }
 
         function refresh() {
@@ -108,9 +141,6 @@
                         log('Returned ' + (angular.isArray(data.entry) ? data.entry.length : 0) + ' Practitioners from ' + vm.activeServer.name, true);
                         return data;
                     }, function (error) {
-                        log('Error ' + error);
-                        toggleSpinner(false);
-                    }, function(error) {
                         log('Error ' + error);
                         toggleSpinner(false);
                     })
