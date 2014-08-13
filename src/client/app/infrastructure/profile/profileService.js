@@ -6,24 +6,23 @@
     angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', profileService]);
 
     function profileService(common, dataCache, fhirClient) {
-        var getLogFn = common.logger.getLogFn;
         var dataCacheKey = 'localProfiles';
         var linksCacheKey = 'linksProfiles';
         var isLoaded = false;
-        var log = getLogFn(serviceId);
-        var logError = getLogFn(serviceId, 'error');
-        var logSuccess = getLogFn(serviceId, 'success');
+        var _isFetching = false;
         var $q = common.$q;
 
 
         var service = {
             addProfile: addProfile,
+            clearCache: clearCache,
             deleteProfile: deleteProfile,
             getCachedProfile: getCachedProfile,
             getFilteredCount: getFilteredCount,
             getRemoteProfile: getRemoteProfile,
             getProfilesCount: getProfilesCount,
             getProfiles: getProfiles,
+            isFetching: isFetching,
             updateProfile: updateProfile
         };
 
@@ -34,8 +33,8 @@
             var id = common.generateUUID();
 
             fhirClient.addResource(baseUrl + '/Profile/' + id)
-                .then(function (data) {
-                    deferred.resolve(data);
+                .then(function (results) {
+                    deferred.resolve(results);
                 },
                 function (outcome) {
                     deferred.reject(outcome);
@@ -43,11 +42,15 @@
             return deferred.promise;
         }
 
+        function clearCache() {
+            dataCache.addToCache(dataCacheKey, null);
+        }
+
         function deleteProfile(resourceId) {
             var deferred = $q.defer();
             fhirClient.deleteResource(resourceId)
-                .then(function (data) {
-                    deferred.resolve(data);
+                .then(function (results) {
+                    deferred.resolve(results);
                 },
                 function (outcome) {
                     deferred.reject(outcome);
@@ -72,8 +75,8 @@
         function getRemoteProfile(resourceId) {
             var deferred = $q.defer();
             fhirClient.getResource(resourceId)
-                .then(function (data) {
-                    deferred.resolve(data);
+                .then(function (results) {
+                    deferred.resolve(results);
                 },
                 function (outcome) {
                     deferred.reject(outcome);
@@ -126,7 +129,8 @@
             if (_areProfilesLoaded() && !forceRemote) {
                 _getAllLocal().then(getByPage);
             } else {
-                fhirClient.getResource(baseUrl + '/Profile/_search?_count=500')
+                _isFetching = true;
+                fhirClient.getResource(baseUrl + '/Profile?_count=200')
                     .then(querySucceeded,
                     function (outcome) {
                         deferred.reject(outcome);
@@ -157,14 +161,18 @@
                 deferred.resolve(pagedProfiles);
             }
 
-            function querySucceeded(data) {
+            function querySucceeded(results) {
                 _areProfilesLoaded(true);
-                log('Retrieved ' + data.entry.length + ' of ' + data.totalResults + ' available [Profiles] from remote FHIR server', data.entry.length)
-                dataCache.addToCache(dataCacheKey, data.entry);
-                return data.entry;
+                dataCache.addToCache(dataCacheKey, results.data);
+                _isFetching = false;
+                return results.data.entry;
             }
 
             return deferred.promise;
+        }
+
+        function isFetching() {
+            return _isFetching;
         }
 
         function updateProfile(resourceId, resource) {
@@ -182,7 +190,7 @@
 
         function _getAllLocal() {
             var cachedProfiles = dataCache.readFromCache(dataCacheKey);
-            return $q.when(cachedProfiles);
+            return $q.when(cachedProfiles.entry);
         }
 
         function _areProfilesLoaded(value) {

@@ -15,6 +15,7 @@
 
         var service = {
             addOrganization: addOrganization,
+            clearCache: clearCache,
             deleteCachedOrganization: deleteCachedOrganization,
             deleteOrganization: deleteOrganization,
             getCachedOrganization: getCachedOrganization,
@@ -45,6 +46,10 @@
                         });
                 });
             return deferred.promise
+        }
+
+        function clearCache() {
+            dataCache.addToCache(dataCacheKey, null);
         }
 
         function deleteCachedOrganization(hashKey, resourceId) {

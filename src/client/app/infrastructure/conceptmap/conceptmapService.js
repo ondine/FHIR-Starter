@@ -6,13 +6,10 @@
     angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', conceptmapService]);
 
     function conceptmapService(common, dataCache, fhirClient) {
-        var getLogFn = common.logger.getLogFn;
+
         var dataCacheKey = 'localConceptmaps';
         var linksCacheKey = 'linksConceptmaps';
         var isLoaded = false;
-        var log = getLogFn(serviceId);
-        var logError = getLogFn(serviceId, 'error');
-        var logSuccess = getLogFn(serviceId, 'success');
         var $q = common.$q;
 
 
@@ -34,8 +31,8 @@
             var id = common.generateUUID();
 
             fhirClient.addResource(baseUrl + '/Conceptmap/' + id)
-                .then(function (data) {
-                    deferred.resolve(data);
+                .then(function (results) {
+                    deferred.resolve(results);
                 },
                 function (outcome) {
                     deferred.reject(outcome);
@@ -46,8 +43,8 @@
         function deleteConceptmap(resourceId) {
             var deferred = $q.defer();
             fhirClient.deleteResource(resourceId)
-                .then(function (data) {
-                    deferred.resolve(data);
+                .then(function (results) {
+                    deferred.resolve(results);
                 },
                 function (outcome) {
                     deferred.reject(outcome);
@@ -126,7 +123,7 @@
             if (_areConceptmapsLoaded() && !forceRemote) {
                 _getAllLocal().then(getByPage);
             } else {
-                fhirClient.getResource(baseUrl + '/ConceptMap/_search?_count=500')
+                fhirClient.getResource(baseUrl + '/ConceptMap?_count=200')
                     .then(querySucceeded,
                     function (outcome) {
                         deferred.reject(outcome);
@@ -157,11 +154,10 @@
                 deferred.resolve(pagedConceptmaps);
             }
 
-            function querySucceeded(data) {
+            function querySucceeded(results) {
                 _areConceptmapsLoaded(true);
-                log('Retrieved ' + data.entry.length + ' of ' + data.totalResults + ' available [Conceptmaps] from remote FHIR server', data.entry.length)
-                dataCache.addToCache(dataCacheKey, data.entry);
-                return data.entry;
+                dataCache.addToCache(dataCacheKey, results.data);
+                return results.data.entry;
             }
 
             return deferred.promise;
@@ -171,8 +167,8 @@
             var deferred = $q.defer();
 
             fhirClient.addResource(resourceId, resource)
-                .then(function (data) {
-                    deferred.resolve(data);
+                .then(function (results) {
+                    deferred.resolve(results);
                 },
                 function (outcome) {
                     deferred.reject(outcome);
@@ -182,7 +178,7 @@
 
         function _getAllLocal() {
             var cachedConceptmaps = dataCache.readFromCache(dataCacheKey);
-            return $q.when(cachedConceptmaps);
+            return $q.when(cachedConceptmaps.entry);
         }
 
         function _areConceptmapsLoaded(value) {

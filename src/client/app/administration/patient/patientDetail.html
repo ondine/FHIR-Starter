@@ -38,7 +38,6 @@
 
                                     </td>
                                 </tr>
-
                                 <tr>
                                     <td>Gender</td>
                                     <td>
@@ -55,7 +54,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Communication</td>
+                                    <td>Telecommunication</td>
                                     <td>
                                         <p class="small" data-ng-repeat="t in vm.patient.telecom">
                                             <strong>{{t.use}} {{t.system}}</strong>: {{t.value}}
@@ -81,6 +80,12 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td>Primary Language</td>
+                                    <td>
+                                        {{vm.patient.communication.coding[0].display}}
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td>Marital Status</td>
                                     <td>
                                         {{vm.patient.maritalStatus.coding[0].display}}
@@ -103,17 +108,21 @@
                                     <td>
                                         <table class="table table-striped table-hover small">
                                             <thead>
-                                            <th>System</th>
-                                            <th>Value</th>
-                                            <th>Label</th>
-                                            <th>Use</th>
+                                            <tr>
+                                                <th>System</th>
+                                                <th>Value</th>
+                                                <th>Label</th>
+                                                <th>Use</th>
+                                            </tr>
                                             </thead>
+                                            <tbody>
                                             <tr data-ng-repeat="id in vm.patient.identifier">
                                                 <td>{{id.system}}</td>
                                                 <td>{{id.value}}</td>
                                                 <td>{{id.label}}</td>
                                                 <td>{{id.use}}</td>
                                             </tr>
+                                            </tbody>
                                         </table>
                                     </td>
                                 </tr>

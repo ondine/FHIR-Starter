@@ -3,9 +3,9 @@
 
     var controllerId = 'dashboard';
 
-    angular.module('FHIRStarter').controller(controllerId, ['common', 'conformanceService', 'fhirServers', dashboard]);
+    angular.module('FHIRStarter').controller(controllerId, ['common', 'conformanceService', 'fhirServers', 'organizationService', 'patientService', 'profileService', dashboard]);
 
-    function dashboard(common, conformanceService, fhirServers) {
+    function dashboard(common, conformanceService, fhirServers, organizationService, patientService, profileService) {
         var getLogFn = common.logger.getLogFn;
         var logError = getLogFn(controllerId, "error");
         var logSuccess = getLogFn(controllerId, "success");
@@ -33,8 +33,9 @@
         }
 
         function changeServer(id) {
-            toggleSpinner(true);
             conformanceService.clearCache();
+            organizationService.clearCache();
+            patientService.clearCache();
             fhirServers.getServerById(id)
                 .then(function (selectedServer) {
                     return vm.activeServer = selectedServer;
@@ -44,21 +45,29 @@
                 })
                 .then(setActiveServer)
                 .then(fetchConformance)
-                .then(function () {
-                    toggleSpinner(false);
-                });
+                .then(fetchProfiles);
         }
 
         function fetchConformance(server) {
             if (server) {
-                conformanceService.getConformance(server.baseUrl)
+                conformanceService.getConformance(vm.activeServer.baseUrl)
                     .then(function (conformance) {
                         logSuccess('Loaded conformance statement for ' + vm.activeServer.name);
                         return vm.conformance = conformance;
-                    }, function(error) {
+                    }, function (error) {
                         logError(error);
                     });
             }
+        }
+
+        function fetchProfiles() {
+            profileService.clearCache();
+            profileService.getProfiles(true, vm.activeServer.baseUrl, 0, 20, '')
+                .then(function (data) {
+                    logSuccess('Loaded profiles for ' + vm.activeServer.name);
+                }, function (error) {
+                    logError(error);
+                });
         }
 
         function getActiveServer() {

@@ -6,13 +6,9 @@
     angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', compositionService]);
 
     function compositionService(common, dataCache, fhirClient) {
-        var getLogFn = common.logger.getLogFn;
         var dataCacheKey = 'localCompositions';
         var linksCacheKey = 'linksCompositions';
         var isLoaded = false;
-        var log = getLogFn(serviceId);
-        var logError = getLogFn(serviceId, 'error');
-        var logSuccess = getLogFn(serviceId, 'success');
         var $q = common.$q;
 
 
@@ -34,8 +30,8 @@
             var id = common.generateUUID();
 
             fhirClient.addResource(baseUrl + '/Composition/' + id)
-                .then(function (data) {
-                    deferred.resolve(data);
+                .then(function (results) {
+                    deferred.resolve(results);
                 },
                 function (outcome) {
                     deferred.reject(outcome);
@@ -46,8 +42,8 @@
         function deleteComposition(resourceId) {
             var deferred = $q.defer();
             fhirClient.deleteResource(resourceId)
-                .then(function (data) {
-                    deferred.resolve(data);
+                .then(function (results) {
+                    deferred.resolve(results);
                 },
                 function (outcome) {
                     deferred.reject(outcome);
@@ -72,8 +68,8 @@
         function getRemoteComposition(resourceId) {
             var deferred = $q.defer();
             fhirClient.getResource(resourceId)
-                .then(function (data) {
-                    deferred.resolve(data);
+                .then(function (results) {
+                    deferred.resolve(results);
                 },
                 function (outcome) {
                     deferred.reject(outcome);
@@ -126,7 +122,7 @@
             if (_areCompositionsLoaded() && !forceRemote) {
                 _getAllLocal().then(getByPage);
             } else {
-                fhirClient.getResource(baseUrl + '/Composition/_search?_count=500')
+                fhirClient.getResource(baseUrl + '/Composition?_count=100')
                     .then(querySucceeded,
                     function (outcome) {
                         deferred.reject(outcome);
@@ -157,11 +153,10 @@
                 deferred.resolve(pagedCompositions);
             }
 
-            function querySucceeded(data) {
+            function querySucceeded(results) {
                 _areCompositionsLoaded(true);
-                log('Retrieved ' + data.entry.length + ' of ' + data.totalResults + ' available [Compositions] from remote FHIR server', data.entry.length)
-                dataCache.addToCache(dataCacheKey, data.entry);
-                return data.entry;
+                dataCache.addToCache(dataCacheKey, results.data);
+                return results.data.entry;
             }
 
             return deferred.promise;
@@ -171,8 +166,8 @@
             var deferred = $q.defer();
 
             fhirClient.addResource(resourceId, resource)
-                .then(function (data) {
-                    deferred.resolve(data);
+                .then(function (results) {
+                    deferred.resolve(results);
                 },
                 function (outcome) {
                     deferred.reject(outcome);
@@ -182,7 +177,7 @@
 
         function _getAllLocal() {
             var cachedCompositions = dataCache.readFromCache(dataCacheKey);
-            return $q.when(cachedCompositions);
+            return $q.when(cachedCompositions.entry);
         }
 
         function _areCompositionsLoaded(value) {

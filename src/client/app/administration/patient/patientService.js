@@ -13,6 +13,7 @@
 
         var service = {
             addPatient: addPatient,
+            clearCache: clearCache,
             deleteCachedPatient: deleteCachedPatient,
             deletePatient: deletePatient,
             getCachedPatient: getCachedPatient,
@@ -39,6 +40,10 @@
                         });
                 });
             return deferred.promise
+        }
+
+        function clearCache() {
+            dataCache.addToCache(dataCacheKey, null);
         }
 
         function deleteCachedPatient(hashKey, resourceId) {

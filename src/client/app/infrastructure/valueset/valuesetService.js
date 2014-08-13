@@ -6,13 +6,9 @@
     angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', valuesetService]);
 
     function valuesetService(common, dataCache, fhirClient) {
-        var getLogFn = common.logger.getLogFn;
         var dataCacheKey = 'localValuesets';
         var linksCacheKey = 'linksValuesets';
         var isLoaded = false;
-        var log = getLogFn(serviceId);
-        var logError = getLogFn(serviceId, 'error');
-        var logSuccess = getLogFn(serviceId, 'success');
         var $q = common.$q;
 
 
@@ -34,8 +30,8 @@
             var id = common.generateUUID();
 
             fhirClient.addResource(baseUrl + '/Valueset/' + id)
-                .then(function (data) {
-                    deferred.resolve(data);
+                .then(function (results) {
+                    deferred.resolve(results);
                 },
                 function (outcome) {
                     deferred.reject(outcome);
@@ -46,8 +42,8 @@
         function deleteValueset(resourceId) {
             var deferred = $q.defer();
             fhirClient.deleteResource(resourceId)
-                .then(function (data) {
-                    deferred.resolve(data);
+                .then(function (results) {
+                    deferred.resolve(results);
                 },
                 function (outcome) {
                     deferred.reject(outcome);
@@ -72,8 +68,8 @@
         function getRemoteValueset(resourceId) {
             var deferred = $q.defer();
             fhirClient.getResource(resourceId)
-                .then(function (data) {
-                    deferred.resolve(data);
+                .then(function (results) {
+                    deferred.resolve(results);
                 },
                 function (outcome) {
                     deferred.reject(outcome);
@@ -126,7 +122,7 @@
             if (_areValuesetsLoaded() && !forceRemote) {
                 _getAllLocal().then(getByPage);
             } else {
-                fhirClient.getResource(baseUrl + '/ValueSet/_search?_count=500')
+                fhirClient.getResource(baseUrl + '/ValueSet?_count=500')
                     .then(querySucceeded,
                     function (outcome) {
                         deferred.reject(outcome);
@@ -157,11 +153,10 @@
                 deferred.resolve(pagedValuesets);
             }
 
-            function querySucceeded(data) {
+            function querySucceeded(results) {
                 _areValuesetsLoaded(true);
-                log('Retrieved ' + data.entry.length + ' of ' + data.totalResults + ' available [Valuesets] from remote FHIR server', data.entry.length)
-                dataCache.addToCache(dataCacheKey, data.entry);
-                return data.entry;
+                dataCache.addToCache(dataCacheKey, results.data);
+                return results.data.entry;
             }
 
             return deferred.promise;
@@ -182,7 +177,7 @@
 
         function _getAllLocal() {
             var cachedValuesets = dataCache.readFromCache(dataCacheKey);
-            return $q.when(cachedValuesets);
+            return $q.when(cachedValuesets.entry);
         }
 
         function _areValuesetsLoaded(value) {

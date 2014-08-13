@@ -10,6 +10,7 @@
         var _birthOrder = null;
         var _deceased = false;
         var _deceasedDate = null;
+        var _language = { "coding": [] };
         var _multipleBirth = false;
         var _gender = { "coding": [] };
         var _maritalStatus = { "coding": [] };
@@ -20,6 +21,7 @@
             getDeceased: getDeceased,
             getDeceasedDate: getDeceasedDate,
             getGender: getGender,
+            getLanguage: getLanguage,
             getMaritalStatus: getMaritalStatus,
             getMultipleBirth: getMultipleBirth,
             init: init,
@@ -28,6 +30,7 @@
             setDeceased: setDeceased,
             setDeceasedDate: setDeceasedDate,
             setGender: setGender,
+            setLanguage: setLanguage,
             setMaritalStatus: setMaritalStatus,
             setMultipleBirth: setMultipleBirth
         }
@@ -54,6 +57,10 @@
             return _gender;
         }
 
+        function getLanguage() {
+            return _language;
+        }
+
         function getMaritalStatus() {
             return _maritalStatus;
         }
@@ -62,12 +69,15 @@
             return _multipleBirth;
         }
 
-        function init(gender, maritalStatus) {
+        function init(gender, maritalStatus, language) {
             if (gender) {
                 _gender = gender;
             }
             if (maritalStatus) {
                 _maritalStatus = maritalStatus;
+            }
+            if (language) {
+                _language = language;
             }
         }
 
@@ -103,6 +113,18 @@
         }
 
         // only 1 item in array permitted
+        function setLanguage(value) {
+            _language.coding = [];
+            if (value) {
+                if (angular.isObject(value)) {
+                    _language.coding.push(value);
+                } else {
+                    _language.coding.push(JSON.parse(value));
+                }
+            }
+        }
+
+        // only 1 item in array permitted
         function setMaritalStatus(value) {
             _maritalStatus.coding = [];
             if (value) {
@@ -121,4 +143,5 @@
             }
         }
     }
-})();
+})
+    ();

@@ -134,7 +134,7 @@
             function intitializeRelatedData(data) {
                 vm.patient = data;
                 humanNameService.init(vm.patient.name);
-                demographicsService.init(vm.patient.gender, vm.patient.maritalStatus);
+                demographicsService.init(vm.patient.gender, vm.patient.maritalStatus, vm.patient.communication);
                 demographicsService.setBirthDate(vm.patient.birthDate);
                 demographicsService.setBirthOrder(vm.patient.multipleBirthInteger);
                 demographicsService.setMultipleBirth(vm.patient.multipleBirthBoolean);
@@ -190,6 +190,7 @@
             patient.multipleBirthInteger =  demographicsService.getBirthOrder();
             patient.deceasedBoolean = demographicsService.getDeceased();
             patient.deceasedDateTime = demographicsService.getDeceasedDate();
+            patient.communication = demographicsService.getLanguage();
 
             patient.address = addressService.mapFromViewModel();
             patient.telecom = telecomService.mapFromViewModel();

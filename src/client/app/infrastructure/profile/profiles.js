@@ -12,7 +12,9 @@
         };
         var getLogFn = common.logger.getLogFn;
         var keyCodes = config.keyCodes;
-        var log = getLogFn(controllerId);
+        var logError = getLogFn(controllerId, "error");
+        var logInfo = getLogFn(controllerId, "info");
+        var logSuccess = getLogFn(controllerId, "success");
 
         vm.activeServer = null;
         vm.busyMessage = "Contacting remote server ...";

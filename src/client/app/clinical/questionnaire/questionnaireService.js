@@ -6,12 +6,8 @@
     angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', questionnaireService]);
 
     function questionnaireService(common, dataCache, fhirClient) {
-        var getLogFn = common.logger.getLogFn;
         var cacheKey = 'foundQuestionnaires';
         var isLoaded = false;
-        var log = getLogFn(serviceId);
-        var logError = getLogFn(serviceId, 'error');
-        var logSuccess = getLogFn(serviceId, 'success');
         var $q = common.$q;
 
 
@@ -33,8 +29,8 @@
             var id = common.generateUUID();
 
             fhirClient.addResource(baseUrl + '/Questionnaire/' + id)
-                .then(function (data) {
-                    deferred.resolve(data);
+                .then(function (results) {
+                    deferred.resolve(results);
                 },
                 function (outcome) {
                     deferred.reject(outcome);
@@ -45,8 +41,8 @@
         function deleteQuestionnaire(resourceId) {
             var deferred = $q.defer();
             fhirClient.deleteResource(resourceId)
-                .then(function (data) {
-                    deferred.resolve(data);
+                .then(function (results) {
+                    deferred.resolve(results);
                 },
                 function (outcome) {
                     deferred.reject(outcome);
@@ -57,9 +53,9 @@
         function getFilteredCount(filter) {
             var deferred = $q.defer();
             var filterCount = 0;
-            _getAllLocal().then(function (data) {
-                for (var i = 0, len = data.length; i < len; i++) {
-                    if (filter(data[i])) {
+            _getAllLocal().then(function (results) {
+                for (var i = 0, len = results.length; i < len; i++) {
+                    if (filter(results[i])) {
                         filterCount = (filterCount + 1);
                     }
                 }
@@ -71,8 +67,8 @@
         function getRemoteQuestionnaire(resourceId) {
             var deferred = $q.defer();
             fhirClient.getResource(resourceId)
-                .then(function (data) {
-                    deferred.resolve(data);
+                .then(function (results) {
+                    deferred.resolve(results);
                 },
                 function (outcome) {
                     deferred.reject(outcome);
@@ -156,11 +152,10 @@
                 deferred.resolve(pagedQuestionnaires);
             }
 
-            function querySucceeded(data) {
+            function querySucceeded(results) {
                 _areQuestionnairesLoaded(true);
-                log('Retrieved [Questionnaires] from remote FHIR server', data.entry.length)
-                dataCache.addToCache(cacheKey, data.entry);
-                return data.entry;
+                dataCache.addToCache(cacheKey, results.data);
+                return results.data.entry;
             }
 
             return deferred.promise;
@@ -170,8 +165,8 @@
             var deferred = $q.defer();
 
             fhirClient.addResource(resourceId, resource)
-                .then(function (data) {
-                    deferred.resolve(data);
+                .then(function (results) {
+                    deferred.resolve(results);
                 },
                 function (outcome) {
                     deferred.reject(outcome);
@@ -181,7 +176,7 @@
 
         function _getAllLocal() {
             var cachedQuestionnaires = dataCache.readFromCache(cacheKey);
-            return $q.when(cachedQuestionnaires);
+            return $q.when(cachedQuestionnaires.entry);
         }
 
         function _areQuestionnairesLoaded(value) {

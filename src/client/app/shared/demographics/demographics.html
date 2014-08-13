@@ -33,7 +33,7 @@
                         <select
                                 class="form-control" id="demographics-language"
                                 data-ng-model="vm.demographics.language"
-                                data-ng-change="vm.updateMaritalStatus()">
+                                data-ng-change="vm.updateLanguage()">
                             <option data-ng-repeat="coding in vm.languages" value="{{coding}}"
                                     data-ng-selected="coding.code===vm.demographics.language.coding[0].code">
                                 {{coding.display}}
