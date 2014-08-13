@@ -223,6 +223,14 @@
                 }
             },
             {
+                url: '/profile/questionnaire/:hashKey',
+                config: {
+                    title: 'profile-questionnaire',
+                    templateUrl: '/app/infrastructure/profile/profileQuestionnaire.html',
+                    settings: { }
+                }
+            },
+            {
                 url: '/compositions',
                 config: {
                     title: 'compositions',

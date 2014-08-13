@@ -1,12 +1,12 @@
 (function () {
     'use strict';
 
-    var controllerId = 'profileDetail';
+    var controllerId = 'profileQuestionnaire';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$location', '$routeParams', '$window', 'common', 'profileService', profileDetail]);
+        ['$routeParams', '$window', 'common', 'profileService', 'questionnaireService', profileQuestionnaire]);
 
-    function profileDetail($location, $routeParams, $window, common, profileService) {
+    function profileQuestionnaire($routeParams, $window, common, profileService, questionnaireService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
 
@@ -16,15 +16,14 @@
         vm.goBack = goBack;
         vm.isSaving = false;
         vm.isEditing = true;
-        vm.profile = undefined;
-        vm.profileIdParameter = $routeParams.hashKey;
-        vm.makeQuestionnaire = makeQuestionnaire;
+        vm.questionnaire = undefined;
+        vm.questionnaireIdParameter = $routeParams.hashKey;
         vm.save = save;
         vm.status = {
             isFirstOpen: true,
             isFirstDisabled: false
         };
-        vm.title = 'profileDetail';
+        vm.title = 'questionnaireDetail';
 
         Object.defineProperty(vm, 'canSave', {
             get: canSave
@@ -37,7 +36,7 @@
         activate();
 
         function activate() {
-            common.activateController([getRequestedProfile()], controllerId);
+            common.activateController([getRequestedQuestionnaire()], controllerId);
         }
 
         function cancel() {
@@ -52,30 +51,22 @@
             return !vm.isSaving;
         }
 
-        function getRequestedProfile() {
-            var val = $routeParams.hashKey;
-            if (val !== 'new') {
-                profileService.getCachedProfile(val)
-                .then(function(data) {
-                    return vm.profile = data;
-                }, function(error) {
+        function getRequestedQuestionnaire() {
+            var key = $routeParams.hashKey;
+            profileService.getProfileQuestionnaire(key)
+                .then(function (data) {
+                    return vm.questionnaire = data;
+                }, function (error) {
                     logError(error);
                 });
-            }
         }
 
         function getTitle() {
-            return 'Edit ' + ((vm.profile && vm.profile.fullName) || '');
+            return 'Edit ' + ((vm.questionnaire && vm.questionnaire.fullName) || '');
         }
 
         function goBack() {
             $window.history.back();
-        }
-
-        function makeQuestionnaire(profile) {
-            if (profile && profile.$$hashKey) {
-                $location.path('/profile/questionnaire/' + profile.$$hashKey);
-            }
         }
 
         function save() {

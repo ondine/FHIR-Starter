@@ -19,6 +19,7 @@
             deleteProfile: deleteProfile,
             getCachedProfile: getCachedProfile,
             getFilteredCount: getFilteredCount,
+            getProfileQuestionnaire: getProfileQuestionnaire,
             getRemoteProfile: getRemoteProfile,
             getProfilesCount: getProfilesCount,
             getProfiles: getProfiles,
@@ -69,6 +70,21 @@
                 }
                 deferred.resolve(filterCount);
             });
+            return deferred.promise;
+        }
+
+        function getProfileQuestionnaire(hashKey) {
+            var deferred = $q.defer();
+            getCachedProfile(hashKey)
+                .then(function (profile) {
+                    fhirClient.getResource(profile.id + '/?questionnaire')
+                        .then(function (results) {
+                            deferred.resolve(results.data);
+                        },
+                        function (outcome) {
+                            deferred.reject(outcome);
+                        });
+                });
             return deferred.promise;
         }
 
@@ -200,4 +216,5 @@
             return isLoaded = true;
         }
     }
-})();
+})
+    ();
