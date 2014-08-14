@@ -171,7 +171,7 @@
                 "telecom": [],
                 "address": [],
                 "photo": [],
-                "communication": {},
+                "communication": [],
                 "managingOrganization": null,
                 "contact": [],
                 "link": [],

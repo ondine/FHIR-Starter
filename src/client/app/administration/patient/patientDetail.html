@@ -35,7 +35,6 @@
                                         <div data-ng-show="vm.patient.birthDate">
                                             {{vm.patient.birthDate | date: longDate}}
                                         </div>
-
                                     </td>
                                 </tr>
                                 <tr>
@@ -94,7 +93,13 @@
                                 <tr>
                                     <td>Multiple Birth</td>
                                     <td>
-                                        {{vm.patient.multipleBirthBoolean}}
+                                        {{vm.patient.multipleBirthInteger || vm.patient.multipleBirthBoolean}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Deceased</td>
+                                    <td>
+                                        {{vm.patient.deceasedDateTime || vm.patient.deceasedBoolean}}
                                     </td>
                                 </tr>
                                 <tr>

@@ -135,11 +135,9 @@
                 vm.patient = data;
                 humanNameService.init(vm.patient.name);
                 demographicsService.init(vm.patient.gender, vm.patient.maritalStatus, vm.patient.communication);
+                demographicsService.initBirth(vm.patient.multipleBirthBoolean, vm.patient.multipleBirthInteger);
+                demographicsService.initDeath(vm.patient.deceasedBoolean, vm.patient.deceasedDateTime);
                 demographicsService.setBirthDate(vm.patient.birthDate);
-                demographicsService.setBirthOrder(vm.patient.multipleBirthInteger);
-                demographicsService.setMultipleBirth(vm.patient.multipleBirthBoolean);
-                demographicsService.setDeceased(vm.patient.deceasedBoolean);
-                demographicsService.setDeceasedDate(vm.patient.deceasedDateTime);
                 attachmentService.init(vm.patient.photo, "Photos");
                 identifierService.init(vm.patient.identifier);
                 addressService.init(vm.patient.address, true);
@@ -190,7 +188,7 @@
             patient.multipleBirthInteger =  demographicsService.getBirthOrder();
             patient.deceasedBoolean = demographicsService.getDeceased();
             patient.deceasedDateTime = demographicsService.getDeceasedDate();
-            patient.communication = demographicsService.getLanguage();
+    //        patient.communication = demographicsService.getLanguage();
 
             patient.address = addressService.mapFromViewModel();
             patient.telecom = telecomService.mapFromViewModel();

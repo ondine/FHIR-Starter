@@ -25,6 +25,8 @@
             getMaritalStatus: getMaritalStatus,
             getMultipleBirth: getMultipleBirth,
             init: init,
+            initBirth: initBirth,
+            initDeath: initDeath,
             setBirthDate: setBirthDate,
             setBirthOrder: setBirthOrder,
             setDeceased: setDeceased,
@@ -78,6 +80,25 @@
             }
             if (language) {
                 _language = language;
+            }
+        }
+
+        function initBirth(multipleBirth, birthOrder)
+        {
+            if (birthOrder) {
+                _birthOrder = birthOrder;
+                _multipleBirth = true;
+            } else {
+                _multipleBirth = multipleBirth;
+            }
+        }
+
+        function initDeath(deceased, dateOfDeath){
+            if (dateOfDeath) {
+                _deceasedDate = dateOfDeath;
+                _deceased = true;
+            } else {
+                _deceased = deceased;
             }
         }
 
