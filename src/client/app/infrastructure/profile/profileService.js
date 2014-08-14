@@ -77,7 +77,7 @@
             var deferred = $q.defer();
             getCachedProfile(hashKey)
                 .then(function (profile) {
-                    fhirClient.getResource(profile.id + '/?questionnaire')
+                    fhirClient.getResource(profile.id + '/$questionnaire')
                         .then(function (results) {
                             deferred.resolve(results.data);
                         },
