@@ -18,6 +18,7 @@
         vm.isEditing = true;
         vm.questionnaire = undefined;
         vm.questionnaireIdParameter = $routeParams.hashKey;
+        vm.renderForm = renderForm;
         vm.save = save;
         vm.status = {
             isFirstOpen: true,
@@ -67,6 +68,10 @@
 
         function goBack() {
             $window.history.back();
+        }
+
+        function renderForm(formData) {
+
         }
 
         function save() {

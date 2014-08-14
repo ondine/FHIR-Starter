@@ -3,20 +3,12 @@
         <div class="container-fluid">
             <div>
                 <button class="btn btn-info" data-ng-click="vm.goBack()"><i class="fa fa-hand-o-left"></i>Back</button>
-                <button class="btn btn-info" data-ng-click="vm.cancel()" data-ng-disabled="!vm.canSave"><i
-                        class="fa fa-undo"></i>Cancel
+                <button class="btn btn-info" data-ng-click="vm.renderForm(vm.group)"><i
+                        class="fa fa-html5"></i>Render
                 </button>
-                <button class="btn btn-info" data-ng-click="vm.save()" data-ng-disabled="!vm.canSave"><i
-                        class="fa fa-save"></i>Save
-                </button>
-                <div class="pull-right">
-                    <button class="btn btn-info" data-ng-click="vm.delete()" data-ng-disabled="!vm.canDelete"><i
-                            class="fa fa-minus"></i>Delete
-                    </button>
-                </div>
             </div>
             <div class="widget worange">
-                <div data-cc-widget-header title="{{vm.questionnaire.title}}"></div>
+                <div data-cc-widget-header title="{{vm.questionnaire.group.title}}"></div>
                 <accordion close-others="true">
                     <accordion-group heading="Metadata" is-open="vm.status.isFirstOpen"
                                      is-disabled="vm.status.isFirstDisabled">
@@ -55,8 +47,8 @@
                             <tr>
                                 <th>Link ID</th>
                                 <th>Text</th>
-                                <th>Required</th>
-                                <th>Repeat</th>
+                                <th style="text-align: center">Required</th>
+                                <th style="text-align: center">Repeat</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -64,8 +56,8 @@
                             <tr data-ng-repeat="group in vm.questionnaire.group.group">
                                 <td>{{group.linkId}}</td>
                                 <td>{{group.text}}</td>
-                                <td>{{group.required}}</td>
-                                <td>{{group.repeats}}</td>
+                                <td style="text-align: center"><i fs-true-check="group.required"></i></td>
+                                <td style="text-align: center"><i fs-true-check="group.repeats"></i></td>
                             </tr>
                             </tbody>
                         </table>

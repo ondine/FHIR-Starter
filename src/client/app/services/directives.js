@@ -243,7 +243,7 @@
         return directive;
     });
 
-    app.directive('fsFileInput', function($parse) {
+    app.directive('fsFileInput', function ($parse) {
         // Description:
         //
         // Usage: <div fs-file-input="file" on-change="readFile()"></div>
@@ -255,7 +255,7 @@
         };
         return directive;
 
-        function link (scope, element, attrs) {
+        function link(scope, element, attrs) {
             var modelGet = $parse(attrs.fsFileInput);
             var modelSet = modelGet.assign;
             var onChange = $parse(attrs.onChange);
@@ -269,5 +269,27 @@
             element.bind('change', updateModel);
         }
     });
+
+    app.directive('fsTrueCheck', ['config', function (config) {
+        //Usage: if value is true, set image to check
+        //<i fs-true-check="vm.isRequired"/></i>
+        var directive = {
+            restrict: 'A',
+            replace: true,
+            link: link,
+            scope: {
+                fsTrueCheck: "=?"
+            }
+        };
+        return directive;
+
+        function link(scope, element, attrs) {
+            scope.$watch('fsTrueCheck', function (value) {
+                if (value === true) {
+                    attrs.$set('class', 'fa fa-check');
+                }
+            });
+        }
+    }]);
 
 })();
