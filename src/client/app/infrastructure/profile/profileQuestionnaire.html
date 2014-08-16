@@ -47,6 +47,7 @@
                             <tr>
                                 <th>Link ID</th>
                                 <th>Text</th>
+                                <th>Type</th>
                                 <th style="text-align: center">Required</th>
                                 <th style="text-align: center">Repeat</th>
                             </tr>
@@ -56,13 +57,31 @@
                             <tr data-ng-repeat="group in vm.questionnaire.group.group">
                                 <td>{{group.linkId}}</td>
                                 <td>{{group.text}}</td>
-                                <td style="text-align: center"><i fs-true-check="group.required"></i></td>
-                                <td style="text-align: center"><i fs-true-check="group.repeats"></i></td>
+                                <td><p data-ng-repeat="dt in group.extension">
+                                    {{dt.valueString}}
+                                    </p>
+                                </td>
+                                <td style="text-align: center"><i data-fs-true-check="group.required"></i></td>
+                                <td style="text-align: center"><i data-fs-true-check="group.repeats"></i></td>
                             </tr>
                             </tbody>
                         </table>
                     </accordion-group>
+                    <accordion-group heading="Rendered {{vm.questionnaire.group.linkId}}">
+                        <h3>{{vm.questionnaire.group.title}}</h3>
 
+                        <p>{{vm.questionnaire.group.text}}</p>
+                        <data-ng-form name="patientEditForm" class="form-horizontal"
+                                      data-ng-model="vm.formData">
+                            <fieldset>
+                                <div class="form-group col-md-12">
+                                    <!-- dynamic form here -->
+                                    <div data-ng-repeat="item in vm.questionnaire.group.group">
+                                        <data-fs-questionnaire-form group="item"></data-fs-questionnaire-form>
+                                    </div>
+                                </div>
+                            </fieldset>
+                    </accordion-group>
                 </accordion>
             </div>
         </div>

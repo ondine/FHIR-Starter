@@ -7,6 +7,7 @@
 
     function valuesetService(common, dataCache, fhirClient) {
         var dataCacheKey = 'localValuesets';
+        var expansionCacheKey = 'localValuesetExpansions';
         var linksCacheKey = 'linksValuesets';
         var isLoaded = false;
         var $q = common.$q;
@@ -16,6 +17,7 @@
             addValueset: addValueset,
             deleteValueset: deleteValueset,
             getCachedValueset: getCachedValueset,
+            getExpansion: getExpansion,
             getFilteredCount: getFilteredCount,
             getRemoteValueset: getRemoteValueset,
             getValuesetsCount: getValuesetsCount,
@@ -100,6 +102,24 @@
                     deferred.reject('Valueset not found in cache: ' + hashKey);
                 }
             }
+        }
+
+        function getExpansion(baseUrl, identifier) {
+            // e.g., http://fhir-dev.healthintersections.com.au/open/ValueSet/$expand?identifier=http://hl7.org/fhir/vs/location-status
+            var resourceId = baseUrl + "/ValueSet/$expand?identifier=" + identifier;
+            var deferred = $q.defer();
+            fhirClient.getResource(resourceId)
+                .then(function (results) {
+                    if (results.data && results.data.expansion && angular.isArray(results.data.expansion.contains)) {
+                        deferred.resolve(results.data.expansion.contains);
+                    } else {
+                        deferred.reject("Response did not include expected expansion");
+                    }
+                },
+                function (outcome) {
+                    deferred.reject(outcome);
+                });
+            return deferred.promise;
         }
 
         function getValuesetsCount() {

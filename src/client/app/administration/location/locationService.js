@@ -1,43 +1,44 @@
 ﻿(function () {
     'use strict';
 
-    var serviceId = 'organizationService';
+    var serviceId = 'locationService';
 
-    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', 'fhirServers', organizationService]);
+    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', 'fhirServers', locationService]);
 
-    function organizationService(common, dataCache, fhirClient, fhirServers) {
-        var dataCacheKey = 'localOrganizations';
-        var linksCacheKey = 'linksOrganizations';
-        var itemCacheKey = 'contextOrganization';
+    function locationService(common, dataCache, fhirClient, fhirServers) {
+        var dataCacheKey = 'localLocations';
+        var linksCacheKey = 'linksLocations';
+        var itemCacheKey = 'contextLocation';
         var getLogFn = common.logger.getLogFn;
         var logWarning = getLogFn(serviceId, 'warning');
         var $q = common.$q;
 
         var service = {
-            addOrganization: addOrganization,
+            addLocation: addLocation,
             clearCache: clearCache,
-            deleteCachedOrganization: deleteCachedOrganization,
-            deleteOrganization: deleteOrganization,
-            getCachedOrganization: getCachedOrganization,
+            deleteCachedLocation: deleteCachedLocation,
+            deleteLocation: deleteLocation,
+            getCachedLocation: getCachedLocation,
             getCachedSearchResults: getCachedSearchResults,
-            getOrganization: getOrganization,
-            getOrganizationReference: getOrganizationReference,
-            getOrganizations: getOrganizations,
-            initializeNewOrganization: initializeNewOrganization,
-            updateOrganization: updateOrganization
+            getLocation: getLocation,
+            getLocationReference: getLocationReference,
+            getLocations: getLocations,
+            initializeNewLocation: initializeNewLocation,
+            updateLocation: updateLocation
         };
 
         return service;
 
-        function addOrganization(resource) {
+        function addLocation(resource) {
             _prepArrays(resource)
                 .then(function (resource) {
                     resource.type.coding = _prepCoding(resource.type.coding);
+                    resource.physicalType.coding = _prepCoding(resource.physicalType.coding);
                 });
             var deferred = $q.defer();
             fhirServers.getActiveServer()
                 .then(function (server) {
-                    var url = server.baseUrl + "/Organization";
+                    var url = server.baseUrl + "/Location";
                     fhirClient.addResource(url, resource)
                         .then(function (results) {
                             deferred.resolve(results);
@@ -52,9 +53,9 @@
             dataCache.addToCache(dataCacheKey, null);
         }
 
-        function deleteCachedOrganization(hashKey, resourceId) {
+        function deleteCachedLocation(hashKey, resourceId) {
             var deferred = $q.defer();
-            deleteOrganization(resourceId)
+            deleteLocation(resourceId)
                 .then(getCachedSearchResults,
                 function (error) {
                     deferred.reject(error);
@@ -68,11 +69,11 @@
 
             function removeFromCache(searchResults) {
                 var removed = false;
-                var cachedOrganizations = searchResults.entry;
-                for (var i = 0, len = cachedOrganizations.length; i < len; i++) {
-                    if (cachedOrganizations[i].$$hashKey === hashKey) {
-                        cachedOrganizations.splice(i, 1);
-                        searchResults.entry = cachedOrganizations;
+                var cachedLocations = searchResults.entry;
+                for (var i = 0, len = cachedLocations.length; i < len; i++) {
+                    if (cachedLocations[i].$$hashKey === hashKey) {
+                        cachedLocations.splice(i, 1);
+                        searchResults.entry = cachedLocations;
                         searchResults.totalResults = (searchResults.totalResults - 1);
                         dataCache.addToCache(dataCacheKey, searchResults);
                         removed = true;
@@ -82,13 +83,13 @@
                 if (removed) {
                     deferred.resolve();
                 } else {
-                    logWarning('Organization not found in cache: ' + hashKey);
+                    logWarning('Location not found in cache: ' + hashKey);
                     deferred.resolve();
                 }
             }
         }
 
-        function deleteOrganization(resourceId) {
+        function deleteLocation(resourceId) {
             var deferred = $q.defer();
             fhirClient.deleteResource(resourceId)
                 .then(function (results) {
@@ -110,34 +111,34 @@
             return deferred.promise;
         }
 
-        function getCachedOrganization(hashKey) {
+        function getCachedLocation(hashKey) {
             var deferred = $q.defer();
             getCachedSearchResults()
-                .then(getOrganization,
+                .then(getLocation,
                 function () {
-                    deferred.reject('Organization search results not found in cache.');
+                    deferred.reject('Location search results not found in cache.');
                 });
             return deferred.promise;
 
-            function getOrganization(searchResults) {
-                var cachedOrganization;
-                var cachedOrganizations = searchResults.entry;
-                cachedOrganization = _.find(cachedOrganizations, { '$$hashKey': hashKey});
-                if (cachedOrganization) {
-                    var selfLink = _.find(cachedOrganization.link, { 'rel': 'self' });
-                    cachedOrganization.content.resourceId = cachedOrganization.id;
-                    cachedOrganization.content.resourceVersionId = selfLink.href;
-                    cachedOrganization.content.hashKey = cachedOrganization.$$hashKey;
+            function getLocation(searchResults) {
+                var cachedLocation;
+                var cachedLocations = searchResults.entry;
+                cachedLocation = _.find(cachedLocations, { '$$hashKey': hashKey});
+                if (cachedLocation) {
+                    var selfLink = _.find(cachedLocation.link, { 'rel': 'self' });
+                    cachedLocation.content.resourceId = cachedLocation.id;
+                    cachedLocation.content.resourceVersionId = selfLink.href;
+                    cachedLocation.content.hashKey = cachedLocation.$$hashKey;
                 }
-                if (cachedOrganization) {
-                    deferred.resolve(cachedOrganization.content)
+                if (cachedLocation) {
+                    deferred.resolve(cachedLocation.content)
                 } else {
-                    deferred.reject('Organization not found in cache: ' + hashKey);
+                    deferred.reject('Location not found in cache: ' + hashKey);
                 }
             }
         }
 
-        function getOrganization(resourceId) {
+        function getLocation(resourceId) {
             var deferred = $q.defer();
             fhirClient.getResource(resourceId)
                 .then(function (results) {
@@ -149,7 +150,7 @@
             return deferred.promise;
         }
 
-        function getOrganizations(baseUrl, nameFilter, page, size) {
+        function getLocations(baseUrl, nameFilter, page, size) {
             var deferred = $q.defer();
             var params = '';
             var take = size || 20;
@@ -160,7 +161,7 @@
             }
             params = nameFilter + '&_offset=' + skip + '&_count=' + take;
 
-            fhirClient.getResource(baseUrl + '/Organization/?name=' + nameFilter)
+            fhirClient.getResource(baseUrl + '/Location/?name=' + nameFilter)
                 .then(function (results) {
                     dataCache.addToCache(dataCacheKey, results.data);
                     deferred.resolve(results.data);
@@ -170,46 +171,51 @@
             return deferred.promise;
         }
 
-        function getOrganizationReference(baseUrl, input) {
+        function getLocationReference(baseUrl, input) {
             var deferred = $q.defer();
-            fhirClient.getResource(baseUrl + '/Organization/?name=' + input + '&_count=20&_summary=true')
+            fhirClient.getResource(baseUrl + '/Location/?name=' + input + '&_count=20&_summary=true')
                 .then(function (results) {
-                    var organizations = [];
+                    var locations = [];
                     if (results.data.entry) {
                         angular.forEach(results.data.entry,
                             function (item) {
-                                if (item.content && item.content.resourceType === 'Organization') {
-                                    organizations.push({display: item.content.name, reference: item.id});
+                                if (item.content && item.content.resourceType === 'Location') {
+                                    locations.push({display: item.content.name, reference: item.id});
                                 }
                             });
                     }
-                    if (organizations.length === 0) {
-                        organizations.push({display: "No matches", reference: ''})
+                    if (locations.length === 0) {
+                        locations.push({display: "No matches", reference: ''})
                     }
-                    deferred.resolve(organizations);
+                    deferred.resolve(locations);
                 }, function (outcome) {
                     deferred.reject(outcome);
                 });
             return deferred.promise;
         }
 
-        function initializeNewOrganization() {
+        function initializeNewLocation() {
             return {
-                "resourceType": "Organization",
-                "identifier": [],
+                "resourceType": "Location",
+                "identifier": null,
+                "name": null,
+                "description": null,
                 "type": { "coding": [] },
                 "telecom": [],
-                "contact": [],
                 "address": [],
+                "physicalType": { "coding": [] },
+                "managingOrganization": null,
                 "partOf": null,
-                "location": [],
-                "active": true};
+                "position": null,
+                "mode": null,
+                "status": null}
         }
 
-        function updateOrganization(resourceVersionId, resource) {
+        function updateLocation(resourceVersionId, resource) {
             _prepArrays(resource)
                 .then(function (resource) {
                     resource.type.coding = _prepCoding(resource.type.coding);
+                    resource.physicalType.coding = _prepCoding(resource.physicalType.coding);
                 });
             var deferred = $q.defer();
             fhirClient.updateResource(resourceVersionId, resource)
@@ -222,20 +228,11 @@
         }
 
         function _prepArrays(resource) {
-            if (resource.address.length === 0) {
-                resource.address = null;
-            }
-            if (resource.identifier.length === 0) {
-                resource.identifier = null;
-            }
-            if (resource.contact.length === 0) {
-                resource.contact = null;
-            }
-            if (resource.telecom.length === 0) {
+            if (resource.telecom && resource.telecom.length === 0) {
                 resource.telecom = null;
             }
-            if (resource.location.length === 0) {
-                resource.location = null;
+            if (resource.identifier && resource.identifier.length === 0) {
+                resource.identifier = null;
             }
             return $q.when(resource);
         }

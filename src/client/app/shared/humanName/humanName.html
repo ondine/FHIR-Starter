@@ -115,10 +115,11 @@
                                 'current' }}
                             </td>
                             <td>{{name.use}}</td>
-                            <td>
-                                <button type="button" class="btn btn-default btn-xs"
-                                        data-ng-click="vm.removeListItem(name)" tooltip="delete">X
-                                </button>
+                            <td style="padding-top: 0px">
+                                <img
+                                        src="/content/images/x_red.gif"
+                                        data-ng-click="vm.removeListItem(name)"
+                                        tooltip="remove"/>
                             </td>
                         </tr>
                         </tbody>

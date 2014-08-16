@@ -48,4 +48,26 @@
             }
         }
     });
+
+    app.filter('questionnaireLabel', function () {
+        return function (linkId) {
+            var retValue = 'Unspecified';
+            if (linkId) {
+                retValue = linkId;
+                var startIndex = linkId.indexOf('.');
+                if (startIndex > 0) {
+                    retValue = capitalize(linkId.substring(startIndex + 1));
+
+                }
+            }
+            return retValue;
+
+            function capitalize(input) {
+                return input.replace(/^./, function(match) {
+                    return match.toUpperCase();
+                })
+            }
+        }
+    });
+
 })();

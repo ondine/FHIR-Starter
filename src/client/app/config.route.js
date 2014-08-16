@@ -25,9 +25,36 @@
                     templateUrl: 'app/dashboard/dashboard.html',
                     title: 'dashboard',
                     settings: {
-                        nav: 1,
+                        nav: 0,
                         content: '<i class="fa fa-database"></i> Dashboard'
                     }
+                }
+            },
+            {
+                url: '/locations',
+                config: {
+                    title: 'locations',
+                    templateUrl: '/app/administration/location/locations.html',
+                    settings: {
+                        nav: 1,
+                        content: '<i class="fa fa-building"></i> Location'
+                    }
+                }
+            },
+            {
+                url: '/location/edit/:hashKey',
+                config: {
+                    title: 'location',
+                    templateUrl: '/app/administration/location/locationEdit.html',
+                    settings: { }
+                }
+            },
+            {
+                url: '/location/view/:hashKey',
+                config: {
+                    title: 'location',
+                    templateUrl: '/app/administration/location/locationDetail.html',
+                    settings: { }
                 }
             },
             {

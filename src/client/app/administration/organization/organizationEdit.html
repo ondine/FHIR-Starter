@@ -37,9 +37,8 @@
                                             <option data-ng-repeat="coding in vm.organizationTypes"
                                                     value="{{coding}}"
                                                     data-ng-selected="coding.code===vm.organization.type.coding[0].code">
-                                                {{coding.display}}
+                                                {{coding.display || ''}}
                                             </option>
-                                            <option value=""></option>
                                         </select>
                                         </div>
                                     </div>

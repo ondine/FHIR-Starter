@@ -11,18 +11,23 @@
 
         vm.addToList = addToList;
         vm.editListItem = editListItem;
+        vm.genId = generateIdentifier;
         vm.identifier = {};
         vm.identifiers = [];
+        vm.mode = 'multi';
         vm.removeListItem = removeListItem;
         vm.reset = reset;
-        vm.genId = generateIdentifier;
+        vm.updateIdentifier = updateIdentifier;
 
         activate();
 
         function activate() {
-            common.activateController([getIdentifiers()], controllerId).then(function () {
-                vm.identifier = { "use": "usual"};
-            });
+            common.activateController([getIdentifiers(), getMode()], controllerId)
+                .then(function () {
+                    if (vm.identifiers.length > 0) {
+                        vm.identifier = vm.identifiers[0];
+                    }
+                });
         }
 
         function addToList(form, item) {
@@ -54,6 +59,14 @@
         function reset(form) {
             vm.identifier = { "use": "usual"};
             form.$setPristine();
+        }
+
+        function getMode() {
+            return vm.mode = identifierService.getMode();
+        }
+
+        function updateIdentifier() {
+            identifierService.setSingle(vm.identifier);
         }
     }
 })();

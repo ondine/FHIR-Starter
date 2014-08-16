@@ -9,14 +9,18 @@
         var identifiers = [];
         var getLogFn = common.logger.getLogFn;
         var log = getLogFn(serviceId);
-
+        var _mode = 'multi';
+        var _identifier = undefined;
 
         var service = {
             add: add,
             remove: remove,
             getAll: getAll,
+            getMode: getMode,
+            getSingle: getSingle,
             init: init,
-            reset: reset
+            reset: reset,
+            setSingle: setSingle
         }
 
         return service;
@@ -45,14 +49,29 @@
             return -1;
         }
 
-        function init(items) {
+        function getMode() {
+            return _mode;
+        }
+
+        function getSingle() {
+            return _identifier;
+        }
+
+        function init(items, mode) {
+            _mode = mode ? mode: 'multi';
             if (angular.isArray(items)) {
                 identifiers = items;
-            } else {
+            } else if (angular.isObject(items)){
+                identifiers = [];
+                identifiers.push(items);
+            }
+            else {
                 identifiers = [];
                 var defaultId = {"use": "usual", "system": "urn:fhir-starter:id", "value": common.generateUUID(), "label": "Auto-generated FHIR Starter identifier"};
                 identifiers.push(defaultId);
             }
+            _identifier = identifiers[0];
+            return identifiers;
         }
 
         function remove(item) {
@@ -64,6 +83,10 @@
             while (identifiers.length > 0) {
                 identifiers.pop();
             }
+        }
+
+        function setSingle(item) {
+            _identifier = item;
         }
     }
 })();

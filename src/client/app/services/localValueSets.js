@@ -11,6 +11,9 @@
             administrativeGender: administrativeGender,
             contactEntityType: contactEntityType,
             iso6391Languages: languages,
+            locationMode: locationMode,
+            locationPhysicalType: locationPhysicalType,
+            locationStatus: locationStatus,
             maritalStatus: maritalStatus,
             organizationType: organizationType,
             usaStates: usaStates
@@ -37,22 +40,6 @@
                 {"code": "PAYOR", "display": "Payor", "system": "http://hl7.org/fhir/contactentity-type"},
                 {"code": "PATINF", "display": "Patient", "system": "http://hl7.org/fhir/contactentity-type"},
                 {"code": "PRESS", "display": "Press", "system": "http://hl7.org/fhir/contactentity-type"}
-            ];
-        }
-
-        function maritalStatus() {
-            return [
-                {"code": "UNK", "display": "Unknown", "system": "http://hl7.org/fhir/v3/NullFlavor"},
-                {"code": "A", "display": "Annulled", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
-                {"code": "D", "display": "Divorced", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
-                {"code": "I", "display": "Interlocutory", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
-                {"code": "L", "display": "Legally Seperated", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
-                {"code": "M", "display": "Married", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
-                {"code": "P", "display": "Polygamous", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
-                {"code": "S", "display": "Never Married", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
-                {"code": "T", "display": "Domestic Partner", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
-                {"code": "U", "display": "Unmarried", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
-                {"code": "W", "display": "Widowed", "system": "http://hl7.org/fhir/v3/MaritalStatus"}
             ];
         }
 
@@ -241,6 +228,52 @@
                 {"code": "yo", "display": "Yoruba", "system": "urn:std:iso:639-1"},
                 {"code": "za", "display": "Zhuang, Chuang", "system": "urn:std:iso:639-1"}
             ]
+        }
+
+        // http://hl7.org/fhir/vs/location-mode
+        function locationMode() {
+            return [
+                {"code": "instance", "display": "A specific location instance", "system": "http://hl7.org/fhir/vs/location-mode"},
+                {"code": "kind", "display": "A class of locations", "system": "http://hl7.org/fhir/vs/location-mode"}
+            ]
+        }
+
+        // http://hl7.org/fhir/location-physical-type
+        function locationPhysicalType() {
+            return [
+                {"code": "bu", "display": "Building", "system": "http://hl7.org/fhir/location-physical-type"},
+                {"code": "wi", "display": "Wing", "system": "http://hl7.org/fhir/location-physical-type"},
+                {"code": "co", "display": "Corridor", "system": "http://hl7.org/fhir/location-physical-type"},
+                {"code": "ro", "display": "Room", "system": "http://hl7.org/fhir/location-physical-type"},
+                {"code": "ve", "display": "Vehicle", "system": "http://hl7.org/fhir/location-physical-type"},
+                {"code": "ho", "display": "House", "system": "http://hl7.org/fhir/location-physical-type"},
+                {"code": "ca", "display": "Cabinet", "system": "http://hl7.org/fhir/location-physical-type"},
+                {"code": "rd", "display": "Road", "system": "http://hl7.org/fhir/location-physical-type"}
+            ]
+        }
+
+        function locationStatus() {
+            return [
+                {"code": "active", "display": "Active", "system": "http://hl7.org/fhir/vs/location-status"},
+                {"code": "suspended", "display": "Suspended", "system": "http://hl7.org/fhir/vs/location-status"},
+                {"code": "inactive", "display": "Inactive", "system": "http://hl7.org/fhir/vs/location-status"}
+            ]
+        }
+
+        function maritalStatus() {
+            return [
+                {"code": "UNK", "display": "Unknown", "system": "http://hl7.org/fhir/v3/NullFlavor"},
+                {"code": "A", "display": "Annulled", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "D", "display": "Divorced", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "I", "display": "Interlocutory", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "L", "display": "Legally Seperated", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "M", "display": "Married", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "P", "display": "Polygamous", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "S", "display": "Never Married", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "T", "display": "Domestic Partner", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "U", "display": "Unmarried", "system": "http://hl7.org/fhir/v3/MaritalStatus"},
+                {"code": "W", "display": "Widowed", "system": "http://hl7.org/fhir/v3/MaritalStatus"}
+            ];
         }
 
         // http://hl7.org/fhir/organization-type

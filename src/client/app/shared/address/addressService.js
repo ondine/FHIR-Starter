@@ -11,6 +11,7 @@
         var log = getLogFn(serviceId);
         var $q = common.$q;
         var home = true;
+        var _mode = 'multi';
 
         var service = {
             add: add,
@@ -67,7 +68,8 @@
             return -1;
         }
 
-        function init(items, supportHome) {
+        function init(items, supportHome, mode) {
+            _mode = mode ? mode: 'multi';
             home = supportHome;
             addresses = [];
             if (items && angular.isArray(items)) {

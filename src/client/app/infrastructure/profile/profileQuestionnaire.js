@@ -58,7 +58,11 @@
                 .then(function (data) {
                     return vm.questionnaire = data;
                 }, function (error) {
-                    logError(error);
+                    if (error.outcome && error.status) {
+                        logError(error.status + ' error: ' + error.outcome.issue[0].details);
+                    } else {
+                        logError("Unknown error: " + error);
+                    }
                 });
         }
 

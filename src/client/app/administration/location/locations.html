@@ -1,0 +1,64 @@
+﻿<section class="mainbar" data-ng-controller="locations as vm">
+    <section class="matter">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="col-md-12">
+
+                    <input type="search"
+                           class="form-control search-query"
+                           data-ng-model="vm.searchText"
+                           data-ng-keyup="vm.search($event)"
+                           placeholder="Find location by name ..."
+                            />
+
+                    <div class="btn-group pull-right">
+                        <a class="btn btn-info"
+                           data-ng-click="vm.search($event)"><i class="fa fa-search"></i><span>Search</span></a>
+                        <a class="btn btn-info" href="/location/edit/new"><i
+                                class="fa fa-plus"></i><span>Add Location</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row" data-ng-show="vm.locations">
+                <div class="widget wviolet">
+                    <div data-cc-widget-header title="{{vm.title}}"
+                         subtitle="{{vm.paging.totalResults}} total results"
+                         right-text="Page {{vm.paging.currentPage}} of {{vm.paging.pageCount}}"></div>
+                    <div class="widget-content col-sm-12">
+                        <ul class="list-group">
+                            <div class="col-sm-6"
+                                 data-ng-repeat="o in vm.locations"
+                                 data-ng-click="vm.goToDetail(o.$$hashKey)">
+                                <fs-search-item name="{{o.content.name}}"
+                                                summary="{{o.summary | truncate:50}}"
+                                                resourceid="{{o.id}}"></fs-search-item>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <div class="widget-foot">
+                    <div data-ng-show="vm.paging.totalResults > vm.paging.pageSize">
+                        <pagination boundary-links="false"
+                                    ng-change="vm.pageChanged()"
+                                    total-items="vm.paging.totalResults"
+                                    items-per-page="vm.paging.pageSize"
+                                    ng-model="vm.paging.currentPage"
+                                    max-size="vm.paging.maxPagesToShow"
+                                    class="pagination-small"
+                                    previous-text="Prev"
+                                    next-text="Next"
+                                    first-text="First"
+                                    last-text="Last"></pagination>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+        <div data-ng-show="vm.isBusy" class="page-splash dissolve-animation">
+            <div class="page-splash-message page-splash-message-subtle">{{vm.busyMessage}}&nbsp;&nbsp;<i
+                    class="fa fa-cog fa-spin"></i></div>
+        </div>
+    </section>
+</section>

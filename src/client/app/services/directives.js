@@ -200,7 +200,7 @@
 
     app.directive('fsImgPerson', ['config', function (config) {
         //Usage:
-        //<img fs-img-person="vm.person.photo[0]"/>
+        //<img data-fs-img-person="vm.person.photo[0]"/>
         var directive = {
             link: link,
             scope: {
@@ -227,8 +227,10 @@
 
     app.directive('fsSearchItem', function () {
         // Description:
+        //  renders search results in list
         //
         // Usage:
+        //   <data-fs-search-item name="" resourceId="" summary="" />
         var directive = {
             restrict: 'E',
             replace: true,
@@ -246,7 +248,7 @@
     app.directive('fsFileInput', function ($parse) {
         // Description:
         //
-        // Usage: <div fs-file-input="file" on-change="readFile()"></div>
+        // Usage: <div data-fs-file-input="file" on-change="readFile()"></div>
         var directive = {
             restrict: "EA",
             template: "<input multiple='false' type='file' />",
@@ -270,9 +272,9 @@
         }
     });
 
-    app.directive('fsTrueCheck', ['config', function (config) {
-        //Usage: if value is true, set image to check
-        //<i fs-true-check="vm.isRequired"/></i>
+    app.directive('fsTrueCheck', [function () {
+        // Description: if value is true, set image to check mark
+        // Usage: <i data-fs-true-check="vm.isRequired"/></i>
         var directive = {
             restrict: 'A',
             replace: true,
@@ -288,6 +290,52 @@
                 if (value === true) {
                     attrs.$set('class', 'fa fa-check');
                 }
+            });
+        }
+    }]);
+
+    app.directive('fsAddToList', [function () {
+        // Description: if value is true, set image to check mark
+        // Usage: <i data-add-to-list="vm.isRequired"/></i>
+        var directive = {
+            restrict: 'A',
+            replace: true,
+            link: link,
+            scope: {
+                fsAddToList: "=?"
+            }
+        };
+        return directive;
+
+        function link(scope, element, attrs) {
+            scope.$watch('fsAddToList', function (value) {
+                if (value === true) {
+                    attrs.$set('class', 'glyphicon glyphicon-plus');
+                    attrs.$set('tooltip', 'Add item to list');
+                    // <span class="glyphicon glyphicon-plus"></span>
+                }
+            });
+        }
+    }]);
+
+    app.directive('fsQuestionnaireForm', [function () {
+        // Description:
+        // Usage:
+        var directive = {
+            restrict: 'E',
+            replace: true,
+            transclude: true,
+            link: link,
+            templateUrl: '/app/templates/questionnaireItem.html',
+            scope: {
+                group: "=?"
+            }
+        };
+        return directive;
+
+        function link(scope, element, attrs) {
+            scope.$watch('fsQuestionnaireForm', function (value) {
+
             });
         }
     }]);

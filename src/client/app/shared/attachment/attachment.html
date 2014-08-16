@@ -14,9 +14,10 @@
         <div collapse="vm.attachments.length < 1" class="col-md-10">
             <div class="btn-group" data-ng-repeat="photo in vm.attachments">
                 <img class="img-polaroid" fs-img-person="photo"/>
-                <button type="button" class="btn btn-default btn-xs pull-right"
-                        data-ng-click="vm.removeListItem(photo)" tooltip="delete">X
-                </button>
+                <img class="pull-right"
+                     src="/content/images/x_red.gif"
+                     data-ng-click="vm.removeListItem(photo)"
+                     tooltip="remove"/>
             </div>
         </div>
     </div>

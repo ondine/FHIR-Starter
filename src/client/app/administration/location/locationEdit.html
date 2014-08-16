@@ -1,0 +1,224 @@
+﻿<section class="mainbar" data-ng-controller="locationDetail as vm">
+<section class="matter">
+<div class="container-fluid">
+<div>
+    <button class="btn btn-info" data-ng-click="vm.goBack()"><i class="fa fa-hand-o-left"></i>Back</button>
+    <button class="btn btn-info" data-ng-click="vm.cancel()" data-ng-disabled="!vm.canSave"><i
+            class="fa fa-undo"></i>Cancel
+    </button>
+    <button class="btn btn-info" data-ng-click="vm.save()" data-ng-disabled="!vm.canSave"><i
+            class="fa fa-save"></i>Save
+    </button>
+    <div class="pull-right" data-ng-hide="!vm.isEditing">
+        <button class="btn btn-danger" data-ng-click="vm.delete()"><i
+                class="fa fa-trash-o"></i>Delete
+        </button>
+    </div>
+</div>
+<div class="widget wviolet">
+<div data-cc-widget-header title="{{vm.title}}"></div>
+<div class="widget-content user">
+    <data-ng-form name="locationEditForm" class="form-horizontal"
+                  data-ng-model="vm.location">
+        <fieldset>
+            <div class="form-group col-md-12">
+                <legend>Name</legend>
+                <div class="controls col-md-12 col-md-offset-2">
+                    <input required type="text" id="location-name" class="form-control"
+                           placeholder="The name of this location"
+                           data-ng-model="vm.location.name">
+                </div>
+            </div>
+
+            <div class="form-group col-md-12">
+                <legend>Function Type</legend>
+                <div class="controls col-md-12 col-md-offset-2">
+                    <input type="text" data-ng-model="vm.location.type.coding[0]"
+                           typeahead="coding as coding.display for coding in vm.locationRoleTypes | filter:$viewValue | limitTo:5"
+                           class="form-control"
+                           placeholder="The type of function performed at this location"
+                           id="location-type">
+                </div>
+            </div>
+
+            <div class="form-group col-md-12">
+                <legend>Description</legend>
+                <div class="controls col-md-12 col-md-offset-2">
+                    <textarea id="location-description" class="form-control"
+                              placeholder="Description of this location"
+                              data-ng-model="vm.location.description"></textarea>
+                </div>
+            </div>
+
+            <div class="form-group col-md-12">
+                <legend>Details</legend>
+                <div class="controls col-md-12 col-md-offset-2">
+                    <div class="form-group col-md-6">
+                        <label class="control-label pull-left"
+                               for="location-status">Mode&nbsp;&nbsp;</label><select
+                            class="form-control" id="location-mode"
+                            data-ng-model="vm.location.mode">
+                        <option data-ng-repeat="coding in vm.modes"
+                                value="{{coding.code}}"
+                                data-ng-selected="coding.code===vm.location.mode.coding[0].code">
+                            {{coding.display || ''}}
+                        </option>
+                    </select>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label class="control-label pull-left"
+                               for="location-status">Status&nbsp;&nbsp;</label><select
+                            class="form-control" id="location-status"
+                            data-ng-model="vm.location.status">
+                        <option data-ng-repeat="coding in vm.statuses"
+                                value="{{coding.code}}"
+                                data-ng-selected="coding.code===vm.location.status.coding[0].code">
+                            {{coding.display || ''}}
+                        </option>
+                    </select>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label class="control-label pull-left" for="location-physicaltype">Physical
+                            Type&nbsp;&nbsp;</label><select
+                            class="form-control" id="location-physicaltype"
+                            data-ng-model="vm.location.physicalType.coding[0]">
+                        <option data-ng-repeat="coding in vm.physicalTypes"
+                                value="{{coding}}"
+                                data-ng-selected="coding.code===vm.location.physicalType.coding[0].code">
+                            {{coding.display || ''}}
+                        </option>
+                    </select>
+                    </div>
+
+                    <div class="form-group col-md-10">
+                        <form>
+                            <legend class="">Physical Position</legend>
+                            <div class="form-group col-md-12">
+                                <div class="col-md-4">
+                                    <label class="control-label"
+                                           for="location-position-longitude">Longitude</label>&nbsp;&nbsp;
+                                    <input
+                                            type="number"
+                                            step="any"
+                                            id="location-position-longitude"
+                                            class="form-control"
+                                            tooltip="Longitude"
+                                            data-ng-model="vm.location.position.longitude">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="control-label"
+                                           for="location-position-latitude">Latitude</label>&nbsp;&nbsp;
+                                    <input
+                                            type="number"
+                                            step="any"
+                                            id="location-position-latitude"
+                                            class="form-control"
+                                            tooltip="Latitude"
+                                            data-ng-model="vm.location.position.latitude">
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="control-label"
+                                           for="location-position-altitude">Altitude</label>&nbsp;&nbsp;
+                                    <input
+                                            type="number"
+                                            step="any"
+                                            id="location-position-altitude"
+                                            class="form-control"
+                                            tooltip="Altitude"
+                                            data-ng-model="vm.location.position.altitude">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+            <div data-ng-include="'../../app/shared/address/addressTypeAhead.html'"></div>
+
+            <div data-ng-include="'../../app/shared/telecom/telecom.html'"></div>
+
+            <div class="form-group col-md-12">
+                <legend>Managing Organization</legend>
+                <div class="controls col-md-10 col-md-offset-2">
+                    <div class="form-group col-md-12">
+                        <input required
+                               type="text"
+                               id="location-organization"
+                               class="form-control"
+                               placeholder="The organization that is responsible for the provisioning and upkeep of the location"
+                               typeahead="item as item.display for item in vm.getOrganizationReference($viewValue) | filter:$viewValue"
+                               typeahead-loading="vm.loadingOrganizations"
+                               typeahead-wait-ms="300"
+                               typeahead-editable="false"
+                               typeahead-min-length="5"
+                               data-ng-model="vm.location.managingOrganization">
+                    </div>
+                    <div class="form-group col-md-10"
+                         data-ng-show="vm.location.managingOrganization.reference">
+                        <a class="control-label" href="{{vm.location.managingOrganization.reference}}"
+                           target="_blank">Referenced Organization:
+                            {{vm.location.managingOrganization.display || "Name Not Specified" }}</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group col-md-12">
+                <legend>Affiliated Location</legend>
+                <div class="controls col-md-10 col-md-offset-2">
+                    <div class="form-group col-md-12">
+                        <input required
+                               type="text"
+                               id="location-partOf"
+                               class="form-control"
+                               placeholder="Another Location which this Location is physically part of"
+                               typeahead="item as item.display for item in vm.getLocationReference($viewValue) | filter:$viewValue"
+                               typeahead-loading="vm.loadingLocations"
+                               typeahead-wait-ms="300"
+                               typeahead-editable="false"
+                               typeahead-min-length="5"
+                               data-ng-model="vm.location.partOf">
+                    </div>
+                    <div class="form-group col-md-10"
+                         data-ng-show="vm.location.partOf.reference">
+                        <a class="control-label" href="{{vm.location.partOf.reference}}"
+                           target="_blank">Referenced Location:
+                            {{vm.location.partOf.display || "Name Not Specified" }}</a>
+                    </div>
+                </div>
+            </div>
+            <!--
+                                                <div class="form-group col-md-12 well">
+                                                    <div class="col-md-2 control-label">Locations</div>
+                                                    <div class="controls col-md-10 col-md-offset-2">
+                                                        <div class="form-group col-md-8">
+                                                            <select class="form-control" id="location-location"
+                                                                    data-ng-model="vm.location.location[0]">
+                                                                <option data-ng-repeat="org in vm.locations"
+                                                                        value="{{display}}"
+                                                                        data-ng-selected="org.id===vm.location.location[0].reference">
+                                                                    {{org.name}}
+                                                                </option>
+                                                                <option value=""></option>
+                                                            </select>
+                                                            <button class="btn btn-info"
+                                                                    data-ng-click="vm.addToList(vm.location)"><i
+                                                                    class="fa fa-plus-square-o"></i>Add to Location List
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+            -->
+            <div data-ng-include="'../../app/shared/identifier/identifier.html'"></div>
+</div>
+</fieldset>
+</data-ng-form>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>

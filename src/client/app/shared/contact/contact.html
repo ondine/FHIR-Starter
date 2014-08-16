@@ -80,10 +80,11 @@
                             <td>{{c.phone}}</td>
                             <td>{{c.email}}</td>
                             <td>{{c.purpose}}</td>
-                            <td>
-                                <button type="button" class="btn btn-default btn-xs pull-right"
-                                        data-ng-click="vm.removeListItem(c)" tooltip="delete">X
-                                </button>
+                            <td style="padding-top: 0px">
+                                <img
+                                        src="/content/images/x_red.gif"
+                                        data-ng-click="vm.removeListItem(c)"
+                                        tooltip="remove"/>
                             </td>
                         </tr>
                         </tbody>
