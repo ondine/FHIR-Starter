@@ -3,7 +3,7 @@
         <legend>Name</legend>
         <div class="controls col-md-12 col-md-offset-2">
             <data-ng-form name="humanNameEditForm" class="form-horizontal" data-ng-model="vm.humanName">
-                <div class="btn-group col-md-12" style="padding-bottom: 20px">
+                <div class="btn-group col-md-12" style="padding-bottom: 20px" data-ng-show="vm.mode==='multi'">
                     <label class="btn btn-default btn-sm" data-ng-model="vm.humanName.use" btn-radio="'usual'"><i
                             class="fa fa-bullseye"></i>&nbsp;Usual</label>
                     <label class="btn btn-default btn-sm" data-ng-model="vm.humanName.use" btn-radio="'official'"><i
@@ -71,7 +71,7 @@
                     </div>
                 </div>
 
-                <div class="btn-group col-md-10">
+                <div class="btn-group col-md-10" data-ng-show="vm.mode==='multi'">
                     <button type="submit" data-ng-disabled="humanNameEditForm.$invalid"
                             class="btn btn-info"
                             data-ng-click="vm.addToList(humanNameEditForm, vm.humanName)"><i
@@ -84,7 +84,7 @@
                 </div>
             </data-ng-form>
 
-            <div collapse="vm.humanNames.length === 0" class="form-group col-md-12">
+            <div collapse="vm.humanNames.length===0 || vm.mode==='single'" class="form-group col-md-12">
                 <form>
                     <legend>List of Names</legend>
                     <table class="table table-responsive">
