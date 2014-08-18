@@ -47,8 +47,7 @@
                                     <td>Addresses</td>
                                     <td>
                                         <p class="small" data-ng-repeat="a in vm.patient.address">
-                                            <strong>{{a.use}}</strong>: {{a.line.join(', ')}}, {{a.city}}, {{a.state}}
-                                            {{a.zip}} {{a.country}}
+                                            <strong>{{a.use}}</strong>: {{a | singleLineAddress}}
                                         </p>
                                     </td>
                                 </tr>

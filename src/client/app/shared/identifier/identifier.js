@@ -24,7 +24,7 @@
         function activate() {
             common.activateController([getIdentifiers(), getMode()], controllerId)
                 .then(function () {
-                    if (vm.identifiers.length > 0) {
+                    if (vm.identifiers.length > 0 && vm.mode === 'single') {
                         vm.identifier = vm.identifiers[0];
                     }
                 });
@@ -51,6 +51,10 @@
             vm.identifiers = identifierService.getAll();
         }
 
+        function getMode() {
+            return vm.mode = identifierService.getMode();
+        }
+
         function removeListItem(item) {
             identifierService.remove(item);
             vm.identifiers = identifierService.getAll();
@@ -59,10 +63,6 @@
         function reset(form) {
             vm.identifier = { "use": "usual"};
             form.$setPristine();
-        }
-
-        function getMode() {
-            return vm.mode = identifierService.getMode();
         }
 
         function updateIdentifier() {

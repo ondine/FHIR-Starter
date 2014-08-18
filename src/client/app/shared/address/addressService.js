@@ -17,10 +17,12 @@
             add: add,
             remove: remove,
             getAll: getAll,
+            getMode: getMode,
             init: init,
             mapFromViewModel: mapFromViewModel,
             reset: reset,
             searchGoogle: searchGoogle,
+            setSingle: setSingle,
             supportHome: supportHome
         }
 
@@ -68,21 +70,27 @@
             return -1;
         }
 
+        function getMode() {
+            return _mode;
+        }
+
         function init(items, supportHome, mode) {
-            _mode = mode ? mode: 'multi';
+            _mode = mode ? mode : 'multi';
             home = supportHome;
             addresses = [];
             if (items && angular.isArray(items)) {
                 for (var i = 0, len = items.length; i < len; i++) {
                     var item = { "address": items[i] };
-                    item.use = item.address.use;
-                    item.text =
-                        (angular.isArray(item.address.line) ? item.address.line.join(' ') + ', ' : '')
-                            + (item.address.city ? (item.address.city + ', ') : '')
-                            + (item.address.state ? (item.address.state + ' ') : '')
-                            + (item.address.zip ? (item.address.zip + ', ') : '')
-                            + (item.address.country ? (item.address.country) : '');
-                    addresses.push(item);
+                    if (angular.isObject(item.address)) {
+                        item.use = item.address.use;
+                        item.text =
+                            (angular.isArray(item.address.line) ? item.address.line.join(' ') + ', ' : '')
+                                + (item.address.city ? (item.address.city + ', ') : '')
+                                + (item.address.state ? (item.address.state + ' ') : '')
+                                + (item.address.zip ? (item.address.zip + ', ') : '')
+                                + (item.address.country ? (item.address.country) : '');
+                        addresses.push(item);
+                    }
                 }
             }
         }
@@ -150,6 +158,11 @@
                     deferred.reject(error);
                 });
             return deferred.promise;
+        }
+
+        function setSingle(item) {
+            reset();
+            add(item);
         }
 
         function supportHome() {

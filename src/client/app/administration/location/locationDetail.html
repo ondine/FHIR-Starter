@@ -14,106 +14,84 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="widget wviolet">
-                    <div data-cc-widget-header title="{{vm.location.name}}"></div>
-                    <div class="widget-content user">
-                        <table class="table table-striped table-hover">
-                            <tr>
-                                <td>Type</td>
-                                <td>{{vm.location.type.coding[0].display}}</td>
-                            </tr>
-                            <tr>
-                                <td>Active</td>
-                                <td>{{vm.location.active}}</td>
-                            </tr>
-                            <tr>
-                                <td>Addresses</td>
-                                <td>
-                                    <p class="small" data-ng-repeat="a in vm.location.address">
-                                        {{a.line.join(', ')}},
-                                        {{a.city}}, {{a.state}}
-                                        {{a.zip}} {{a.country}}
-                                    </p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Communication</td>
-                                <td>
-                                    <p class="small" data-ng-repeat="t in vm.location.telecom">
-                                        <strong>{{t.system || "unspecified"}}</strong>:&nbsp;{{t.value}}
-                                    </p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Administrative Contacts</td>
-                                <td>
-                                    <table class="table small table-responsive"
-                                           data-ng-repeat="ac in vm.location.contact">
-                                        <tr>
-                                            <td>Name</td>
-                                            <td>{{ac.name.given.join(' ')}}
-                                                {{ac.name.family.join(' ')}}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Address</td>
-                                            <td>
-                                                <p class="small">
-                                                    {{ac.address.line.join(', ')}},
-                                                    {{ac.address.city}},
-                                                    {{ac.address.state}}
-                                                    {{ac.address.zip}}
-                                                    {{ac.address.country}}
-                                                </p>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Communication</td>
-                                            <td>
-                                                <p class="small" data-ng-repeat="ct in ac.telecom">
-                                                    <strong>{{ct.use}} {{ct.system}}</strong>: {{ct.value}}
-                                                </p>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Locations</td>
-                                <td>
-                                    <p class="small" data-ng-repeat="loc in vm.location.location">
-                                        <a href="{{loc.reference}}">{{loc.display}}</a>
-                                    </p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Associated Location</td>
-                                <td>
-                                    <a href="{{vm.location.partOf.reference}}">{{vm.location.partOf.display}}</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Identifiers</td>
-                                <td>
-                                    <table class="table small table-responsive" data-ng-show="vm.location.identifier">
-                                        <thead>
-                                        <th>System</th>
-                                        <th>Value</th>
-                                        <th>Label</th>
-                                        <th>Use</th>
-                                        </thead>
-                                        <tr data-ng-repeat="id in vm.location.identifier">
-                                            <td>{{id.system}}</td>
-                                            <td>{{id.value}}</td>
-                                            <td>{{id.label}}</td>
-                                            <td>{{id.use}}</td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+            <div class="widget wviolet">
+                <div data-cc-widget-header title="{{vm.location.name}}"></div>
+                <div class="widget-content user">
+                    <table class="table table-striped table-hover">
+                        <tr>
+                            <td>Function Type</td>
+                            <td>{{vm.location.type.coding[0].display}}</td>
+                        </tr>
+                        <tr>
+                            <td>Description</td>
+                            <td>{{vm.location.description}}</td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td>{{vm.location.status}}</td>
+                        </tr>
+                        <tr>
+                            <td>Mode</td>
+                            <td>{{vm.location.mode}}</td>
+                        </tr>
+                        <tr>
+                            <td>Physical Type</td>
+                            <td>{{vm.location.physicalType.coding[0].display}}</td>
+                        </tr>
+                        <tr>
+                            <td>Position</td>
+                            <td>lat:{{vm.location.position.latitude}} long:{{vm.location.position.longitude}}
+                                alt:{{vm.location.position.altitude}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Address</td>
+                            <td>
+                                <p class="small" data-ng-show="vm.location.address">
+                                    {{vm.location.address | singleLineAddress }}
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Telecommunication</td>
+                            <td>
+                                <p class="small" data-ng-repeat="t in vm.location.telecom">
+                                    <strong>{{t.system || "unspecified"}}</strong>:&nbsp;{{t.value}}
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Managing Organization</td>
+                            <td>
+                                <a href="{{vm.location.managingOrganization.reference}}">{{vm.location.managingOrganization.display}}</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Associated Location</td>
+                            <td>
+                                <a href="{{vm.location.partOf.reference}}">{{vm.location.partOf.display}}</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Identifiers</td>
+                            <td>
+                                <table class="table small table-responsive" data-ng-show="vm.location.identifier">
+                                    <thead>
+                                    <th>System</th>
+                                    <th>Value</th>
+                                    <th>Label</th>
+                                    <th>Use</th>
+                                    </thead>
+                                    <tr data-ng-repeat="id in vm.location.identifier">
+                                        <td>{{id.system}}</td>
+                                        <td>{{id.value}}</td>
+                                        <td>{{id.label}}</td>
+                                        <td>{{id.use}}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>

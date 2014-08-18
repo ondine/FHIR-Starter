@@ -69,22 +69,27 @@
 
             function removeFromCache(searchResults) {
                 var removed = false;
-                var cachedLocations = searchResults.entry;
-                for (var i = 0, len = cachedLocations.length; i < len; i++) {
-                    if (cachedLocations[i].$$hashKey === hashKey) {
-                        cachedLocations.splice(i, 1);
-                        searchResults.entry = cachedLocations;
-                        searchResults.totalResults = (searchResults.totalResults - 1);
-                        dataCache.addToCache(dataCacheKey, searchResults);
-                        removed = true;
-                        break;
-                    }
-                }
-                if (removed) {
-                    deferred.resolve();
-                } else {
+                if (angular.isUndefined(searchResults.entry)) {
                     logWarning('Location not found in cache: ' + hashKey);
                     deferred.resolve();
+                } else {
+                    var cachedLocations = searchResults.entry;
+                    for (var i = 0, len = cachedLocations.length; i < len; i++) {
+                        if (cachedLocations[i].$$hashKey === hashKey) {
+                            cachedLocations.splice(i, 1);
+                            searchResults.entry = cachedLocations;
+                            searchResults.totalResults = (searchResults.totalResults - 1);
+                            dataCache.addToCache(dataCacheKey, searchResults);
+                            removed = true;
+                            break;
+                        }
+                    }
+                    if (removed) {
+                        deferred.resolve();
+                    } else {
+                        logWarning('Location not found in cache: ' + hashKey);
+                        deferred.resolve();
+                    }
                 }
             }
         }
@@ -202,7 +207,7 @@
                 "description": null,
                 "type": { "coding": [] },
                 "telecom": [],
-                "address": [],
+                "address": null,
                 "physicalType": { "coding": [] },
                 "managingOrganization": null,
                 "partOf": null,
@@ -214,8 +219,12 @@
         function updateLocation(resourceVersionId, resource) {
             _prepArrays(resource)
                 .then(function (resource) {
-                    resource.type.coding = _prepCoding(resource.type.coding);
-                    resource.physicalType.coding = _prepCoding(resource.physicalType.coding);
+                    if (angular.isDefined(resource.type)) {
+                        resource.type.coding = _prepCoding(resource.type.coding);
+                    }
+                    if (angular.isDefined(resource.physicalType)) {
+                        resource.physicalType.coding = _prepCoding(resource.physicalType.coding);
+                    }
                 });
             var deferred = $q.defer();
             fhirClient.updateResource(resourceVersionId, resource)
@@ -233,6 +242,12 @@
             }
             if (resource.identifier && resource.identifier.length === 0) {
                 resource.identifier = null;
+            }
+            if (resource.type && resource.type.coding && resource.type.coding.length === 0) {
+                resource.type = null;
+            }
+            if (resource.physicalType && resource.physicalType.coding && resource.physicalType.coding.length === 0) {
+                resource.physicalType = null;
             }
             return $q.when(resource);
         }

@@ -340,4 +340,48 @@
         }
     }]);
 
+    app.directive('fsQuestionnaireGroup', [function () {
+        // Description:
+        // Usage:
+        var directive = {
+            restrict: 'E',
+            replace: true,
+            transclude: true,
+            link: link,
+            templateUrl: '/app/templates/questionnaireGroup.html',
+            scope: {
+                group: "=?"
+            }
+        };
+        return directive;
+
+        function link(scope, element, attrs) {
+            scope.$watch('fsQuestionnaireGroup', function (value) {
+
+            });
+        }
+    }]);
+
+    app.directive('fsQuestionnaireQuestion', [function () {
+        // Description:
+        // Usage:
+        var directive = {
+            restrict: 'E',
+            replace: true,
+            transclude: true,
+            link: link,
+            templateUrl: '/app/templates/questionnaireQuestion.html',
+            scope: {
+                question: "=?"
+            }
+        };
+        return directive;
+
+        function link(scope, element, attrs) {
+            scope.$watch('fsQuestionnaireQuestion', function (value) {
+
+            });
+        }
+    }]);
+
 })();

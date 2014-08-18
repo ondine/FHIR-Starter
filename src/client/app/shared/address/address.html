@@ -52,7 +52,7 @@
                                                                                    data-ng-model="vm.address.country">
                 </div>
 
-                <div class="btn-group col-md-12">
+                <div class="btn-group col-md-12" data-ng-show="vm.mode==='multi'">
                     <button type="button" class="btn btn-info" data-ng-click="vm.reset(addressEditForm)"><i
                             class="fa fa-refresh"></i>
                         Reset
@@ -65,7 +65,7 @@
                 </div>
             </data-ng-form>
 
-            <div collapse="vm.addresses.length === 0" class="col-md-10">
+            <div collapse="vm.addresses.length===0 || vm.mode==='single'" class="col-md-10">
                 <hr/>
                 <table class="table small table-responsive pull-left">
                     <thead>

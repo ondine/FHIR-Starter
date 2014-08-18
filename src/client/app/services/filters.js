@@ -53,21 +53,39 @@
         return function (linkId) {
             var retValue = 'Unspecified';
             if (linkId) {
-                retValue = linkId;
-                var startIndex = linkId.indexOf('.');
+                retValue = spaceWords(linkId);
+                var startIndex = retValue.lastIndexOf('.');
                 if (startIndex > 0) {
-                    retValue = capitalize(linkId.substring(startIndex + 1));
-
+                    retValue = capitalizeFirstWord(retValue.substring(startIndex + 1));
                 }
             }
             return retValue;
 
-            function capitalize(input) {
-                return input.replace(/^./, function(match) {
+            function capitalizeFirstWord(input) {
+                return input.replace(/^./, function (match) {
                     return match.toUpperCase();
                 })
             }
+
+            function spaceWords(input) {
+                return input.replace(/([a-z])([A-Z])/g, '$1 $2');
+            }
         }
     });
+
+    app.filter('singleLineAddress', function () {
+        return function (address) {
+            if (address) {
+                return (address.line ? address.line.join(' ') + ', ' : '')
+                    + (address.city ? address.city + ', ' : '')
+                    + (address.state ? address.state : '')
+                    + (address.zip ? ' ' + address.zip : '')
+                    + (address.country ? ', ' + address.country : '');
+            } else {
+                return '';
+            }
+        }
+    });
+
 
 })();

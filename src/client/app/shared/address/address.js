@@ -18,6 +18,7 @@
         vm.editListItem = editListItem;
         vm.getLocation = getLocation;
         vm.loadingLocations = false;
+        vm.mode = 'multi';
         vm.removeListItem = removeListItem;
         vm.reset = reset;
         vm.showHome = true;
@@ -25,8 +26,11 @@
         activate();
 
         function activate() {
-            common.activateController([getAddresses(), supportHome(), initAddress() ], controllerId).then(function () {
-                // nothing else
+            common.activateController([getAddresses(), getMode(), supportHome(), initAddress() ], controllerId)
+                .then(function () {
+                    if (vm.addresses.length > 0 && vm.mode === 'single') {
+                        vm.address = vm.addresses[0];
+                    }
             });
         }
 
@@ -44,7 +48,11 @@
                 if ($event.keyCode === keyCodes.esc) {
                     initAddress();
                 } else if ($event.keyCode === keyCodes.enter) {
-                    addToList(form, item);
+                    if (vm.mode === 'single') {
+                        addressService.add(item);
+                    } else {
+                        addToList(form, item);
+                    }
                 }
             }
         }
@@ -72,8 +80,17 @@
             return deferred.promise;
         }
 
+        function getMode() {
+            return vm.mode = addressService.getMode();
+        }
+
         function initAddress() {
-            return vm.address = { "use": "work"};
+            if (vm.mode === 'single' && vm.addresses.length > 0) {
+                return vm.address = vm.addresses[0];
+            } else {
+                return vm.address = { "use": "work"};
+            }
+
         }
 
         function removeListItem(item) {

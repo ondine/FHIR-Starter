@@ -13,15 +13,21 @@
         vm.editListItem = editListItem;
         vm.humanName = {};
         vm.humanNames = [];
+        vm.mode = 'multi';
         vm.removeListItem = removeListItem;
         vm.reset = reset;
 
         activate();
 
         function activate() {
-            common.activateController([getHumanNames()], controllerId).then(function () {
-                vm.humanName = { "use": "usual"};
-            });
+            common.activateController([getHumanNames()], controllerId)
+                .then(function () {
+                    if (vm.humanNames.length > 0 && vm.mode === 'single') {
+                        vm.humanName = vm.humanNames[0];
+                    } else {
+                        vm.humanName = { "use": "usual"};
+                    }
+                });
         }
 
         function addToList(form, item) {
@@ -42,7 +48,7 @@
         }
 
         function removeListItem(item) {
-           vm.humanNames = humanNameService.remove(item);
+            vm.humanNames = humanNameService.remove(item);
         }
 
         function reset(form) {

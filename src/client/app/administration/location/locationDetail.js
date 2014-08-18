@@ -166,9 +166,12 @@
                 if (angular.isUndefined(vm.location.type)) {
                     vm.location.type = { "coding": [] }
                 }
+                if (angular.isUndefined(vm.location.physicalType)) {
+                    vm.location.physicalType = { "coding": [] }
+                }
                 vm.title = vm.location.name;
                 identifierService.init(vm.location.identifier, 'multi');
-                addressService.init(vm.location.address, false, 'single');
+                addressService.init([vm.location.address], false, 'single');
                 telecomService.init(vm.location.telecom, false, false);
             }
         }
@@ -198,7 +201,7 @@
             location.description = vm.location.description;
             location.type = vm.location.type;
             location.telecom = telecomService.mapFromViewModel();
-      //      location.address = addressService.mapFromViewModel();
+            location.address = addressService.mapFromViewModel()[0];
             location.physicalType = vm.location.physicalType;
             location.managingOrganization = vm.location.managingOrganization;
             location.partOf = vm.location.partOf;

@@ -31,9 +31,7 @@
                                 <td>Addresses</td>
                                 <td>
                                     <p class="small" data-ng-repeat="a in vm.organization.address">
-                                        {{a.line.join(', ')}},
-                                        {{a.city}}, {{a.state}}
-                                        {{a.zip}} {{a.country}}
+                                        {{ a | singleLineAddress }}
                                     </p>
                                 </td>
                             </tr>

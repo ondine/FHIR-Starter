@@ -1,0 +1,8 @@
+<div class="form-group col-md-12 col-md-offset-2">
+    <label class="control-label" for="{{question.linkId}}">{{question.linkId | questionnaireLabel }}</label>&nbsp;&nbsp;
+    <input required="{{question.required}}"
+           type="text"
+           id="{{question.linkId}}"
+           class="form-control"
+           placeholder="{{question.text}}"><span data-fs-add-to-list="question.repeats"/></span>
+</div>
