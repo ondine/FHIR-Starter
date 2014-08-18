@@ -157,24 +157,31 @@
                 var pagedProfiles;
                 var filteredEntries = [];
 
-                if (filter) {
-                    for (var i = 0, len = entries.length; i < len; i++) {
-                        if (filter(entries[i])) {
-                            filteredEntries.push(entries[i]);
+                if (angular.isUndefined(entries)) {
+                    deferred.resolve();
+                } else {
+                    if (filter) {
+                        for (var i = 0, len = entries.length; i < len; i++) {
+                            if (filter(entries[i])) {
+                                filteredEntries.push(entries[i]);
+                            }
+                        }
+                    } else {
+                        filteredEntries = entries;
+                    }
+
+                    if (angular.isDefined(filteredEntries) && angular.isArray(filteredEntries)) {
+                        if (filteredEntries.length < size) {
+                            pagedProfiles = filteredEntries;
+                        }
+                        else {
+                            var start = (skip < filteredEntries.length) ? skip : (filteredEntries - size);
+                            var items = ((start + size) >= filteredEntries.length) ? (filteredEntries.length) : (start + size);
+                            pagedProfiles = filteredEntries.slice(start, items);
                         }
                     }
-                } else {
-                    filteredEntries = entries;
+                    deferred.resolve(pagedProfiles);
                 }
-
-                if (filteredEntries.length < size) {
-                    pagedProfiles = filteredEntries;
-                } else {
-                    var start = (skip < filteredEntries.length) ? skip : (filteredEntries - size);
-                    var items = ((start + size) >= filteredEntries.length) ? (filteredEntries.length) : (start + size);
-                    pagedProfiles = filteredEntries.slice(start, items);
-                }
-                deferred.resolve(pagedProfiles);
             }
 
             function querySucceeded(results) {
@@ -205,8 +212,12 @@
         }
 
         function _getAllLocal() {
+            var entries = [];
             var cachedProfiles = dataCache.readFromCache(dataCacheKey);
-            return $q.when(cachedProfiles.entry);
+            if (angular.isObject(cachedProfiles) && angular.isDefined(cachedProfiles.entry)) {
+                entries = cachedProfiles.entry;
+            }
+            return $q.when(entries);
         }
 
         function _areProfilesLoaded(value) {

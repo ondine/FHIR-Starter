@@ -66,7 +66,7 @@
                 .then(function (data) {
                     logSuccess('Loaded profiles for ' + vm.activeServer.name);
                 }, function (error) {
-                    logError(error);
+                    logError('Failed retrieving Profiles from remote server. Error code: ' + error.status + '\n' + error.outcome);
                 });
         }
 

@@ -9,6 +9,7 @@
     function profileQuestionnaire($routeParams, $window, common, profileService, questionnaireService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
+        var logWarning = common.logger.getLogFn(controllerId, 'warning');
 
         vm.cancel = cancel;
         vm.activate = activate;
@@ -75,7 +76,7 @@
         }
 
         function renderForm(formData) {
-
+            logWarning("Whoops! TODO: add functionality produce a live form...")
         }
 
         function save() {

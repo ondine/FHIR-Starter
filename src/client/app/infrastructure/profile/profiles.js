@@ -13,8 +13,7 @@
         var getLogFn = common.logger.getLogFn;
         var keyCodes = config.keyCodes;
         var logError = getLogFn(controllerId, "error");
-        var logInfo = getLogFn(controllerId, "info");
-        var logSuccess = getLogFn(controllerId, "success");
+        var logWarning = getLogFn(controllerId, "warning");
 
         vm.activeServer = null;
         vm.busyMessage = "Contacting remote server ...";
@@ -78,6 +77,9 @@
         function getProfilesCount() {
             return profileService.getProfilesCount()
                 .then(function (data) {
+                    if (data === 0) {
+                        logWarning("No Profiles available from remote server.")
+                    }
                     return vm.profilesCount = data;
                 });
         }
@@ -95,6 +97,7 @@
                     return data;
                 }, function (error) {
                     toggleSpinner(false);
+                    logError('Failed retrieving Profiles from remote server. Error code: ' + error.status + '\n' + error.outcome);
                     return error;
                 });
         }
