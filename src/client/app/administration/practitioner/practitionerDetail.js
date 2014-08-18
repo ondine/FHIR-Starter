@@ -147,7 +147,7 @@
 
             function intitializeRelatedData(data) {
                 vm.practitioner = data;
-                humanNameService.init(vm.practitioner.name, 'single');
+                humanNameService.init([vm.practitioner.name], 'single');
                 demographicsService.init(vm.practitioner.gender, vm.practitioner.maritalStatus);
                 demographicsService.setBirthDate(vm.practitioner.birthDate);
                 attachmentService.init(vm.practitioner.photo, "Photos");
@@ -190,7 +190,7 @@
                 return;
             }
             toggleSpinner(true);
-            practitioner.name = humanNameService.mapFromViewModel();
+            practitioner.name = humanNameService.mapFromViewModel()[0];
             practitioner.photo = attachmentService.getAll();
 
             practitioner.birthDate = demographicsService.getBirthDate();

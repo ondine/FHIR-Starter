@@ -104,7 +104,6 @@
             } else {
                 return vm.address = { "use": "work"};
             }
-
         }
 
         function removeListItem(item) {

@@ -159,7 +159,7 @@
                     templateUrl: '/app/administration/person/persons.html',
                     settings: {
                         nav: 4,
-                        content: '<i class="fa fa-user"></i> Person'
+                        content: '<i class="fa fa-user"></i> Related Person'
                     }
                 }
             },

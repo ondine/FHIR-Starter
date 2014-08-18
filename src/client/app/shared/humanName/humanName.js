@@ -34,7 +34,7 @@
         activate();
 
         function activate() {
-            common.activateController([getHumanNames(),  getMode()], controllerId)
+            common.activateController([getHumanNames(), getMode(), initName()], controllerId)
                 .then(function () {
                     if (vm.humanNames.length > 0 && vm.mode === 'single') {
                         vm.humanName = vm.humanNames[0];
@@ -48,7 +48,7 @@
             if (form.$valid) {
                 humanNameService.add(item);
                 vm.humanNames = humanNameService.getAll();
-                vm.humanName = {};
+                initName();
                 form.$setPristine();
             }
         }
@@ -65,12 +65,20 @@
             return vm.mode = humanNameService.getMode();
         }
 
+        function initName() {
+            if (vm.mode === 'single' && vm.humanNames.length > 0) {
+                return vm.humanName = vm.humanNames[0];
+            } else {
+                return vm.humanName = { "use": "usual"};
+            }
+        }
+
         function removeListItem(item) {
             vm.humanNames = humanNameService.remove(item);
         }
 
         function reset(form) {
-            vm.humanName = { "use": "usual"};
+            initName();
             form.$setPristine();
         }
     }
