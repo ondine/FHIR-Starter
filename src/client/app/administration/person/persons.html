@@ -20,6 +20,16 @@
             </div>
         </div>
         <div class="container">
+            <div class="row" data-ng-hide="vm.persons">
+                <p>
+                    <small>
+                        Related Persons typically have a personal or non-healthcare-specific professional relationship to
+                        the patient. A Related Person resource is primarily used for attribution of information, since
+                        RelatedPersons are often a source of information about the patient. For keeping information
+                        about persons for contact purposes for a patient, use a Patient Contact element instead.
+                    </small>
+                </p>
+            </div>
             <div class="row" data-ng-show="vm.persons">
                 <div class="widget wviolet">
                     <div data-cc-widget-header title="{{vm.title}}"

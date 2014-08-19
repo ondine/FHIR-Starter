@@ -18,6 +18,16 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row" data-ng-hide="vm.patients">
+                <p>
+                    <small>
+                        Demographics and other administrative information about a person receiving care or other
+                        health-related services.
+                    </small>
+                </p>
+            </div>
+
             <div class="row">
                 <div class="widget wblue" data-ng-show="vm.patients">
                     <div data-cc-widget-header title="{{vm.title}}"
@@ -57,6 +67,7 @@
                 </div>
             </div>
         </div>
+
         <div data-ng-show="vm.isBusy" class="page-splash dissolve-animation">
             <div class="page-splash-message page-splash-message-subtle">{{vm.busyMessage}}&nbsp;&nbsp;<i
                     class="fa fa-cog fa-spin"></i></div>

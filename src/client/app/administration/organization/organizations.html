@@ -21,6 +21,14 @@
             </div>
         </div>
         <div class="container">
+            <div class="row" data-ng-hide="vm.organizations">
+                <p>
+                    <small>A formally or informally recognized grouping of people or organizations formed for the
+                        purpose of achieving some form of collective action. Includes companies, institutions,
+                        corporations, departments, community groups, healthcare practice groups, etc.
+                    </small>
+                </p>
+            </div>
             <div class="row" data-ng-show="vm.organizations">
                 <div class="widget wlightblue">
                     <div data-cc-widget-header title="{{vm.title}}"

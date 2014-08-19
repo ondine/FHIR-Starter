@@ -21,6 +21,15 @@
             </div>
         </div>
         <div class="container">
+            <div class="row" data-ng-hide="vm.locations">
+                <p>
+                    <small>A Location includes both incidental locations (a place which is used for healthcare without
+                        prior designation or authorization) and dedicated, formally appointed locations. Locations may
+                        be private, public, mobile or fixed and scale from small freezers to full hospital buildings or
+                        parking garages.
+                    </small>
+                </p>
+            </div>
             <div class="row" data-ng-show="vm.locations">
                 <div class="widget wviolet">
                     <div data-cc-widget-header title="{{vm.title}}"
