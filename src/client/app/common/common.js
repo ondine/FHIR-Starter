@@ -61,7 +61,8 @@
             makeHumanName: makeHumanName,
             mapDisplayToCoding: mapDisplayToCoding,
             removeNullProperties: removeNullProperties,
-            textContains: textContains
+            textContains: textContains,
+            unexpectedOutcome: unexpectedOutcome
         };
 
         return service;
@@ -219,6 +220,19 @@
                 }
             });
             return target;
+        }
+
+        function unexpectedOutcome(error) {
+            var message = 'Unexpected response from server<br/>';
+            if (error.status) {
+                message = message + 'HTTP Status: ' + error.status;
+            }
+            if (error.outcome && error.outcome.issue) {
+                _.forEach(error.outcome.issue, function (item) {
+                    message = message + '<br/>' + item.severity + ' - ' + item.details;
+                })
+            }
+            return message;
         }
     }
 })();

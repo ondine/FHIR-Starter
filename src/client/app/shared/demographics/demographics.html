@@ -16,7 +16,8 @@
                         </select>
                     </div>
                     <div class="form-group col-md-4">
-                        <label class="control-label pull-left" for="demographics-maritalStatus">Marital&nbsp;Status</label>&nbsp;&nbsp;
+                        <label class="control-label pull-left"
+                               for="demographics-maritalStatus">Marital&nbsp;Status</label>&nbsp;&nbsp;
                         <select
                                 class="form-control" id="demographics-maritalStatus"
                                 data-ng-model="vm.demographics.maritalStatus"
@@ -33,15 +34,6 @@
                         <input required type="text" ng-model="vm.demographics.language"
                                typeahead="coding.display for coding in vm.languages | filter:$viewValue | limitTo:5"
                                class="form-control" placeholder="Enter primary language" id="demographics-language">
-                        <!--select
-                                class="form-control" id="demographics-language"
-                                data-ng-model="vm.demographics.language"
-                                data-ng-change="vm.updateLanguage()">
-                            <option data-ng-repeat="coding in vm.languages" value="{{coding}}"
-                                    data-ng-selected="coding.code===vm.demographics.language.coding[0].code">
-                                {{coding.display || ''}}
-                            </option>
-                        </select-->
                     </div>
                 </div>
 

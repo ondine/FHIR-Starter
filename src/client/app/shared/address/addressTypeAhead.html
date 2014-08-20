@@ -29,9 +29,10 @@
                                                                                    data-ng-model="vm.address.text"
                                                                                    data-ng-keyup="vm.capture($event, addressEditForm, vm.address)">
                 </div>
-                <div class="form-group col-md-10" data-ng-show="vm.mode==='multi'">
+                <div collapse="vm.address.use !== 'old'" class="form-group col-md-10" data-ng-show="vm.mode==='multi'">
                     <form>
                         <legend class="">Period</legend>
+                        <span class="help-block">Period during which the address is valid.</span>
                         <div class="form-group col-md-12">
                             <div class="col-md-6">
                                 <label class="control-label" for="address-period-start">Start</label>&nbsp;&nbsp;
@@ -88,8 +89,7 @@
                                 </button>
                             </td>
                             <td>{{a.text}}</td>
-                            <td>{{a.period.start | date: 'MMM`yy'}}-{{a.period.end ? (a.period.end | date: 'MMM`yy') :
-                                'current' }}
+                            <td>{{a.period | periodText }}
                             </td>
                             <td>{{a.use}}</td>
                             <td style="padding-top: 0px">

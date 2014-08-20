@@ -28,7 +28,7 @@
                 </p>
             </div>
 
-            <div class="row">
+            <div class="row-fluid">
                 <div class="widget wblue" data-ng-show="vm.patients">
                     <div data-cc-widget-header title="{{vm.title}}"
                          subtitle="{{vm.paging.totalResults}} total results"
@@ -37,7 +37,7 @@
                         <div class="padd list-flow"
                              data-ng-repeat="p in vm.patients"
                              data-ng-click="vm.goToPatient(p)">
-                            <div class="user">
+                            <div class="user" title="Go to patient details">
                                 <img fs-img-person="p.content.photo[0]"
                                      class="img-polaroid stacked" src="/content/images/unknown_person.jpg"/>
 

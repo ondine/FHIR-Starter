@@ -63,6 +63,16 @@
         }
     });
 
+    app.filter('periodText', function () {
+        return function (period) {
+            if (period) {
+                return (period.start ? moment(period.start).format('MMM`YY') + '-' : '?-') + (period.end ? moment(period.end).format('MMM`YY') : 'current');
+            } else {
+                return '';
+            }
+        }
+    });
+
     app.filter('questionnaireLabel', function () {
         return function (linkId) {
             var retValue = 'Unspecified';
@@ -101,5 +111,19 @@
         }
     });
 
+    app.filter('unexpectedOutcome', function () {
+        return function (error) {
+            var message = "Unexpected response from server/n";
+            if (error.status) {
+                message = "HTTP Status: " + message.status + "\n";
+            }
+            if (error.outcome && error.outcome.issue) {
+                _.forEach(message.outcome.issue, function (item) {
+                    message = message + item.severity + ": " + item.details + "\n"
+                })
+            }
+            return message;
+        }
+    });
 
 })();

@@ -32,54 +32,35 @@
                                 <div data-ng-include="'../../app/shared/telecom/telecom.html'"></div>
 
                                 <div class="form-group col-md-12">
-                                    <legend>Roles</legend>
+                                    <legend>Organization Affiliation</legend>
                                     <div class="controls col-md-10 col-md-offset-2">
                                         <div class="form-group col-md-10">
-                                            <input required
+                                            <label for="practitioner-organization"
+                                                   class="control-label">Organization</label>&nbsp;&nbsp;<input required
                                                    type="text"
-                                                   id="care-provider"
-                                                   class="form-control"
-                                                   placeholder="The role of the practitioner at the organization"
-                                                   typeahead="item as item.display for item in vm.getRolesReference($viewValue) | filter:$viewValue"
-                                                   typeahead-loading="vm.loadingPractitioners"
-                                                   typeahead-wait-ms="300"
-                                                   typeahead-editable="false"
-                                                   typeahead-min-length="5"
-                                                   data-ng-model="vm.practitioner.careProvider">
-                                        </div>
-                                        <div class="form-group col-md-10"
-                                             data-ng-show="vm.practitioner.careProvider.reference">
-                                            <a class="control-label" href="{{vm.practitioner.careProvider.reference}}"
-                                               target="_blank">Referenced Provider:
-                                                {{vm.practitioner.managingOrganization.display || "Name Not Specified"
-                                                }}</a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group col-md-12">
-                                    <legend>Managing&nbsp;Organization</legend>
-                                    <div class="controls col-md-10 col-md-offset-2">
-                                        <div class="form-group col-md-10">
-                                            <input required
-                                                   type="text"
-                                                   id="managing-organization"
+                                                   id="practitioner-organization"
                                                    class="form-control"
                                                    placeholder="The organization that the practitioner represents"
-                                                   typeahead="item as item.display for item in vm.getOrganizationReference($viewValue) | filter:$viewValue"
+                                                   typeahead="item.display for item in vm.getOrganizationReference($viewValue) | filter:$viewValue"
                                                    typeahead-loading="vm.loadingOrganizations"
                                                    typeahead-wait-ms="300"
                                                    typeahead-editable="false"
                                                    typeahead-min-length="5"
                                                    data-ng-model="vm.practitioner.managingOrganization">
                                         </div>
-                                        <div class="form-group col-md-10"
-                                             data-ng-show="vm.practitioner.managingOrganization.reference">
-                                            <a class="control-label"
-                                               data-ng-href="{{vm.practitioner.managingOrganization.reference}}"
-                                               target="_blank">Referenced Organization:
-                                                {{vm.practitioner.managingOrganization.display || "Name Not Specified"
-                                                }}</a>
+
+                                        <div class="form-group col-md-6">
+                                            <label for="practitioner-role"
+                                                   class="control-label">Role</label>&nbsp;&nbsp;<select
+                                                class="form-control" id="practitioner-role"
+                                                data-ng-model="vm.practitioner.role">
+                                            <option data-ng-repeat="coding in vm.practitionerRoles"
+                                                    value="{{coding.display}}"
+                                                    data-ng-selected="coding.code===vm.practitioner.role.code">
+                                                {{coding.display}}
+                                            </option>
+                                            <option value="">[Select a Role]</option>
+                                        </select>
                                         </div>
                                     </div>
                                 </div>

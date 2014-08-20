@@ -51,6 +51,7 @@
                 <div collapse="vm.humanName.use !== ('old') && vm.humanName.use !== ('temp')"
                      class="form-group col-md-10">
                     <legend>Period</legend>
+                    <span class="help-block">Period during which the name is valid.</span>
                     <div class="form-group col-md-12">
                         <div class="col-md-6">
                             <label class="control-label" for="name-period-start">Start</label>&nbsp;&nbsp;
@@ -110,9 +111,7 @@
                             <td>{{name.given}}</td>
                             <td>{{name.family}}</td>
                             <td>{{name.suffix}}</td>
-                            <td>{{name.period.start | date: 'MMM`yy'}}-{{name.period.end ? (name.period.end | date:
-                                'MMM`yy') :
-                                'current' }}
+                            <td>{{name.period | periodText }}
                             </td>
                             <td>{{name.use}}</td>
                             <td style="padding-top: 0px">

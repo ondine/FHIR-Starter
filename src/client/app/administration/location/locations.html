@@ -38,11 +38,12 @@
                     <div class="widget-content col-sm-12">
                         <ul class="list-group">
                             <div class="col-sm-6"
-                                 data-ng-repeat="o in vm.locations"
-                                 data-ng-click="vm.goToDetail(o.$$hashKey)">
-                                <fs-search-item name="{{o.content.name}}"
-                                                summary="{{o.summary | truncate:50}}"
-                                                resourceid="{{o.id}}"></fs-search-item>
+                                 data-ng-repeat="l in vm.locations"
+                                 data-ng-click="vm.goToDetail(l.$$hashKey)"
+                                 title="Go to location details">
+                                <fs-search-item name="{{l.content.name}}"
+                                                summary="{{l.summary | truncate:50}}"
+                                                resourceid="{{l.id}}"></fs-search-item>
                             </div>
                         </ul>
                     </div>

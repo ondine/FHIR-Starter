@@ -18,9 +18,9 @@
     var controllerId = 'patientDetail';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$location', '$routeParams', '$window', 'addressService', 'attachmentService', 'common', 'demographicsService', 'fhirServers', 'humanNameService', 'identifierService', 'localValueSets', 'organizationService', 'patientService', 'telecomService', patientDetail]);
+        ['$location', '$routeParams', '$window', 'addressService', 'attachmentService', 'bootstrap.dialog', 'common', 'demographicsService', 'fhirServers', 'humanNameService', 'identifierService', 'localValueSets', 'organizationService', 'patientService', 'telecomService', patientDetail]);
 
-    function patientDetail($location, $routeParams, $window, addressService, attachmentService, common, demographicsService, fhirServers, humanNameService, identifierService, localValueSets, organizationService, patientService, telecomService) {
+    function patientDetail($location, $routeParams, $window, addressService, attachmentService, bsDialog, common, demographicsService, fhirServers, humanNameService, identifierService, localValueSets, organizationService, patientService, telecomService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
         var logSuccess = common.logger.getLogFn(controllerId, 'success');
@@ -83,16 +83,21 @@
         }
 
         function deletePatient(patient) {
-            if (patient && patient.resourceId && patient.hashKey) {
-                patientService.deleteCachedPatient(patient.hashKey, patient.resourceId)
-                    .then(function () {
-                        logSuccess("Deleted patient " + patient.resourceId);
-                        $location.path('/patients');
-                    },
-                    function (error) {
-                        logError(error);
-                    }
-                );
+            return bsDialog.deleteDialog(patient.fullName)
+                .then(confirmDelete);
+
+            function confirmDelete() {
+                if (patient && patient.resourceId && patient.hashKey) {
+                    patientService.deleteCachedPatient(patient.hashKey, patient.resourceId)
+                        .then(function () {
+                            logSuccess("Deleted patient " + patient.fullName);
+                            $location.path('/patients');
+                        },
+                        function (error) {
+                            logError(common.unexpectedOutcome(error));
+                        }
+                    );
+                }
             }
         }
 
@@ -118,7 +123,7 @@
                     deferred.resolve(data);
                 }, function (error) {
                     vm.loadingOrganizations = false;
-                    logError(error);
+                    logError(common.unexpectedOutcome(error));
                     deferred.reject();
                 });
             return deferred.promise;
@@ -134,13 +139,13 @@
                 if ($routeParams.hashKey) {
                     patientService.getCachedPatient($routeParams.hashKey)
                         .then(intitializeRelatedData, function (error) {
-                            logError(error);
+                            logError(common.unexpectedOutcome(error));
                         });
                 } else if ($routeParams.id) {
                     var resourceId = vm.activeServer.baseUrl + '/Patient/' + $routeParams.id;
                     patientService.getPatient(resourceId)
                         .then(intitializeRelatedData, function (error) {
-                            logError(error);
+                            logError(common.unexpectedOutcome(error));
                         });
                 }
             }
@@ -199,10 +204,10 @@
             patient.gender = demographicsService.getGender();
             patient.maritalStatus = demographicsService.getMaritalStatus();
             patient.multipleBirthBoolean = demographicsService.getMultipleBirth();
-            patient.multipleBirthInteger =  demographicsService.getBirthOrder();
+            patient.multipleBirthInteger = demographicsService.getBirthOrder();
             patient.deceasedBoolean = demographicsService.getDeceased();
             patient.deceasedDateTime = demographicsService.getDeceasedDate();
-    //        patient.communication = demographicsService.getLanguage();
+            //        patient.communication = demographicsService.getLanguage();
 
             patient.address = addressService.mapFromViewModel();
             patient.telecom = telecomService.mapFromViewModel();
@@ -215,14 +220,14 @@
                 patientService.updatePatient(vm.patient.resourceId, patient)
                     .then(processResult,
                     function (error) {
-                        logError("Update failed: " + error.outcome.details);
+                        logError(common.unexpectedOutcome(error));
                         toggleSpinner(false);
                     });
             } else {
                 patientService.addPatient(patient)
                     .then(processResult,
                     function (error) {
-                        logError("Add failed: " + error.outcome.details);
+                        logError(common.unexpectedOutcome(error));
                         toggleSpinner(false);
                     });
             }

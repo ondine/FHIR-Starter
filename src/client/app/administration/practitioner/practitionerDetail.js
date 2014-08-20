@@ -18,9 +18,9 @@
     var controllerId = 'practitionerDetail';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$location', '$routeParams', '$window', 'addressService', 'attachmentService', 'common', 'demographicsService', 'fhirServers', 'humanNameService', 'identifierService', 'localValueSets', 'organizationService', 'practitionerService', 'telecomService', practitionerDetail]);
+        ['$location', '$routeParams', '$window', 'addressService', 'attachmentService', 'bootstrap.dialog', 'common', 'demographicsService', 'fhirServers', 'humanNameService', 'identifierService', 'localValueSets', 'organizationService', 'practitionerService', 'telecomService', 'valuesetService', practitionerDetail]);
 
-    function practitionerDetail($location, $routeParams, $window, addressService, attachmentService, common, demographicsService, fhirServers, humanNameService, identifierService, localValueSets, organizationService, practitionerService, telecomService) {
+    function practitionerDetail($location, $routeParams, $window, addressService, attachmentService, bsDialog, common, demographicsService, fhirServers, humanNameService, identifierService, localValueSets, organizationService, practitionerService, telecomService, valuesetService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
         var logSuccess = common.logger.getLogFn(controllerId, 'success');
@@ -55,9 +55,11 @@
         activate();
 
         function activate() {
-            common.activateController([getActiveServer()], controllerId).then(function () {
-                getRequestedPractitioner();
-            });
+            common.activateController([getActiveServer()], controllerId)
+                .then(function () {
+                    getPractitionerRoles();
+                    getRequestedPractitioner();
+                });
         }
 
         function calculateAge(birthDate) {
@@ -83,16 +85,21 @@
         }
 
         function deletePractitioner(practitioner) {
-            if (practitioner && practitioner.resourceId && practitioner.hashKey) {
-                practitionerService.deleteCachedPractitioner(practitioner.hashKey, practitioner.resourceId)
-                    .then(function () {
-                        logSuccess("Deleted practitioner " + practitioner.resourceId);
-                        $location.path('/practitioners');
-                    },
-                    function (error) {
-                        logError(error);
-                    }
-                );
+            return bsDialog.deleteDialog(practitioner.fullName)
+                .then(confirmDelete);
+
+            function confirmDelete() {
+                if (practitioner && practitioner.resourceId && practitioner.hashKey) {
+                    practitionerService.deleteCachedPractitioner(practitioner.hashKey, practitioner.resourceId)
+                        .then(function () {
+                            logSuccess("Deleted practitioner " + practitioner.resourceId);
+                            $location.path('/practitioners');
+                        },
+                        function (error) {
+                            logError(common.unexpectedOutcome(error));
+                        }
+                    );
+                }
             }
         }
 
@@ -109,6 +116,15 @@
                 });
         }
 
+        function getPractitionerRoles() {
+            valuesetService.getExpansion(vm.activeServer.baseUrl, "http://hl7.org/fhir/vs/practitioner-role ")
+                .then(function (expansions) {
+                    return vm.practitionerRoles = expansions;
+                }, function (error) {
+                    logError(common.unexpectedOutcome(error));
+                });
+        }
+
         function getOrganizationReference(input) {
             var deferred = $q.defer();
             vm.loadingOrganizations = true;
@@ -118,7 +134,7 @@
                     deferred.resolve(data);
                 }, function (error) {
                     vm.loadingOrganizations = false;
-                    logError(error);
+                    logError(common.unexpectedOutcome(error));
                     deferred.reject();
                 });
             return deferred.promise;
@@ -134,37 +150,15 @@
                 if ($routeParams.hashKey) {
                     practitionerService.getCachedPractitioner($routeParams.hashKey)
                         .then(intitializeRelatedData, function (error) {
-                            logError(error);
+                            logError(common.unexpectedOutcome(error));
                         });
                 } else if ($routeParams.id) {
                     var resourceId = vm.activeServer.baseUrl + '/Practitioner/' + $routeParams.id;
                     practitionerService.getPractitioner(resourceId)
                         .then(intitializeRelatedData, function (error) {
-                            logError(error);
+                            logError(common.unexpectedOutcome(error));
                         });
                 }
-            }
-
-            function intitializeRelatedData(data) {
-                vm.practitioner = data;
-                humanNameService.init([vm.practitioner.name], 'single');
-                demographicsService.init(vm.practitioner.gender, vm.practitioner.maritalStatus);
-                demographicsService.setBirthDate(vm.practitioner.birthDate);
-                attachmentService.init(vm.practitioner.photo, "Photos");
-                identifierService.init(vm.practitioner.identifier);
-                addressService.init(vm.practitioner.address, true, 'single');
-                telecomService.init(vm.practitioner.telecom, true, true);
-                vm.practitioner.fullName = humanNameService.getFullName();
-                if (vm.practitioner.organization && vm.practitioner.organization.reference) {
-                    var reference = vm.practitioner.organization.reference;
-                    if (common.isAbsoluteUri(reference) === false) {
-                        vm.practitioner.organization.reference = vm.activeServer.baseUrl + '/' + reference;
-                    }
-                    if (angular.isUndefined(vm.practitioner.organization.display)) {
-                        vm.practitioner.organization.display = reference;
-                    }
-                }
-                vm.title = getTitle();
             }
         }
 
@@ -176,11 +170,46 @@
                 title = 'Add New Practitioner';
             }
             return title;
-
         }
 
         function goBack() {
             $window.history.back();
+        }
+
+        function intitializeRelatedData(data) {
+            vm.practitioner = data;
+            humanNameService.init([vm.practitioner.name], 'single');
+            demographicsService.init(vm.practitioner.gender, vm.practitioner.maritalStatus);
+            demographicsService.setBirthDate(vm.practitioner.birthDate);
+            attachmentService.init(vm.practitioner.photo, "Photos");
+            identifierService.init(vm.practitioner.identifier);
+            addressService.init(vm.practitioner.address, true, 'single');
+            telecomService.init(vm.practitioner.telecom, true, true);
+            vm.practitioner.fullName = humanNameService.getFullName();
+            if (vm.practitioner.organization && vm.practitioner.organization.reference) {
+                var reference = vm.practitioner.organization.reference;
+                if (common.isAbsoluteUri(reference) === false) {
+                    vm.practitioner.organization.reference = vm.activeServer.baseUrl + '/' + reference;
+                }
+                if (angular.isUndefined(vm.practitioner.organization.display)) {
+                    vm.practitioner.organization.display = reference;
+                }
+            }
+            vm.title = getTitle();
+        }
+
+        function processResult(results) {
+            var resourceVersionId = results.headers.location || results.headers["content-location"];
+            if (angular.isUndefined(resourceVersionId)) {
+                logWarning("Practitioner saved, but location is unavailable. CORS not implemented correctly at remote host.");
+            } else {
+                logSuccess("Practitioner saved at " + resourceVersionId);
+            }
+            vm.practitioner.resourceVersionId = resourceVersionId;
+            vm.practitioner.fullName = humanNameService.getFullName();
+            vm.isEditing = true;
+            vm.title = getTitle();
+            toggleSpinner(false);
         }
 
         function save() {
@@ -197,7 +226,7 @@
             practitioner.gender = demographicsService.getGender();
             practitioner.maritalStatus = demographicsService.getMaritalStatus();
             practitioner.multipleBirthBoolean = demographicsService.getMultipleBirth();
-            practitioner.multipleBirthInt =  demographicsService.getBirthOrder();
+            practitioner.multipleBirthInt = demographicsService.getBirthOrder();
             practitioner.deceasedBoolean = demographicsService.getDeceased();
             practitioner.deceasedDate = demographicsService.getDeceasedDate();
 
@@ -212,30 +241,16 @@
                 practitionerService.updatePractitioner(vm.practitioner.resourceId, practitioner)
                     .then(processResult,
                     function (error) {
-                        logError("Update failed: " + error.outcome.details);
+                        logError(common.unexpectedOutcome(error));
                         toggleSpinner(false);
                     });
             } else {
                 practitionerService.addPractitioner(practitioner)
                     .then(processResult,
                     function (error) {
-                        logError("Add failed: " + error.outcome.details);
+                        logError(common.unexpectedOutcome(error));
                         toggleSpinner(false);
                     });
-            }
-
-            function processResult(results) {
-                var resourceVersionId = results.headers.location || results.headers["content-location"];
-                if (angular.isUndefined(resourceVersionId)) {
-                    logWarning("Practitioner saved, but location is unavailable. CORS not implemented correctly at remote host.");
-                } else {
-                    logSuccess("Practitioner saved at " + resourceVersionId);
-                }
-                vm.practitioner.resourceVersionId = resourceVersionId;
-                vm.practitioner.fullName = humanNameService.getFullName();
-                vm.isEditing = true;
-                vm.title = getTitle();
-                toggleSpinner(false);
             }
         }
 

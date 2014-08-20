@@ -35,7 +35,7 @@
             var deferred = $q.defer();
             $http.post(baseUrl, common.removeNullProperties(resource))
                 .success(function (data, status, headers, config) {
-                    var results = [];
+                    var results = {};
                     results.data = data;
                     results.headers = headers();
                     results.status = status;
@@ -54,7 +54,7 @@
 
             $http.delete(resourceUrl)
                 .success(function (data, status, headers, config) {
-                    var results = [];
+                    var results = {};
                     results.data = data;
                     results.headers = headers();
                     results.status = status;
@@ -64,7 +64,7 @@
                 .error(function (data, status, headers) {
                     if (status === 410) {
                         // already deleted
-                        var results = [];
+                        var results = {};
                         results.data = data;
                         results.status = status;
                         results.headers = headers;
@@ -82,7 +82,7 @@
 
             $http.get(resourceUrl)
                 .success(function (data, status, headers, config) {
-                    var results = [];
+                    var results = {};
                     results.data = data;
                     results.headers = headers();
                     results.status = status;
@@ -101,7 +101,7 @@
 
             $http.put(resourceUrl, common.removeNullProperties(resource))
                 .success(function (data, status, headers, config) {
-                    var results = [];
+                    var results = {};
                     results.data = data;
                     results.headers = headers();
                     results.status = status;

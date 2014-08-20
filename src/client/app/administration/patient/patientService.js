@@ -67,20 +67,24 @@
                 function (error) {
                     deferred.reject(error);
                 })
-                .then(removeFromCache)
+                .then(removeFromCache,
+                function (error) {
+                    deferred.reject(error);
+                })
                 .then(function () {
                     deferred.resolve()
                 });
             return deferred.promise;
 
             function removeFromCache(searchResults) {
-                var cachedPatients = searchResults.entry;
-                searchResults.entry = _.remove(cachedPatients, function (item) {
-                    return item.$$hashKey !== hashKey;
-                });
-                searchResults.totalResults = (searchResults.totalResults - 1);
-                dataCache.addToCache(dataCacheKey, searchResults);
-
+                if (searchResults && searchResults.entry) {
+                    var cachedPatients = searchResults.entry;
+                    searchResults.entry = _.remove(cachedPatients, function (item) {
+                        return item.$$hashKey !== hashKey;
+                    });
+                    searchResults.totalResults = (searchResults.totalResults - 1);
+                    dataCache.addToCache(dataCacheKey, searchResults);
+                }
                 deferred.resolve();
             }
         }

@@ -18,9 +18,9 @@
     var controllerId = 'locationDetail';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$location', '$routeParams', '$window', 'addressService', 'common', 'fhirServers', 'identifierService', 'localValueSets', 'locationService', 'organizationService', 'telecomService', 'valuesetService', locationDetail]);
+        ['$location', '$routeParams', '$window', 'addressService',  'bootstrap.dialog', 'common', 'fhirServers', 'identifierService', 'localValueSets', 'locationService', 'organizationService', 'telecomService', 'valuesetService', locationDetail]);
 
-    function locationDetail($location, $routeParams, $window, addressService, common, fhirServers, identifierService, localValueSets, locationService, organizationService, telecomService, valuesetService) {
+    function locationDetail($location, $routeParams, $window, addressService, bsDialog, common, fhirServers, identifierService, localValueSets, locationService, organizationService, telecomService, valuesetService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
         var logSuccess = common.logger.getLogFn(controllerId, 'success');
@@ -77,17 +77,21 @@
         }
 
         function deleteLocation(location) {
+            return bsDialog.deleteDialog(location.name)
+                .then(confirmDelete);
+
+            function confirmDelete() {
             if (location && location.resourceId && location.hashKey) {
                 locationService.deleteCachedLocation(location.hashKey, location.resourceId)
                     .then(function () {
-                        logSuccess("Deleted location " + location.resourceId);
+                        logSuccess("Deleted location " + location.name);
                         $location.path('/locations');
                     },
                     function (error) {
-                        logError(error);
+                        logError(common.unexpectedOutcome(error));
                     }
                 );
-            }
+            }}
         }
 
         function edit(location) {
@@ -116,7 +120,7 @@
                     deferred.resolve(data);
                 }, function (error) {
                     vm.loadingLocations = false;
-                    logError(error);
+                    logError(common.unexpectedOutcome(error));
                     deferred.reject();
                 });
             return deferred.promise;
@@ -127,7 +131,7 @@
                 .then(function (expansions) {
                     return vm.locationRoleTypes = expansions;
                 }, function (error) {
-                    logError(error);
+                    logError(common.unexpectedOutcome(error));
                 });
         }
 
@@ -148,7 +152,7 @@
                     deferred.resolve(data);
                 }, function (error) {
                     vm.loadingOrganizations = false;
-                    logError(error);
+                    logError(common.unexpectedOutcome(error));
                     deferred.reject();
                 });
             return deferred.promise;
@@ -164,13 +168,13 @@
                 if ($routeParams.hashKey) {
                     locationService.getCachedLocation($routeParams.hashKey)
                         .then(intitializeRelatedData, function (error) {
-                            logError(error);
+                            logError(common.unexpectedOutcome(error));
                         });
                 } else if ($routeParams.id) {
                     var resourceId = vm.activeServer.baseUrl + '/Location/' + $routeParams.id;
                     locationService.getLocation(resourceId)
                         .then(intitializeRelatedData, function (error) {
-                            logError(error);
+                            logError(common.unexpectedOutcome(error));
                         });
                 }
             }
@@ -226,13 +230,13 @@
                 locationService.updateLocation(vm.location.resourceId, location)
                     .then(processResult,
                     function (error) {
-                        logError("Update failed: " + error.outcome.details);
+                        logError(common.unexpectedOutcome(error));
                     });
             } else {
                 locationService.addLocation(location)
                     .then(processResult,
                     function (error) {
-                        logError("Add failed: " + error.outcome.details);
+                        logError(common.unexpectedOutcome(error));
                     });
             }
 

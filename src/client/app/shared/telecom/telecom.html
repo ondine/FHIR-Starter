@@ -51,6 +51,8 @@
                 <div collapse="vm.telecom.use !== 'old'" class="form-group col-md-10">
                     <form>
                         <legend>Period</legend>
+                        <span class="help-block">Period during which the telecommunication is valid.</span>
+
                         <div class="form-group col-md-12">
                             <div class="col-md-6">
                                 <label class="control-label" for="telecom-period-start">Start</label>&nbsp;&nbsp;
@@ -112,9 +114,7 @@
                             <td>{{t.fax}}</td>
                             <td>{{t.email}}</td>
                             <td>{{t.url}}</td>
-                            <td>{{t.period.start | date: 'MMM`yy'}}-{{t.period.end ? (t.period.end | date: 'MMM`yy') :
-                                'current' }}
-                            </td>
+                            <td>{{t.period | periodText }}</td>
                             <td>{{t.use}}</td>
                             <td style="padding-top: 0px">
                                 <img

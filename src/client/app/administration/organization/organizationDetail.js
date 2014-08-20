@@ -18,9 +18,9 @@
     var controllerId = 'organizationDetail';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$location', '$routeParams', '$window', 'addressService', 'common', 'contactService', 'fhirServers', 'identifierService', 'localValueSets', 'organizationService', 'telecomService', organizationDetail]);
+        ['$location', '$routeParams', '$window', 'addressService', 'bootstrap.dialog', 'common', 'contactService', 'fhirServers', 'identifierService', 'localValueSets', 'organizationService', 'telecomService', organizationDetail]);
 
-    function organizationDetail($location, $routeParams, $window, addressService, common, contactService, fhirServers, identifierService, localValueSets, organizationService, telecomService) {
+    function organizationDetail($location, $routeParams, $window, addressService, bsDialog, common, contactService, fhirServers, identifierService, localValueSets, organizationService, telecomService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
         var logSuccess = common.logger.getLogFn(controllerId, 'success');
@@ -74,16 +74,21 @@
         }
 
         function deleteOrganization(organization) {
-            if (organization && organization.resourceId && organization.hashKey) {
-                organizationService.deleteCachedOrganization(organization.hashKey, organization.resourceId)
-                    .then(function () {
-                        logSuccess("Deleted organization " + organization.resourceId);
-                        $location.path('/organizations');
-                    },
-                    function (error) {
-                        logError(error);
-                    }
-                );
+            return bsDialog.deleteDialog(organization.name)
+                .then(confirmDelete);
+
+            function confirmDelete() {
+                if (organization && organization.resourceId && organization.hashKey) {
+                    organizationService.deleteCachedOrganization(organization.hashKey, organization.resourceId)
+                        .then(function () {
+                            logSuccess("Deleted organization " + organization.name);
+                            $location.path('/organizations');
+                        },
+                        function (error) {
+                            logError(common.unexpectedOutcome(error));
+                        }
+                    );
+                }
             }
         }
 
@@ -109,7 +114,7 @@
                     deferred.resolve(data);
                 }, function (error) {
                     vm.loadingOrganizations = false;
-                    logError(error);
+                    logError(common.unexpectedOutcome(error));
                     deferred.reject();
                 });
             return deferred.promise;
@@ -185,13 +190,13 @@
                 organizationService.updateOrganization(vm.organization.resourceId, organization)
                     .then(processResult,
                     function (error) {
-                        logError("Update failed: " + error.outcome.details);
+                        logError(common.unexpectedOutcome(error));
                     });
             } else {
                 organizationService.addOrganization(organization)
                     .then(processResult,
                     function (error) {
-                        logError("Add failed: " + error.outcome.details);
+                        logError(common.unexpectedOutcome(error));
                     });
             }
 

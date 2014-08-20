@@ -17,14 +17,19 @@
 
     var controllerId = 'qualification';
 
-    angular.module('FHIRStarter').controller(controllerId, ['$scope', 'common', 'qualificationService', qualification]);
+    angular.module('FHIRStarter').controller(controllerId, ['$scope', 'common', 'fhirServers', 'organizationService', 'qualificationService', 'valuesetService', qualification]);
 
-    function qualification($scope, common, qualificationService) {
+    function qualification($scope, common, fhirServers, organizationService, qualificationService, valuesetService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
+        var logSuccess = common.logger.getLogFn(controllerId, 'success');
+        var logWarning = common.logger.getLogFn(controllerId, 'warning');
+        var $q = common.$q;
 
         vm.addToList = addToList;
         vm.editListItem = editListItem;
+        vm.getOrganizationReference = getOrganizationReference;
+        vm.loadingOrganizations = false;
         vm.qualification = null;
         vm.qualifications = [];
         vm.removeListItem = removeListItem;
@@ -33,9 +38,9 @@
         activate();
 
         function activate() {
-            common.activateController([getQualifications()], controllerId)
+            common.activateController([getQualifications(), getActiveServer()], controllerId)
                 .then(function () {
-
+                    getQualificationCodes();
                 });
         }
 
@@ -50,6 +55,37 @@
 
         function editListItem(item) {
             vm.qualification = item;
+        }
+
+        function getActiveServer() {
+            fhirServers.getActiveServer()
+                .then(function (server) {
+                    return vm.activeServer = server;
+                });
+        }
+
+        function getOrganizationReference(input) {
+            var deferred = $q.defer();
+            vm.loadingOrganizations = true;
+            organizationService.getOrganizationReference(vm.activeServer.baseUrl, input)
+                .then(function (data) {
+                    vm.loadingOrganizations = false;
+                    deferred.resolve(data);
+                }, function (error) {
+                    vm.loadingOrganizations = false;
+                    logError(error);
+                    deferred.reject();
+                });
+            return deferred.promise;
+        }
+
+        function getQualificationCodes() {
+            valuesetService.getExpansion(vm.activeServer.baseUrl, "http://hl7.org/fhir/vs/anzsco-occupations ")
+                .then(function (expansions) {
+                    return vm.occupationCodes = expansions;
+                }, function (error) {
+                    logError(error);
+                });
         }
 
         function getQualifications() {
