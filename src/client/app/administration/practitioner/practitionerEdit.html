@@ -32,35 +32,126 @@
                                 <div data-ng-include="'../../app/shared/telecom/telecom.html'"></div>
 
                                 <div class="form-group col-md-12">
-                                    <legend>Organization Affiliation</legend>
+                                    <legend>Organization Details</legend>
                                     <div class="controls col-md-10 col-md-offset-2">
                                         <div class="form-group col-md-10">
                                             <label for="practitioner-organization"
                                                    class="control-label">Organization</label>&nbsp;&nbsp;<input required
-                                                   type="text"
-                                                   id="practitioner-organization"
-                                                   class="form-control"
-                                                   placeholder="The organization that the practitioner represents"
-                                                   typeahead="item.display for item in vm.getOrganizationReference($viewValue) | filter:$viewValue"
-                                                   typeahead-loading="vm.loadingOrganizations"
-                                                   typeahead-wait-ms="300"
-                                                   typeahead-editable="false"
-                                                   typeahead-min-length="5"
-                                                   data-ng-model="vm.practitioner.managingOrganization">
+                                                                                                                type="text"
+                                                                                                                id="practitioner-organization"
+                                                                                                                class="form-control"
+                                                                                                                placeholder="The organization that the practitioner represents"
+                                                                                                                typeahead="item as item.display for item in vm.getOrganizationReference($viewValue) | filter:$viewValue"
+                                                                                                                typeahead-loading="vm.loadingOrganizations"
+                                                                                                                typeahead-wait-ms="300"
+                                                                                                                typeahead-editable="false"
+                                                                                                                typeahead-min-length="5"
+                                                                                                                data-ng-model="vm.practitioner.organization">
                                         </div>
 
-                                        <div class="form-group col-md-6">
-                                            <label for="practitioner-role"
-                                                   class="control-label">Role</label>&nbsp;&nbsp;<select
-                                                class="form-control" id="practitioner-role"
-                                                data-ng-model="vm.practitioner.role">
-                                            <option data-ng-repeat="coding in vm.practitionerRoles"
-                                                    value="{{coding.display}}"
-                                                    data-ng-selected="coding.code===vm.practitioner.role.code">
-                                                {{coding.display}}
-                                            </option>
-                                            <option value="">[Select a Role]</option>
-                                        </select>
+                                        <div class="form-group col-md-12">
+                                            <div class="form-group col-md-6">
+                                                <label for="practitioner-specialty"
+                                                       class="control-label">Specialty</label>&nbsp;&nbsp;
+                                                <select
+                                                        class="form-control"
+                                                        id="practitioner-specialty"
+                                                        data-ng-model="vm.selectedSpecialty"
+                                                        data-ng-change="vm.selectSpecialty()">
+                                                    <option value=null>[Select a Specialty]</option>
+                                                    <option data-ng-repeat="coding in vm.practitionerSpecialties"
+                                                            value="{{coding}}">
+                                                        {{coding.display}}
+                                                    </option>
+
+                                                </select>
+                                            </div>
+                                            <div collapse="vm.practitioner.specialty.length===0" class="col-md-6">
+                                                <form>
+                                                    <table class="table table-responsive">
+                                                        <thead>
+                                                        <tr>
+                                                            <th colspan="2">Specialties</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr data-ng-repeat="item in vm.practitioner.specialty">
+                                                            <td>{{item.display}}</td>
+                                                            <td style="padding-top: 0px;text-align:right">
+                                                                <img src="/content/images/x_red.gif"
+                                                                     data-ng-click="vm.removeSpecialty(item)"
+                                                                     tooltip="remove"/>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </form>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="form-group col-md-12">
+                                            <div class="form-group col-md-6">
+                                                <label for="practitioner-role"
+                                                       class="control-label">Role</label>&nbsp;&nbsp;
+                                                <select
+                                                        class="form-control"
+                                                        id="practitioner-role"
+                                                        data-ng-model="vm.selectedRole"
+                                                        data-ng-change="vm.selectRole()">
+                                                    <option value=null>[Select a Role]</option>
+                                                    <option data-ng-repeat="coding in vm.practitionerRoles"
+                                                            value="{{coding}}">
+                                                        {{coding.display}}
+                                                    </option>
+
+                                                </select>
+                                            </div>
+                                            <div collapse="vm.practitioner.role.length===0" class="col-md-6">
+                                                <form>
+                                                    <table class="table table-responsive">
+                                                        <thead>
+                                                        <tr>
+                                                            <th colspan="2">Roles</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr data-ng-repeat="item in vm.practitioner.role">
+                                                            <td>{{item.display}}</td>
+                                                            <td style="padding-top: 0px;text-align:right">
+                                                                <img src="/content/images/x_red.gif"
+                                                                     data-ng-click="vm.removeRole(item)"
+                                                                     tooltip="remove"/>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                        <div collapse="vm.practitioner.role.length === 0"
+                                             class="form-group col-md-10">
+                                            <legend>Period</legend>
+                                            <span class="help-block">The period during which the practitioner is authorized to perform in these role(s)</span>
+                                            <div class="form-group col-md-12">
+                                                <div class="col-md-6">
+                                                    <label class="control-label" for="name-period-start">Start</label>&nbsp;&nbsp;
+                                                    <input type="date"
+                                                           id="name-period-start"
+                                                           class="form-control"
+                                                           tooltip="Start date of name"
+                                                           data-ng-model="vm.practitioner.period.start">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="control-label" for="name-period-start">End</label>&nbsp;&nbsp;
+                                                    <input type="date"
+                                                           id="name-period-end"
+                                                           class="form-control"
+                                                           tooltip="Leave blank if current"
+                                                           data-ng-model="vm.practitioner.period.end">
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

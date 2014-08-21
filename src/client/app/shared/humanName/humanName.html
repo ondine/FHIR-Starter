@@ -24,14 +24,16 @@
                     <input id="name-prefix"
                            class="form-control"
                            placeholder="Parts that come before the name"
-                           data-ng-model="vm.humanName.prefix">
+                           data-ng-model="vm.humanName.prefix"
+                           data-ng-change="vm.updateName()">
                 </div>
                 <div class="form-group col-md-10">
                     <label class="control-label" for="name-given">Given Name</label>&nbsp;&nbsp;
                     <input required id="name-given"
                            class="form-control"
                            placeholder="Given names include middle names"
-                           data-ng-model="vm.humanName.given">
+                           data-ng-model="vm.humanName.given"
+                           data-ng-change="vm.updateName()">
                 </div>
                 <div class="form-group col-md-10">
                     <label class="control-label" for="name-family">Family Name</label>&nbsp;&nbsp;
@@ -39,14 +41,16 @@
                             id="name-family"
                             class="form-control"
                             placeholder="Family name (often called 'Surname')"
-                            data-ng-model="vm.humanName.family">
+                            data-ng-model="vm.humanName.family"
+                            data-ng-change="vm.updateName()">
                 </div>
                 <div class="form-group col-md-6">
                     <label class="control-label" for="name-suffix">Suffix</label>&nbsp;&nbsp;
                     <input id="name-suffix"
                            class="form-control"
                            placeholder="Parts that come after the name"
-                           data-ng-model="vm.humanName.suffix">
+                           data-ng-model="vm.humanName.suffix"
+                           data-ng-change="vm.updateName()">
                 </div>
                 <div collapse="vm.humanName.use !== ('old') && vm.humanName.use !== ('temp')"
                      class="form-group col-md-10">

@@ -20,12 +20,10 @@
     angular.module('FHIRStarter').factory(serviceId, ['$http', 'common', addressService]);
 
     function addressService($http, common) {
-        var addresses = [];
-        var getLogFn = common.logger.getLogFn;
-        var log = getLogFn(serviceId);
         var $q = common.$q;
-        var home = true;
         var _mode = 'multi';
+        var addresses = [];
+        var home = true;
 
         var service = {
             add: add,

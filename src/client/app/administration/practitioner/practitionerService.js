@@ -171,20 +171,23 @@
 
         function initializeNewPractitioner() {
             return {
-                "resourceType": "Practitioner",
-                "name": [],
-                "gender": undefined,
-                "birthDate": null,
-                "maritalStatus": undefined,
-                //              "multipleBirth": false,
-                "telecom": [],
+                "active": true,
                 "address": [],
+                "birthDate": null,
+                "communication": [],
+                "gender": null,
+                "identifier": [],
+                "location": [],
+                "name": null,
+                "organization": null,
+                "period": null,
                 "photo": [],
-                "communication": {},
-                "managingOrganization": null,
-                "contact": [],
-                "link": [],
-                "active": true};
+                "qualification": [],
+                "resourceType": "Practitioner",
+                "role": [],
+                "specialty": [],
+                "telecom": []
+            }
         }
 
         function updatePractitioner(resourceVersionId, resource) {
@@ -215,29 +218,29 @@
             if (resource.address.length === 0) {
                 resource.address = null;
             }
+            if (resource.communication.length === 0) {
+                resource.communication = null;
+            }
             if (resource.identifier.length === 0) {
                 resource.identifier = null;
             }
-            if (resource.contact.length === 0) {
-                resource.contact = null;
-            }
-            if (resource.telecom.length === 0) {
-                resource.telecom = null;
+            if (resource.location.length === 0) {
+                resource.location = null;
             }
             if (resource.photo.length === 0) {
                 resource.photo = null;
             }
-            if (resource.communication.length === 0) {
-                resource.communication = null;
+            if (resource.qualification.length === 0) {
+                resource.qualification = null;
             }
-            if (resource.link.length === 0) {
-                resource.link = null;
+            if (resource.role.length === 0) {
+                resource.role = null;
             }
-            if (resource.maritalStatus.coding && resource.maritalStatus.coding.length === 0) {
-                resource.maritalStatus = null;
+            if (resource.specialty.length === 0) {
+                resource.specialty = null;
             }
-            if (resource.gender.coding && resource.gender.coding.length === 0) {
-                resource.gender = null;
+            if (resource.telecom.length === 0) {
+                resource.telecom = null;
             }
             return $q.when(resource);
         }

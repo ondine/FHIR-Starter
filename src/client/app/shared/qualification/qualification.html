@@ -5,15 +5,15 @@
             <data-ng-form name="qualificationEditForm" class="form-horizontal" data-ng-model="vm.qualification">
 
                 <div class="form-group col-md-10">
-                    <label class="control-label" for="qualification-code">Specialty</label>&nbsp;&nbsp;
+                    <label class="control-label" for="qualification-code">Occupation</label>&nbsp;&nbsp;
                     <input
                             required
                             type="text"
                             typeahead="code as code.display for code in vm.occupationCodes | filter:$viewValue | limitTo:5"
                             id="qualification-code"
                             class="form-control"
-                            placeholder="Coded representation of the qualification"
-                            data-ng-model="vm.qualification.specialty">
+                            placeholder="Specific qualification the practitioner has to provide a service"
+                            data-ng-model="vm.qualification.code">
                 </div>
 
                 <div class="form-group col-md-10">

@@ -212,6 +212,33 @@
         }
     });
 
+    app.directive('fsAddListItem', function ($parse) {
+        // Description:
+        //
+        // Usage: <div data-fs-add-list-item="item" on-change="addListItem()"></div>
+        var directive = {
+            restrict: "EA",
+            template: "<input multiple='false' type='file' />",
+            replace: true,
+            link: link
+        };
+        return directive;
+
+        function link(scope, element, attrs) {
+            var modelGet = $parse(attrs.fsAddListItem);
+            var modelSet = modelGet.assign;
+            var onChange = $parse(attrs.onChange);
+
+            var updateModel = function () {
+                scope.$apply(function () {
+                    modelSet(scope, element[0].files[0]);
+                    onChange(scope);
+                });
+            };
+            element.bind('change', updateModel);
+        }
+    });
+
     app.directive('fsImgPerson', ['config', function (config) {
         //Usage:
         //<img data-fs-img-person="vm.person.photo[0]"/>

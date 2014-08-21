@@ -31,7 +31,8 @@
             getMode: getMode,
             init: init,
             mapFromViewModel: mapFromViewModel,
-            reset: reset
+            reset: reset,
+            setSingle: setSingle
         }
 
         return service;
@@ -77,23 +78,25 @@
             if (angular.isArray(items)) {
                 humanNames = [];
                 _.forEach(items, function (item) {
-                    var humanName = {};
-                    if (angular.isArray(item.given)) {
-                        humanName.given = item.given.join(' ');
+                    if ((angular.isUndefined(item) || item === null) === false) {
+                        var humanName = {};
+                        if (angular.isArray(item.given)) {
+                            humanName.given = item.given.join(' ');
+                        }
+                        if (angular.isArray(item.family)) {
+                            humanName.family = item.family.join(' ');
+                        }
+                        if (angular.isArray(item.prefix)) {
+                            humanName.prefix = item.prefix.join(' ');
+                        }
+                        if (angular.isArray(item.suffix)) {
+                            humanName.suffix = item.suffix.join(' ');
+                        }
+                        humanName.text = item.text;
+                        humanName.period = item.period;
+                        humanName.use = item.use;
+                        humanNames.push(humanName);
                     }
-                    if (angular.isArray(item.family)) {
-                        humanName.family = item.family.join(' ');
-                    }
-                    if (angular.isArray(item.prefix)) {
-                        humanName.prefix = item.prefix.join(' ');
-                    }
-                    if (angular.isArray(item.suffix)) {
-                        humanName.suffix = item.suffix.join(' ');
-                    }
-                    humanName.text = item.text;
-                    humanName.period = item.period;
-                    humanName.use = item.use;
-                    humanNames.push(humanName);
                 });
             } else {
                 humanNames = [];
@@ -135,6 +138,11 @@
             while (humanNames.length > 0) {
                 humanNames.pop();
             }
+        }
+
+        function setSingle(item) {
+            reset();
+            add(item);
         }
     }
 })();

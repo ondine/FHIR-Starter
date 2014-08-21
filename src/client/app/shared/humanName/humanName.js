@@ -30,6 +30,7 @@
         vm.mode = 'multi';
         vm.removeListItem = removeListItem;
         vm.reset = reset;
+        vm.updateName = updateName;
 
         activate();
 
@@ -80,6 +81,12 @@
         function reset(form) {
             initName();
             form.$setPristine();
+        }
+
+        function updateName() {
+            if (vm.mode === 'single') {
+                humanNameService.setSingle(vm.humanName);
+            }
         }
     }
 })();

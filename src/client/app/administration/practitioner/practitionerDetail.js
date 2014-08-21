@@ -41,7 +41,13 @@
         vm.isEditing = true;
         vm.loadingOrganizations = false;
         vm.practitioner = undefined;
+        vm.removeRole = removeRole;
+        vm.removeSpecialty = removeSpecialty;
         vm.save = save;
+        vm.selectedRole = null;
+        vm.selectRole = selectRole;
+        vm.selectedSpecialty = null;
+        vm.selectSpecialty = selectSpecialty;
         vm.title = 'practitionerDetail';
 
         Object.defineProperty(vm, 'canSave', {
@@ -58,6 +64,7 @@
             common.activateController([getActiveServer()], controllerId)
                 .then(function () {
                     getPractitionerRoles();
+                    getPractitionerSpecialties();
                     getRequestedPractitioner();
                 });
         }
@@ -117,9 +124,18 @@
         }
 
         function getPractitionerRoles() {
-            valuesetService.getExpansion(vm.activeServer.baseUrl, "http://hl7.org/fhir/vs/practitioner-role ")
+            valuesetService.getExpansion(vm.activeServer.baseUrl, "http://hl7.org/fhir/vs/practitioner-role")
                 .then(function (expansions) {
                     return vm.practitionerRoles = expansions;
+                }, function (error) {
+                    logError(common.unexpectedOutcome(error));
+                });
+        }
+
+        function getPractitionerSpecialties() {
+            valuesetService.getExpansion(vm.activeServer.baseUrl, "http://hl7.org/fhir/vs/practitioner-specialty")
+                .then(function (expansions) {
+                    return vm.practitionerSpecialties = expansions;
                 }, function (error) {
                     logError(common.unexpectedOutcome(error));
                 });
@@ -183,9 +199,11 @@
             demographicsService.setBirthDate(vm.practitioner.birthDate);
             attachmentService.init(vm.practitioner.photo, "Photos");
             identifierService.init(vm.practitioner.identifier);
-            addressService.init(vm.practitioner.address, true, 'single');
+            addressService.init(vm.practitioner.address, true, 'multi');
             telecomService.init(vm.practitioner.telecom, true, true);
             vm.practitioner.fullName = humanNameService.getFullName();
+            vm.practitioner.role = vm.practitioner.role || [];
+            vm.practitioner.specialty = vm.practitioner.specialty || [];
             if (vm.practitioner.organization && vm.practitioner.organization.reference) {
                 var reference = vm.practitioner.organization.reference;
                 if (common.isAbsoluteUri(reference) === false) {
@@ -212,6 +230,20 @@
             toggleSpinner(false);
         }
 
+        function removeRole(item) {
+            _.remove(vm.practitioner.role, function (removedItem) {
+                return removedItem === item;
+            });
+
+        }
+
+        function removeSpecialty(item) {
+            _.remove(vm.practitioner.specialty, function (removedItem) {
+                return removedItem === item;
+            });
+
+        }
+        
         function save() {
             var practitioner = practitionerService.initializeNewPractitioner();
             if (humanNameService.getAll().length === 0) {
@@ -221,21 +253,14 @@
             toggleSpinner(true);
             practitioner.name = humanNameService.mapFromViewModel()[0];
             practitioner.photo = attachmentService.getAll();
-
-            practitioner.birthDate = demographicsService.getBirthDate();
-            practitioner.gender = demographicsService.getGender();
-            practitioner.maritalStatus = demographicsService.getMaritalStatus();
-            practitioner.multipleBirthBoolean = demographicsService.getMultipleBirth();
-            practitioner.multipleBirthInt = demographicsService.getBirthOrder();
-            practitioner.deceasedBoolean = demographicsService.getDeceased();
-            practitioner.deceasedDate = demographicsService.getDeceasedDate();
-
+            //         practitioner.birthDate = demographicsService.getBirthDate();
+            //       practitioner.gender = demographicsService.getGender();
             practitioner.address = addressService.mapFromViewModel();
             practitioner.telecom = telecomService.mapFromViewModel();
             practitioner.identifier = identifierService.getAll();
-
-            practitioner.managingOrganization = vm.practitioner.managingOrganization;
-
+            practitioner.organization = vm.practitioner.organization;
+            practitioner.role = vm.practitioner.role;
+            practitioner.specialty = vm.practitioner.specialty;
             practitioner.active = vm.practitioner.active;
             if (vm.isEditing) {
                 practitionerService.updatePractitioner(vm.practitioner.resourceId, practitioner)
@@ -251,6 +276,24 @@
                         logError(common.unexpectedOutcome(error));
                         toggleSpinner(false);
                     });
+            }
+        }
+
+        function selectRole() {
+            var parsedItem = JSON.parse(vm.selectedRole);
+            if (parsedItem !== null) {
+                if (_.first(vm.practitioner.role, parsedItem).length === 0) {
+                    vm.practitioner.role.push(JSON.parse(vm.selectedRole));
+                }
+            }
+        }
+
+        function selectSpecialty() {
+            var parsedItem = JSON.parse(vm.selectedSpecialty);
+            if (parsedItem !== null) {
+                if (_.first(vm.practitioner.specialty, parsedItem).length === 0) {
+                    vm.practitioner.specialty.push(JSON.parse(vm.selectedSpecialty));
+                }
             }
         }
 
