@@ -46,10 +46,16 @@
 
         function addToList(form, item) {
             if (form.$valid) {
-                qualificationService.add(item);
-                vm.qualifications = qualificationService.getAll();
-                vm.qualification = null;
-                form.$setPristine();
+                if (item.code == false) {
+                    logError("Occupation is required");
+                } else {
+                    var coding = { "coding": [ item.code ], "text": item.code.display };
+                    item.code = coding;
+                    qualificationService.add(item);
+                    vm.qualifications = qualificationService.getAll();
+                    vm.qualification = null;
+                    form.$setPristine();
+                }
             }
         }
 

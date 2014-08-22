@@ -79,7 +79,7 @@
                         <thead>
                         <tr>
                             <th></th>
-                            <th>Specialty</th>
+                            <th>Occupation</th>
                             <th>Issuer</th>
                             <th>Period</th>
                             <th></th>
@@ -93,7 +93,7 @@
                                     Edit
                                 </button>
                             </td>
-                            <td>{{qual.specialty.display}}</td>
+                            <td>{{qual.code | codeableConcept}}</td>
                             <td>{{qual.issuer.display}}</td>
                             <td>{{qual.period | periodText }}
                             </td>

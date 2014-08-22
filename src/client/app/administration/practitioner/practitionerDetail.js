@@ -18,9 +18,9 @@
     var controllerId = 'practitionerDetail';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$location', '$routeParams', '$window', 'addressService', 'attachmentService', 'bootstrap.dialog', 'common', 'demographicsService', 'fhirServers', 'humanNameService', 'identifierService', 'localValueSets', 'organizationService', 'practitionerService', 'telecomService', 'valuesetService', practitionerDetail]);
+        ['$location', '$routeParams', '$window', 'addressService', 'attachmentService', 'bootstrap.dialog', 'common', 'demographicsService', 'fhirServers', 'humanNameService', 'identifierService', 'organizationService', 'practitionerService', 'qualificationService', 'telecomService', 'valuesetService', practitionerDetail]);
 
-    function practitionerDetail($location, $routeParams, $window, addressService, attachmentService, bsDialog, common, demographicsService, fhirServers, humanNameService, identifierService, localValueSets, organizationService, practitionerService, telecomService, valuesetService) {
+    function practitionerDetail($location, $routeParams, $window, addressService, attachmentService, bsDialog, common, demographicsService, fhirServers, humanNameService, identifierService, organizationService, practitionerService, qualificationService, telecomService, valuesetService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
         var logSuccess = common.logger.getLogFn(controllerId, 'success');
@@ -201,6 +201,7 @@
             identifierService.init(vm.practitioner.identifier);
             addressService.init(vm.practitioner.address, true, 'multi');
             telecomService.init(vm.practitioner.telecom, true, true);
+            qualificationService.init(vm.practitioner.qualification);
             vm.practitioner.fullName = humanNameService.getFullName();
             vm.practitioner.role = vm.practitioner.role || [];
             vm.practitioner.specialty = vm.practitioner.specialty || [];
@@ -232,18 +233,18 @@
 
         function removeRole(item) {
             _.remove(vm.practitioner.role, function (removedItem) {
-                return removedItem === item;
+                return removedItem.$$hashKey === item.$$hashKey;
             });
 
         }
 
         function removeSpecialty(item) {
             _.remove(vm.practitioner.specialty, function (removedItem) {
-                return removedItem === item;
+                return removedItem.$$hashKey === item.$$hashKey;
             });
 
         }
-        
+
         function save() {
             var practitioner = practitionerService.initializeNewPractitioner();
             if (humanNameService.getAll().length === 0) {
@@ -258,6 +259,7 @@
             practitioner.address = addressService.mapFromViewModel();
             practitioner.telecom = telecomService.mapFromViewModel();
             practitioner.identifier = identifierService.getAll();
+            practitioner.qualification = qualificationService.getAll();
             practitioner.organization = vm.practitioner.organization;
             practitioner.role = vm.practitioner.role;
             practitioner.specialty = vm.practitioner.specialty;
@@ -282,8 +284,9 @@
         function selectRole() {
             var parsedItem = JSON.parse(vm.selectedRole);
             if (parsedItem !== null) {
-                if (_.first(vm.practitioner.role, parsedItem).length === 0) {
-                    vm.practitioner.role.push(JSON.parse(vm.selectedRole));
+                var coding = { "coding": [parsedItem], "text": parsedItem.display };
+                if (_.first(vm.practitioner.role, coding).length === 0) {
+                    vm.practitioner.role.push(coding);
                 }
             }
         }
@@ -291,8 +294,9 @@
         function selectSpecialty() {
             var parsedItem = JSON.parse(vm.selectedSpecialty);
             if (parsedItem !== null) {
-                if (_.first(vm.practitioner.specialty, parsedItem).length === 0) {
-                    vm.practitioner.specialty.push(JSON.parse(vm.selectedSpecialty));
+                var coding = { "coding": [parsedItem], "text": parsedItem.display };
+                if (_.first(vm.practitioner.specialty, coding).length === 0) {
+                    vm.practitioner.specialty.push(coding);
                 }
             }
         }
