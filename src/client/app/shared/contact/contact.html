@@ -61,7 +61,6 @@
                         <thead>
                         <tr>
                             <th></th>
-
                             <th>Name</th>
                             <th>Phone</th>
                             <th>Email</th>
@@ -79,7 +78,7 @@
                             <td>{{c.name}}</td>
                             <td>{{c.phone}}</td>
                             <td>{{c.email}}</td>
-                            <td>{{c.purpose}}</td>
+                            <td>{{c.purpose | codeableConcept }}</td>
                             <td style="padding-top: 0px">
                                 <img
                                         src="/content/images/x_red.gif"

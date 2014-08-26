@@ -10,7 +10,7 @@
         var _birthOrder = null;
         var _deceased = false;
         var _deceasedDate = null;
-        var _language = { "coding": [] };
+        var _language = [];
         var _multipleBirth = false;
         var _gender = { "coding": [] };
         var _maritalStatus = { "coding": [] };
@@ -133,16 +133,8 @@
             }
         }
 
-        // only 1 item in array permitted
         function setLanguage(value) {
-            _language.coding = [];
-            if (value) {
-                if (angular.isObject(value)) {
-                    _language.coding.push(value);
-                } else {
-                    _language.coding.push(JSON.parse(value));
-                }
-            }
+            _language = value;
         }
 
         // only 1 item in array permitted

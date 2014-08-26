@@ -86,7 +86,7 @@
         }
 
         function getQualificationCodes() {
-            valuesetService.getExpansion(vm.activeServer.baseUrl, "http://hl7.org/fhir/vs/anzsco-occupations ")
+            valuesetService.getExpansion(vm.activeServer.baseUrl, "http://hl7.org/fhir/vs/anzsco-occupations")
                 .then(function (expansions) {
                     return vm.occupationCodes = expansions;
                 }, function (error) {

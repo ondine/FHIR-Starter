@@ -1,7 +1,91 @@
 <section class="mainbar" data-ng-controller="personDetail as vm">
     <section class="matter">
-        <div class="container-fluid">
-            Person hash key = {{vm.personIdParameter}}
+        <div class="container">
+            <div class="row">
+                <div class="btn-group col-md-12">
+                    <button class="btn btn-info" data-ng-click="vm.goBack()"><i class="fa fa-hand-o-left"></i>Back
+                    </button>
+                    <button class="btn btn-info" data-ng-click="vm.edit(vm.person)"><i class="fa fa-edit"></i>Edit
+                    </button>
+                    <div class="btn-group pull-right">
+                        <button class="btn btn-danger" data-ng-click="vm.delete(vm.person)"><i
+                                class="fa fa-trash-o"></i>Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="widget wviolet">
+                    <div data-cc-widget-header title="{{ vm.person.name | fullName }}">
+                    </div>
+                    <div class="widget-content user col-md-12">
+                        <div class="col-md-2">
+                            <img data-fs-img-person="vm.person.photo[0]"
+                                 class="img-polaroid" src="/content/images/unknown_person.jpg"/>
+                        </div>
+                        <div class="col-md-10">
+                            <table class="table table-striped table-hover">
+                                <tr>
+                                    <td>Name</td>
+                                    <td>{{vm.person.name | fullName }}</td>
+                                </tr>
+                                 <tr>
+                                    <td>Gender</td>
+                                    <td>
+                                        {{vm.person.gender | codeableConcept}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Address</td>
+                                    <td>
+                                        <p class="small" data-ng-repeat="a in vm.person.address">
+                                            <strong>{{a.use}}</strong>: {{a | singleLineAddress}}
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Telecommunication</td>
+                                    <td>
+                                        <p class="small" data-ng-repeat="t in vm.person.telecom">
+                                            <strong>{{t.use}} {{t.system}}</strong>: {{t.value}}
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Related Patient</td>
+                                    <td>
+                                        <a href="{{vm.person.patient.reference}}">{{vm.person.patient.display}}</a><br/>
+                                        Relationship to Patient: {{vm.person.relationship | codeableConcept}}
+                                    </td>
+                                </tr>
+                                <tr data-ng-show="vm.person.identifier">
+                                    <td>Identifiers</td>
+                                    <td>
+                                        <table class="table table-striped table-hover small">
+                                            <thead>
+                                            <tr>
+                                                <th>System</th>
+                                                <th>Value</th>
+                                                <th>Label</th>
+                                                <th>Use</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr data-ng-repeat="id in vm.person.identifier">
+                                                <td>{{id.system}}</td>
+                                                <td>{{id.value}}</td>
+                                                <td>{{id.label}}</td>
+                                                <td>{{id.use}}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 </section>

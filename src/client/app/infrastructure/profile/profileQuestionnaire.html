@@ -72,12 +72,12 @@
 
                         <p>{{vm.questionnaire.group.text}}</p>
                         <data-ng-form name="patientEditForm" class="form-horizontal"
-                                      data-ng-model="vm.formData">
+                                      data-ng-model="vm.questionnaire.group.linkId">
                             <fieldset>
                                 <div class="form-group col-md-12">
-                                    <!-- dynamic form here -->
-                                    <div data-ng-repeat="item in vm.questionnaire.group.group">
-                                        <data-fs-questionnaire-group group="item"></data-fs-questionnaire-group>
+                                    <!-- render form -->
+                                    <div>
+                                        <data-fs-questionnaire-groups groups="vm.questionnaire.group.group" />
                                     </div>
                                 </div>
                             </fieldset>

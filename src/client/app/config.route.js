@@ -167,6 +167,14 @@
                 url: '/person/:hashKey',
                 config: {
                     title: 'person',
+                    templateUrl: '/app/administration/person/personEdit.html',
+                    settings: { }
+                }
+            },
+            {
+                url: '/person/view/:hashKey',
+                config: {
+                    title: 'person',
                     templateUrl: '/app/administration/person/personDetail.html',
                     settings: { }
                 }

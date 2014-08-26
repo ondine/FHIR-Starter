@@ -17,36 +17,138 @@
 
     var serviceId = 'personService';
 
-    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', personService]);
+    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', 'fhirServers', personService]);
 
-    function personService(common, dataCache, fhirClient) {
-        var getLogFn = common.logger.getLogFn;
-        var log = getLogFn(serviceId);
-        var logError = getLogFn(serviceId, 'error');
-        var logSuccess = getLogFn(serviceId, 'success');
+    function personService(common, dataCache, fhirClient, fhirServers) {
+        var dataCacheKey = 'localPersons';
+        var linksCacheKey = 'linksPersons';
+        var itemCacheKey = 'contextPerson';
         var $q = common.$q;
 
         var service = {
             addPerson: addPerson,
-            updatePerson: updatePerson,
-            getPerson: getPerson,
+            clearCache: clearCache,
+            deleteCachedPerson: deleteCachedPerson,
             deletePerson: deletePerson,
-            getPersons: getPersons
+            getCachedPerson: getCachedPerson,
+            getCachedSearchResults: getCachedSearchResults,
+            getPerson: getPerson,
+            getPersons: getPersons,
+            initializeNewPerson: initializeNewPerson,
+            updatePerson: updatePerson
         };
 
         return service;
 
-
         function addPerson(resource) {
+            _prepArrays(resource);
+            var deferred = $q.defer();
+            fhirServers.getActiveServer()
+                .then(function (server) {
+                    var url = server.baseUrl + "/RelatedPerson";
+                    fhirClient.addResource(url, resource)
+                        .then(function (results) {
+                            deferred.resolve(results);
+                        }, function (outcome) {
+                            deferred.reject(outcome);
+                        });
+                });
+            return deferred.promise
+        }
 
+        function clearCache() {
+            dataCache.addToCache(dataCacheKey, null);
+        }
+
+        function deleteCachedPerson(hashKey, resourceId) {
+            var deferred = $q.defer();
+            deletePerson(resourceId)
+                .then(getCachedSearchResults,
+                function (error) {
+                    deferred.reject(error);
+                })
+                .then(removeFromCache,
+                function (error) {
+                    deferred.reject(error);
+                })
+                .then(function () {
+                    deferred.resolve()
+                });
+            return deferred.promise;
+
+            function removeFromCache(searchResults) {
+                if (searchResults && searchResults.entry) {
+                    var cachedPersons = searchResults.entry;
+                    searchResults.entry = _.remove(cachedPersons, function (item) {
+                        return item.$$hashKey !== hashKey;
+                    });
+                    searchResults.totalResults = (searchResults.totalResults - 1);
+                    dataCache.addToCache(dataCacheKey, searchResults);
+                }
+                deferred.resolve();
+            }
         }
 
         function deletePerson(resourceId) {
+            var deferred = $q.defer();
+            fhirClient.deleteResource(resourceId)
+                .then(function (results) {
+                    deferred.resolve(results);
+                }, function (outcome) {
+                    deferred.reject(outcome);
+                });
+            return deferred.promise;
+        }
 
+        function getCachedPerson(hashKey) {
+            var deferred = $q.defer();
+            getCachedSearchResults()
+                .then(getPerson,
+                function () {
+                    deferred.reject('Related Person search results not found in cache.');
+                });
+            return deferred.promise;
+
+            function getPerson(searchResults) {
+                var cachedPerson;
+                var cachedPersons = searchResults.entry;
+                for (var i = 0, len = cachedPersons.length; i < len; i++) {
+                    if (cachedPersons[i].$$hashKey === hashKey) {
+                        cachedPerson = cachedPersons[i];
+                        cachedPerson.content.resourceId = cachedPerson.id;
+                        cachedPerson.content.hashKey = cachedPerson.$$hashKey;
+                        break;
+                    }
+                }
+                if (cachedPerson) {
+                    deferred.resolve(cachedPerson.content)
+                } else {
+                    deferred.reject('Related Person not found in cache: ' + hashKey);
+                }
+            }
+        }
+
+        function getCachedSearchResults() {
+            var deferred = $q.defer();
+            var cachedSearchResults = dataCache.readFromCache(dataCacheKey);
+            if (cachedSearchResults) {
+                deferred.resolve(cachedSearchResults);
+            } else {
+                deferred.reject('Search results not cached.');
+            }
+            return deferred.promise;
         }
 
         function getPerson(resourceId) {
-
+            var deferred = $q.defer();
+            fhirClient.getResource(resourceId)
+                .then(function (data) {
+                    dataCache.addToCache(dataCacheKey, data);
+                    deferred.resolve(data);
+                }, function (outcome) {
+                    deferred.reject(outcome);
+                });
+            return deferred.promise;
         }
 
         function getPersons(baseUrl, nameFilter, page, size) {
@@ -64,20 +166,69 @@
             } else {
                 params = 'given=' + names[0] + '&family=' + names[1];
             }
-            params = params + '&_offset=' + skip + '&_count=' + take;
+            params = params + '&_count=' + take;
 
-            fhirClient.getResource(baseUrl + '/RelatedPerson/_search?' + params)
-                .then(function (data) {
-                    dataCache.addToCache('persons', data.entry);
-                    deferred.resolve(data);
+            fhirClient.getResource(baseUrl + '/RelatedPerson/?' + params)
+                .then(function (results) {
+                    dataCache.addToCache(dataCacheKey, results.data);
+                    deferred.resolve(results.data);
                 }, function (outcome) {
                     deferred.reject(outcome);
                 });
             return deferred.promise;
         }
 
-        function updatePerson(resourceId, resource) {
+        function initializeNewPerson() {
+            return {
+                "active": true,
+                "address": [],
+                "gender": undefined,
+                "name": [],
+                "patient": null,
+                "photo": [],
+                "relationship": { "coding": []},
+                "resourceType": "RelatedPerson",
+                "telecom": []};
+        }
 
+        function updatePerson(resourceVersionId, resource) {
+            _prepArrays(resource);
+            var deferred = $q.defer();
+            fhirClient.updateResource(resourceVersionId, resource)
+                .then(function (results) {
+                    deferred.resolve(results);
+                }, function (outcome) {
+                    deferred.reject(outcome);
+                });
+            return deferred.promise;
+        }
+
+        function _addToCache(person) {
+            var cachedPersons = searchResults.entry;
+            _.remove(cachedPersons,function (item) {
+                return item.$$hashKey !== hashKey;
+            }).then(function (reducedItems) {
+                    searchResults.entry = reducedItems;
+                    searchResults.totalResults = (searchResults.totalResults - 1);
+                    dataCache.addToCache(dataCacheKey, searchResults);
+                });
+            deferred.resolve();
+        }
+
+        function _prepArrays(resource) {
+            if (resource.address.length === 0) {
+                resource.address = null;
+            }
+            if (resource.identifier.length === 0) {
+                resource.identifier = null;
+            }
+            if (resource.telecom.length === 0) {
+                resource.telecom = null;
+            }
+            if (resource.photo.length === 0) {
+                resource.photo = null;
+            }
+            return $q.when(resource);
         }
     }
 })();

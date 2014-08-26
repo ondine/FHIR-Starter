@@ -80,7 +80,7 @@
 
         function goToPerson(person) {
             if (person && person.$$hashKey) {
-                $location.path('/person/' + person.$$hashKey);
+                $location.path('/person/view/' + person.$$hashKey);
             }
         }
 

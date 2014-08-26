@@ -17,9 +17,9 @@
 
     var serviceId = 'patientService';
 
-    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', 'fhirServers', patientService]);
+    angular.module('FHIRStarter').factory(serviceId, ['$filter', 'common', 'dataCache', 'fhirClient', 'fhirServers', patientService]);
 
-    function patientService(common, dataCache, fhirClient, fhirServers) {
+    function patientService($filter, common, dataCache, fhirClient, fhirServers) {
         var dataCacheKey = 'localPatients';
         var linksCacheKey = 'linksPatients';
         var itemCacheKey = 'contextPatient';
@@ -33,6 +33,7 @@
             getCachedPatient: getCachedPatient,
             getCachedSearchResults: getCachedSearchResults,
             getPatient: getPatient,
+            getPatientReference: getPatientReference,
             getPatients: getPatients,
             initializeNewPatient: initializeNewPatient,
             updatePatient: updatePatient
@@ -145,6 +146,30 @@
                 .then(function (data) {
                     dataCache.addToCache(dataCacheKey, data);
                     deferred.resolve(data);
+                }, function (outcome) {
+                    deferred.reject(outcome);
+                });
+            return deferred.promise;
+        }
+
+        function getPatientReference(baseUrl, input) {
+            var deferred = $q.defer();
+            fhirClient.getResource(baseUrl + '/Patient/?name=' + input + '&_count=20&_summary=true')
+                .then(function (results) {
+                    var patients = [];
+                    if (results.data.entry) {
+                        angular.forEach(results.data.entry,
+                            function (item) {
+                                if (item.content && item.content.resourceType === 'Patient') {
+                                  //  var display = com
+                                    patients.push({display: $filter('fullName')(item.content.name), reference: item.id});
+                                }
+                            });
+                    }
+                    if (patients.length === 0) {
+                        patients.push({display: "No matches", reference: ''})
+                    }
+                    deferred.resolve(patients);
                 }, function (outcome) {
                     deferred.reject(outcome);
                 });

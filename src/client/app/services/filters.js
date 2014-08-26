@@ -17,27 +17,25 @@
 
     var app = angular.module('FHIRStarter');
 
-
     app.filter('codeableConcept', function () {
         return function (codeableConcept) {
-            if (codeableConcept && angular.isArray(codeableConcept.coding)) {
+            if (angular.isUndefined(codeableConcept)) {
+                return '';
+            } else if (angular.isArray(codeableConcept.coding)) {
                 if (codeableConcept.text) {
                     return codeableConcept.text;
                 } else {
-                    var item = _.first(codeableConcept.coding,
-                        function (item) {
-                            return item.display && item.display.length > 0;
-                        });
-                    if (item && angular.isArray(item)) {
+                    var item = _.first(codeableConcept.coding, 'display');
+                    if (item && angular.isArray(item) && item.length > 0) {
                         return item[0].display;
-                    } else if (item) {
+                    } else if (item && item.display) {
                         return item.display;
                     } else {
-                        return "No display for coding";
+                        return "No display text for code";
                     }
                 }
             } else {
-                return 'Bad input';
+                return "Bad input";
             }
         }
     });
@@ -73,6 +71,33 @@
         }
     });
 
+    app.filter('questionnaireInputType', function () {
+        return function (inputType) {
+            var retValue = 'text';
+            if (inputType) {
+                if (inputType === 'dateTime') {
+                    retValue = 'date';
+                }
+            }
+            return retValue;
+        }
+    });
+
+    app.filter('questionnaireFlyover', function () {
+        return function (extension) {
+            var retValue = '';
+            if (angular.isArray(extension)) {
+                var flyover = _.find(extension, function (item) {
+                    return item.url === 'http://hl7.org/fhir/Profile/questionnaire-extensions#flyover';
+                });
+                if (flyover !== null && flyover.valueString) {
+                    retValue = flyover.valueString;
+                }
+            }
+            return retValue;
+        }
+    });
+
     app.filter('questionnaireLabel', function () {
         return function (linkId) {
             var retValue = 'Unspecified';
@@ -80,10 +105,18 @@
                 retValue = spaceWords(linkId);
                 var startIndex = retValue.lastIndexOf('.');
                 if (startIndex > 0) {
-                    retValue = capitalizeFirstWord(retValue.substring(startIndex + 1));
+                    retValue = retValue.substring(startIndex + 1);
+                    // check for hashed notation
+                    var hashIndex = retValue.indexOf('[#');
+                    if (hashIndex > 0) {
+                        retValue = retValue.substring(hashIndex + 2);
+                        retValue = retValue.replace("]", "");
+                    }
+                    retValue = retValue.replace("[x]", "");
+                    retValue = capitalizeFirstWord(retValue);
                 }
             }
-            return retValue;
+            return retValue === 'Value' ? '' : retValue;
 
             function capitalizeFirstWord(input) {
                 return input.replace(/^./, function (match) {

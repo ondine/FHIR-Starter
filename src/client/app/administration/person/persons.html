@@ -14,7 +14,7 @@
                         <a class="btn btn-info"
                            data-ng-click="vm.search($event)"><i class="fa fa-search"></i><span>Search</span></a>
                         <a class="btn btn-info" href="/person/new"><i
-                                class="fa fa-plus"></i><span>Add Person</span></a>
+                                class="fa fa-plus"></i><span>Add Related Person</span></a>
                     </div>
                 </div>
             </div>
@@ -30,39 +30,42 @@
                     </small>
                 </p>
             </div>
-            <div class="row" data-ng-show="vm.persons">
-                <div class="widget wviolet">
+            <div class="row-fluid">
+                <div class="widget wviolet" data-ng-show="vm.persons">
                     <div data-cc-widget-header title="{{vm.title}}"
                          subtitle="{{vm.paging.totalResults}} total results"
                          right-text="Page {{vm.paging.currentPage}} of {{vm.paging.pageCount}}"></div>
-                    <div class="widget-content col-sm-12">
-                        <ul class="list-group">
-                            <div class="col-sm-6"
-                                 data-ng-repeat="p in vm.persons"
-                                 data-ng-click="vm.goToPerson(p)">
-                                <fs-search-item name="{{p.title}}"
-                                                summary="{{p.summary}}"
-                                                resourceid="{{p.id}}"
-                                                edit="edit(p.$$hashKey)"></fs-search-item>
+                    <div class="widget-content user">
+                        <div class="padd list-flow"
+                             data-ng-repeat="p in vm.persons"
+                             data-ng-click="vm.goToPerson(p)">
+                            <div class="user" title="Go to person details">
+                                <img fs-img-person="p.content.photo[0]"
+                                     class="img-polaroid stacked" src="/content/images/unknown_person.jpg"/>
+
+                                <div class="name-stack">
+                                    <h5>{{p.content.name | fullName}}</h5>
+                                </div>
                             </div>
-                        </ul>
+                        </div>
                     </div>
-                </div>
-                <div class="widget-foot">
-                    <div data-ng-show="vm.paging.totalResults > vm.paging.pageSize">
-                        <pagination boundary-links="false"
-                                    ng-change="vm.pageChanged()"
-                                    total-items="vm.paging.totalResults"
-                                    items-per-page="vm.paging.pageSize"
-                                    ng-model="vm.paging.currentPage"
-                                    max-size="vm.paging.maxPagesToShow"
-                                    class="pagination-small"
-                                    previous-text="Prev"
-                                    next-text="Next"
-                                    first-text="First"
-                                    last-text="Last"></pagination>
+                    <div class="widget-foot">
+                        <div class="clearfix"></div>
+                        <div data-ng-show="vm.paging.totalResults > vm.paging.pageSize">
+                            <pagination boundary-links="false"
+                                        ng-change="vm.pageChanged()"
+                                        total-items="vm.paging.totalResults"
+                                        items-per-page="vm.paging.pageSize"
+                                        ng-model="vm.paging.currentPage"
+                                        max-size="vm.paging.maxPagesToShow"
+                                        class="pagination-small"
+                                        previous-text="Prev"
+                                        next-text="Next"
+                                        first-text="First"
+                                        last-text="Last"></pagination>
+                        </div>
+                        <div class="clearfix"></div>
                     </div>
-                    <div class="clearfix"></div>
                 </div>
             </div>
         </div>

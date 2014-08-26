@@ -40,7 +40,7 @@
                                 <tr>
                                     <td>Gender</td>
                                     <td>
-                                        {{vm.patient.gender.coding[0].display}}
+                                        {{vm.patient.gender | codeableConcept}}
                                     </td>
                                 </tr>
                                 <tr>
@@ -78,15 +78,17 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Primary Language</td>
+                                    <td>Languages</td>
                                     <td>
-                                        {{vm.patient.communication.coding[0].display}}
+                                        <p class="small" data-ng-repeat="l in vm.patient.communication">
+                                            {{l | codeableConcept}}<br/>
+                                        </p>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Marital Status</td>
                                     <td>
-                                        {{vm.patient.maritalStatus.coding[0].display}}
+                                        {{vm.patient.maritalStatus | codeableConcept}}
                                     </td>
                                 </tr>
                                 <tr>

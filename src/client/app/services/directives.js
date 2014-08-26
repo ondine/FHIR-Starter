@@ -239,52 +239,30 @@
         }
     });
 
-    app.directive('fsImgPerson', ['config', function (config) {
-        //Usage:
-        //<img data-fs-img-person="vm.person.photo[0]"/>
+
+    app.directive('fsAddToList', [function () {
+        // Description: if value is true, set image to check mark
+        // Usage: <i data-add-to-list="vm.isRequired"/></i>
         var directive = {
+            restrict: 'A',
+            replace: true,
             link: link,
             scope: {
-                fsImgPerson: "=?"
-            },
-            restrict: 'A'
+                fsAddToList: "=?"
+            }
         };
         return directive;
 
         function link(scope, element, attrs) {
-            scope.$watch('fsImgPerson', function (value) {
-                var imgSource = config.imageSettings.unknownPersonImageSource;
-                if (value) {
-                    if (value.url) {
-                        imgSource = value.url;
-                    } else if (value.data) {
-                        imgSource = 'data:' + value.contentType + ';base64,' + value.data;
-                    }
+            scope.$watch('fsAddToList', function (value) {
+                if (value === true) {
+                    attrs.$set('class', 'glyphicon glyphicon-plus');
+                    attrs.$set('tooltip', 'Add item to list');
+                    // <span class="glyphicon glyphicon-plus"></span>
                 }
-                attrs.$set('src', imgSource);
             });
         }
     }]);
-
-    app.directive('fsSearchItem', function () {
-        // Description:
-        //  renders search results in list
-        //
-        // Usage:
-        //   <data-fs-search-item name="" resourceId="" summary="" />
-        var directive = {
-            restrict: 'E',
-            replace: true,
-            require: true,
-            templateUrl: '/app/templates/searchItem.html',
-            scope: {
-                name: "@name",
-                resourceid: "@resourceid",
-                summary: "@summary"
-            }
-        };
-        return directive;
-    });
 
     app.directive('fsFileInput', function ($parse) {
         // Description:
@@ -313,6 +291,98 @@
         }
     });
 
+    app.directive('fsImgPerson', ['config', function (config) {
+        //Usage:
+        //<img data-fs-img-person="vm.person.photo[0]"/>
+        var directive = {
+            link: link,
+            scope: {
+                fsImgPerson: "=?"
+            },
+            restrict: 'A'
+        };
+        return directive;
+
+        function link(scope, element, attrs) {
+            scope.$watch('fsImgPerson', function (value) {
+                var imgSource = config.imageSettings.unknownPersonImageSource;
+                if (value) {
+                    if (value.url) {
+                        imgSource = value.url;
+                    } else if (value.data) {
+                        imgSource = 'data:' + value.contentType + ';base64,' + value.data;
+                    }
+                }
+                attrs.$set('src', imgSource);
+            });
+        }
+    }]);
+
+    app.directive('fsRepeats', [function () {
+        // Description: if value is true, set image to check mark
+        // Usage: <i data-fs-repeats="vm.isRepeatable"/></i>
+        var directive = {
+            restrict: 'A',
+            replace: true,
+            link: link,
+            scope: {
+                fsRepeats: "=?"
+            }
+        };
+        return directive;
+
+        function link(scope, element, attrs) {
+            scope.$watch('fsRepeats', function (value) {
+                if (value === true) {
+                    attrs.$set('class', 'fa fa-repeat');
+                }
+            });
+        }
+    }]);
+
+    app.directive('fsRequired', [function () {
+        // Description: if value is true, set image to check mark
+        // Usage: <i data-fs-required="vm.isRequired"/></i>
+        var directive = {
+            restrict: 'A',
+            replace: true,
+            link: link,
+            scope: {
+                fsRequired: "=?"
+            }
+        };
+        return directive;
+
+        function link(scope, element, attrs) {
+            scope.$watch('fsRequired', function (value) {
+                if (value === true) {
+                    attrs.$set('class', 'fa fa-asterisk');
+                }
+            });
+        }
+    }]);
+
+
+    app.directive('fsSearchItem', function () {
+        // Description:
+        //  renders search results in list
+        //
+        // Usage:
+        //   <data-fs-search-item name="" resourceId="" summary="" />
+        var directive = {
+            restrict: 'E',
+            replace: true,
+            require: true,
+            templateUrl: '/app/templates/searchItem.html',
+            scope: {
+                name: "@name",
+                resourceid: "@resourceid",
+                summary: "@summary"
+            }
+        };
+        return directive;
+    });
+
     app.directive('fsTrueCheck', [function () {
         // Description: if value is true, set image to check mark
         // Usage: <i data-fs-true-check="vm.isRequired"/></i>
@@ -335,39 +405,14 @@
         }
     }]);
 
-    app.directive('fsAddToList', [function () {
-        // Description: if value is true, set image to check mark
-        // Usage: <i data-add-to-list="vm.isRequired"/></i>
-        var directive = {
-            restrict: 'A',
-            replace: true,
-            link: link,
-            scope: {
-                fsAddToList: "=?"
-            }
-        };
-        return directive;
-
-        function link(scope, element, attrs) {
-            scope.$watch('fsAddToList', function (value) {
-                if (value === true) {
-                    attrs.$set('class', 'glyphicon glyphicon-plus');
-                    attrs.$set('tooltip', 'Add item to list');
-                    // <span class="glyphicon glyphicon-plus"></span>
-                }
-            });
-        }
-    }]);
-
-    app.directive('fsQuestionnaireForm', [function () {
-        // Description:
-        // Usage:
+    app.directive('fsQuestionnaireGroup', ['$compile', function ($compile) {
+        // Description: Process individual group of profile questionnaire data. This may be entered recursively for sub-groups.
+        // Usage: <fs-questionnaire-group group="group" />
         var directive = {
             restrict: 'E',
             replace: true,
             transclude: true,
             link: link,
-            templateUrl: '/app/templates/questionnaireItem.html',
             scope: {
                 group: "=?"
             }
@@ -375,43 +420,55 @@
         return directive;
 
         function link(scope, element, attrs) {
-            scope.$watch('fsQuestionnaireForm', function (value) {
-
-            });
+            var subGroup = '<div class="controls col-md-12">' +
+                '<legend>{{group.linkId | questionnaireLabel }}</legend>' +
+                '<span class="help-block">{{group.text || (group.extension | questionnaireFlyover)}}</span>' +
+                '<data-fs-questionnaire-groups groups="group.group" />' +
+                '</div>';
+            var mainGroup = '<div class="form-group col-md-12">' +
+                '<legend>{{group.linkId | questionnaireLabel }}</legend>' +
+                '<span class="help-block">{{group.text || (group.extension | questionnaireFlyover)}}</span>' +
+                '<div data-ng-repeat="q in group.question">' +
+                '    <data-fs-questionnaire-question question="q" />' +
+                '</div>' +
+                '<span data-fs-required="group.required"/></span>' +
+                '<span data-fs-repeats="group.repeats"/></span>' +
+                '</div>';
+            if (scope.group && angular.isArray(scope.group.group)) {
+                $compile(subGroup)(scope, function (cloned, scope) {
+                    element.append(cloned);
+                });
+            } else {
+                $compile(mainGroup)(scope, function (cloned, scope) {
+                    element.append(cloned);
+                });
+            }
         }
     }]);
 
-    app.directive('fsQuestionnaireGroup', [function () {
-        // Description:
-        // Usage:
+    app.directive('fsQuestionnaireGroups', [function () {
+        // Description: Starting point for building profile questionnaire
+        // Usage: <fs-questionnaire-groups groups="questionnaire.groups" />
         var directive = {
             restrict: 'E',
             replace: true,
-            transclude: true,
-            link: link,
-            templateUrl: '/app/templates/questionnaireGroup.html',
+            transclude: false,
             scope: {
-                group: "=?"
-            }
+                groups: "=?"
+            },
+            template: '<data-fs-questionnaire-group data-ng-repeat="item in groups" group="item" />'
         };
         return directive;
-
-        function link(scope, element, attrs) {
-            scope.$watch('fsQuestionnaireGroup', function (value) {
-
-            });
-        }
     }]);
 
-    app.directive('fsQuestionnaireQuestion', [function () {
-        // Description:
-        // Usage:
+    app.directive('fsQuestionnaireQuestion', ['$compile', '$filter', function ($compile, $filter) {
+        // Description: Renders the HTML input element for a specific question
+        // Usage:  <fs-questionnaire-question question="q" />
         var directive = {
             restrict: 'E',
             replace: true,
             transclude: true,
             link: link,
-            templateUrl: '/app/templates/questionnaireQuestion.html',
             scope: {
                 question: "=?"
             }
@@ -419,6 +476,20 @@
         return directive;
 
         function link(scope, element, attrs) {
+            var template = '<div class="form-group col-md-12 col-md-offset-2">' +
+                '<label class="control-label" for="' + scope.question.linkId + '">' + $filter('questionnaireLabel')(scope.question.linkId) + '</label>&nbsp;&nbsp;' +
+                '<input required="' + scope.question.required + '"' +
+                'type="' + $filter('questionnaireInputType')(scope.question.type) + '"' +
+                'id="' + scope.question.linkId + '"' +
+                'class="form-control"' +
+                'data-ng-model="' + scope.question.linkId + '"' +
+                'placeholder="' + scope.question.text + '"><span data-fs-add-to-list=' + scope.question.repeats + '/></span>' +
+                '</div>';
+
+            $compile(template)(scope, function (cloned, scope) {
+                element.append(cloned);
+            });
+
             scope.$watch('fsQuestionnaireQuestion', function (value) {
 
             });

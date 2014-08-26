@@ -235,14 +235,12 @@
             _.remove(vm.practitioner.role, function (removedItem) {
                 return removedItem.$$hashKey === item.$$hashKey;
             });
-
         }
 
         function removeSpecialty(item) {
             _.remove(vm.practitioner.specialty, function (removedItem) {
                 return removedItem.$$hashKey === item.$$hashKey;
             });
-
         }
 
         function save() {

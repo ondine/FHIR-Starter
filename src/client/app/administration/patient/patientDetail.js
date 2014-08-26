@@ -207,7 +207,7 @@
             patient.multipleBirthInteger = demographicsService.getBirthOrder();
             patient.deceasedBoolean = demographicsService.getDeceased();
             patient.deceasedDateTime = demographicsService.getDeceasedDate();
-            //        patient.communication = demographicsService.getLanguage();
+            patient.communication = demographicsService.getLanguage();
 
             patient.address = addressService.mapFromViewModel();
             patient.telecom = telecomService.mapFromViewModel();

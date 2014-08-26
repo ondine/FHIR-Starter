@@ -3,24 +3,28 @@
 
     var controllerId = 'demographics';
 
-    angular.module('FHIRStarter').controller(controllerId, ['common', 'demographicsService', 'localValueSets', demographics]);
+    angular.module('FHIRStarter').controller(controllerId, ['common', 'config', 'demographicsService', 'localValueSets', demographics]);
 
-    function demographics(common, demographicsService, localValueSets) {
+    function demographics(common, config, demographicsService, localValueSets) {
         var vm = this;
+        var keyCodes = config.keyCodes;
 
+        vm.addLanguage = addLanguage;
         vm.demographics = {
             "birthDate": null,
-            "birthOrder" : null,
+            "birthOrder": null,
             "deceased": false,
             "deceasedDate": null,
             "gender": null,
-            "language": null,
+            "language": [],
             "maritalStatus": null,
             "multipleBirth": false
         };
         vm.genders = [];
         vm.languages = [];
         vm.maritalStatuses = [];
+        vm.removeLanguage = removeLanguage;
+        vm.selectedLanguage = null;
         vm.updateBirthDate = updateBirthDate;
         vm.updateBirthOrder = updateBirthOrder;
         vm.updateDeceased = updateDeceased;
@@ -36,6 +40,21 @@
             common.activateController([getGenders(), getMaritalStatuses(), getLanguages()], controllerId).then(function () {
                 initData()
             });
+        }
+
+        function addLanguage($event) {
+            if ($event.keyCode === keyCodes.esc) {
+                vm.selectedLanguage = null;
+            } else if ($event.keyCode === keyCodes.enter) {
+                if (vm.selectedLanguage !== null) {
+                    var coding = { "coding": [vm.selectedLanguage], "text": vm.selectedLanguage.display };
+                    if (_.first(vm.demographics.language, coding).length === 0) {
+                        vm.demographics.language.push(coding);
+                    }
+                    updateLanguage();
+                }
+                vm.selectedLanguage = null;
+            }
         }
 
         function getGenders() {
@@ -59,6 +78,13 @@
             vm.demographics.language = demographicsService.getLanguage();
             vm.demographics.maritalStatus = demographicsService.getMaritalStatus();
             vm.demographics.multipleBirth = demographicsService.getMultipleBirth();
+        }
+
+        function removeLanguage(item) {
+            _.remove(vm.demographics.language, function (removedItem) {
+                return removedItem.$$hashKey === item.$$hashKey;
+            });
+            updateLanguage();
         }
 
         function updateBirthDate() {
