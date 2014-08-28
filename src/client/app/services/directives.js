@@ -407,38 +407,47 @@
 
     app.directive('fsQuestionnaireGroup', ['$compile', function ($compile) {
         // Description: Process individual group of profile questionnaire data. This may be entered recursively for sub-groups.
-        // Usage: <fs-questionnaire-group group="group" />
+        // Usage: <fs-questionnaire-group group="group" offset="2" cols="10"/>
         var directive = {
             restrict: 'E',
             replace: true,
             transclude: true,
             link: link,
             scope: {
-                group: "=?"
+                group: "=?",
+                offset: "=",
+                cols: "="
             }
         };
         return directive;
 
         function link(scope, element, attrs) {
-            var subGroup = '<div class="controls col-md-12">' +
+            var newOffset = scope.offset + 1;
+            var newCol = scope.cols - 1;
+            var baseTemplate = '<div class="form-group col-md-12" >' +
                 '<legend>{{group.linkId | questionnaireLabel }}</legend>' +
                 '<span class="help-block">{{group.text || (group.extension | questionnaireFlyover)}}</span>' +
-                '<data-fs-questionnaire-groups groups="group.group" />' +
-                '</div>';
-            var mainGroup = '<div class="form-group col-md-12">' +
-                '<legend>{{group.linkId | questionnaireLabel }}</legend>' +
-                '<span class="help-block">{{group.text || (group.extension | questionnaireFlyover)}}</span>' +
-                '<div data-ng-repeat="q in group.question">' +
-                '    <data-fs-questionnaire-question question="q" />' +
-                '</div>' +
-                '<span data-fs-required="group.required"/></span>' +
-                '<span data-fs-repeats="group.repeats"/></span>' +
-                '</div>';
+                '<div class="controls col-md-' + scope.cols + ' col-md-offset-' + scope.offset + '" >';
+
+            //TODO: if this is a repeating group
+
+            //TODO: if this is a required group
+
             if (scope.group && angular.isArray(scope.group.group)) {
+                var subGroup = baseTemplate +
+                    '<data-fs-questionnaire-groups groups="group.group" offset="' + newOffset + '" cols="' + newCol + '"/>' +
+                    '</div></div>';
                 $compile(subGroup)(scope, function (cloned, scope) {
                     element.append(cloned);
                 });
             } else {
+                var mainGroup = baseTemplate +
+                    '<div data-ng-repeat="q in group.question">' +
+                    '    <data-fs-questionnaire-question question="q" total-questions="' + (scope.group.question ? scope.group.question.length : 0) + '" extension="' + scope.group.extension + '"/>' +
+                    '</div>' +
+                    '<span data-fs-required="group.required"/></span>' +
+                    '<span data-fs-repeats="group.repeats"/></span>' +
+                    '</div></div>';
                 $compile(mainGroup)(scope, function (cloned, scope) {
                     element.append(cloned);
                 });
@@ -446,45 +455,82 @@
         }
     }]);
 
-    app.directive('fsQuestionnaireGroups', [function () {
+    app.directive('fsQuestionnaireGroups', ['$compile', function ($compile) {
         // Description: Starting point for building profile questionnaire
         // Usage: <fs-questionnaire-groups groups="questionnaire.groups" />
-        var directive = {
-            restrict: 'E',
-            replace: true,
-            transclude: false,
-            scope: {
-                groups: "=?"
-            },
-            template: '<data-fs-questionnaire-group data-ng-repeat="item in groups" group="item" />'
-        };
-        return directive;
-    }]);
-
-    app.directive('fsQuestionnaireQuestion', ['$compile', '$filter', function ($compile, $filter) {
-        // Description: Renders the HTML input element for a specific question
-        // Usage:  <fs-questionnaire-question question="q" />
         var directive = {
             restrict: 'E',
             replace: true,
             transclude: true,
             link: link,
             scope: {
-                question: "=?"
+                groups: "=?",
+                offset: "=",
+                cols: "="
             }
         };
         return directive;
 
         function link(scope, element, attrs) {
-            var template = '<div class="form-group col-md-12 col-md-offset-2">' +
-                '<label class="control-label" for="' + scope.question.linkId + '">' + $filter('questionnaireLabel')(scope.question.linkId) + '</label>&nbsp;&nbsp;' +
-                '<input required="' + scope.question.required + '"' +
-                'type="' + $filter('questionnaireInputType')(scope.question.type) + '"' +
-                'id="' + scope.question.linkId + '"' +
-                'class="form-control"' +
-                'data-ng-model="' + scope.question.linkId + '"' +
-                'placeholder="' + scope.question.text + '"><span data-fs-add-to-list=' + scope.question.repeats + '/></span>' +
-                '</div>';
+            var newGrouping = '<data-fs-questionnaire-group data-ng-repeat="item in groups" group="item" offset="' + scope.offset + '" cols="' + scope.cols + '"/>';
+            $compile(newGrouping)(scope, function (cloned, scope) {
+                element.append(cloned);
+            });
+        }
+    }]);
+
+    app.directive('fsQuestionnaireQuestion', ['$compile', '$filter', function ($compile, $filter) {
+        // Description: Renders the HTML input element for a specific question
+        // Usage:  <fs-questionnaire-question question="q" total-questions="2" extension="group.extension" />
+        var directive = {
+            restrict: 'E',
+            replace: true,
+            transclude: true,
+            link: link,
+            scope: {
+                question: "=?",
+                totalQuestions: "=?",
+                extension: "=?"
+            }
+        };
+        return directive;
+
+        function link(scope, element, attrs) {
+            //TODO: handling for different types of questions
+            // Question type / Extension valueString
+            // -------------  ----------------------
+            // choice        / CodeableConcept - needs value set lookup - must also have options property for question of type choice (if not, make this a simple text input)
+            // open-choice   / CodeableConcept - needs valueset and drop down must also have options property for question of type choice (if not, make this a simple text input)
+            // reference     / ResourceReference - valueString will identify resource type in ext with url = http://www.healthintersections.com.au/fhir/Profile/metadata#reference
+            // string        / string (except in the case where this is a multi-question group)
+            // dateTime      / dateTime
+            // boolean       / boolean
+            // need special handling for polymorphic properties (with [x] in linkId)
+
+
+            // remove polymorphic indicator from linkId (note: may need to update to handle this in client processing
+            var modelLinkId = scope.question.linkId.replace("[x]", "");
+
+            var template =
+                '<input requiredToken@' +
+                    'type="' + $filter('questionnaireInputType')(scope.question.type) + '" ' +
+                    'id="' + scope.question.linkId + '" ' +
+                    'class="form-control" ' +
+                    'data-ng-model="' + modelLinkId + '" ' +
+                    'placeholder="' + scope.question.text + '"><span data-fs-add-to-list=' + scope.question.repeats + '/></span>' +
+                    '</div>';
+
+            template = scope.question.required ? template.replace("requiredToken@", "required ") : template.replace("requiredToken@", "");
+
+            // TODO: if this is a repeating item, add list
+
+            // TODO: if this a Code or CodeableConcept, built selector
+
+            if (scope.totalQuestions > 1) {
+                template = '<label class="control-label" for="' + scope.question.linkId + '">' + $filter('questionnaireLabel')(modelLinkId) + '</label>&nbsp;&nbsp;' +
+                    template;
+            }
+            template = '<div class="form-group-lg" >' + template;
 
             $compile(template)(scope, function (cloned, scope) {
                 element.append(cloned);

@@ -116,7 +116,7 @@
                     retValue = capitalizeFirstWord(retValue);
                 }
             }
-            return retValue === 'Value' ? '' : retValue;
+            return retValue;
 
             function capitalizeFirstWord(input) {
                 return input.replace(/^./, function (match) {
