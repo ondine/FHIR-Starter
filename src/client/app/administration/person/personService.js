@@ -180,10 +180,9 @@
 
         function initializeNewPerson() {
             return {
-                "active": true,
-                "address": [],
+                "address": null,
                 "gender": undefined,
-                "name": [],
+                "name": null,
                 "patient": null,
                 "photo": [],
                 "relationship": { "coding": []},
@@ -216,9 +215,6 @@
         }
 
         function _prepArrays(resource) {
-            if (resource.address.length === 0) {
-                resource.address = null;
-            }
             if (resource.identifier.length === 0) {
                 resource.identifier = null;
             }

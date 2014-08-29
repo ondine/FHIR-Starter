@@ -489,8 +489,7 @@
             link: link,
             scope: {
                 question: "=?",
-                totalQuestions: "=?",
-                extension: "=?"
+                totalQuestions: "=?"
             }
         };
         return directive;

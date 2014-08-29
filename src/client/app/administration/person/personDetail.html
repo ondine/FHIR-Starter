@@ -29,7 +29,7 @@
                                     <td>Name</td>
                                     <td>{{vm.person.name | fullName }}</td>
                                 </tr>
-                                 <tr>
+                                <tr>
                                     <td>Gender</td>
                                     <td>
                                         {{vm.person.gender | codeableConcept}}
@@ -37,11 +37,7 @@
                                 </tr>
                                 <tr>
                                     <td>Address</td>
-                                    <td>
-                                        <p class="small" data-ng-repeat="a in vm.person.address">
-                                            <strong>{{a.use}}</strong>: {{a | singleLineAddress}}
-                                        </p>
-                                    </td>
+                                    <td>{{vm.person.address | singleLineAddress}}</td>
                                 </tr>
                                 <tr>
                                     <td>Telecommunication</td>
@@ -55,7 +51,7 @@
                                     <td>Related Patient</td>
                                     <td>
                                         <a href="{{vm.person.patient.reference}}">{{vm.person.patient.display}}</a><br/>
-                                        Relationship to Patient: {{vm.person.relationship | codeableConcept}}
+                                        <strong>Relationship:&nbsp;</strong>{{vm.person.relationship | codeableConcept}}
                                     </td>
                                 </tr>
                                 <tr data-ng-show="vm.person.identifier">
