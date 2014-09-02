@@ -3,13 +3,21 @@
         <div class="container-fluid">
             <div>
                 <button class="btn btn-info" data-ng-click="vm.goBack()"><i class="fa fa-hand-o-left"></i>Back</button>
-                <button class="btn btn-info" data-ng-click="vm.renderForm(vm.group)"><i
+                <button data-ng-hide="vm.rendered" class="btn btn-info" data-ng-click="vm.renderForm()"><i
                         class="fa fa-html5"></i>Render
+                </button>
+                <button data-ng-show="vm.rendered" class="btn btn-info" data-ng-click="vm.cancel()"
+                        data-ng-disabled="!vm.canSave"><i
+                        class="fa fa-undo"></i>Cancel
+                </button>
+                <button data-ng-show="vm.rendered" class="btn btn-info" data-ng-click="vm.save()"
+                        data-ng-disabled="!vm.canSave"><i
+                        class="fa fa-save"></i>Save
                 </button>
             </div>
             <div class="widget worange">
                 <div data-cc-widget-header title="{{vm.questionnaire.group.title}}"></div>
-                <accordion close-others="true">
+                <accordion close-others="true" data-ng-hide="vm.rendered">
                     <accordion-group heading="Metadata" is-open="vm.status.isFirstOpen"
                                      is-disabled="vm.status.isFirstDisabled">
                         <table class="table table-striped">
@@ -59,7 +67,7 @@
                                 <td>{{group.text}}</td>
                                 <td><p data-ng-repeat="dt in group.extension">
                                     {{dt.valueString}}
-                                    </p>
+                                </p>
                                 </td>
                                 <td style="text-align: center"><i data-fs-true-check="group.required"></i></td>
                                 <td style="text-align: center"><i data-fs-true-check="group.repeats"></i></td>
@@ -67,20 +75,22 @@
                             </tbody>
                         </table>
                     </accordion-group>
-                    <accordion-group heading="Rendered {{vm.questionnaire.group.linkId}}">
-                        <h3>{{vm.questionnaire.group.title}}</h3>
-
-                        <p>{{vm.questionnaire.group.text}}</p>
-                        <data-ng-form name="patientEditForm" class="form-horizontal"
-                                      data-ng-model="vm.questionnaire.group.linkId">
-                            <fieldset>
-                                <div class="form-group col-md-12">
-                                    <!-- render form -->
-                                        <data-fs-questionnaire-groups groups="vm.questionnaire.group.group" offset="0" cols="12"/>
-                                </div>
-                            </fieldset>
-                    </accordion-group>
                 </accordion>
+                <div class="widget-content user" data-ng-show="vm.rendered">
+                    <p class="lead">{{vm.questionnaire.group.text}}</p>
+
+                    <data-ng-form name="questionnaireAnswerForm" class="form-horizontal"
+                                  data-ng-model="vm.answers">
+                        <fieldset>
+                            <div class="form-group col-md-12">
+                                <data-fs-questionnaire-groups groups="vm.questionnaire.group.group"
+                                                              offset="0"
+                                                              cols="12"
+                                                              data-ng-model="vm.answers"/>
+                            </div>
+                        </fieldset>
+                    </data-ng-form>
+                </div>
             </div>
         </div>
     </section>

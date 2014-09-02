@@ -44,6 +44,113 @@
         del: 46
     };
 
+    var fhirTypes = {
+        Primitive: 1,
+        Complex: 2,
+        Resource: 3
+    }
+
+    var fhirPrimitiveTypes = {
+        base64Binary: "base64Binary",
+        boolean: "boolean",
+        code: "code",
+        date: "date",
+        dateTime: "dateTime",
+        decimal: "decimal",
+        id: "id",
+        instant: "instant",
+        integer: "integer",
+        oid: "oid",
+        string: "string",
+        time: "time",
+        uri: "uri",
+        uuid: "uuid"
+    }
+
+    var fhirResources = {
+        AdverseReaction: "AdverseReaction",
+        Alert: "Alert",
+        AllergyIntolerance: "AllergyIntolerance",
+        Appointment: "Appointment",
+        AppointmentResponse: "AppointmentResponse",
+        Availability: "Availability",
+        Binary: "Binary",
+        CarePlan: "CarePlan",
+        Composition: "Composition",
+        ConceptMap: "ConceptMap",
+        Condition: "Condition",
+        Contraindication: "Contraindication",
+        Conformance: "Conformance",
+        DataElement: "DataElement",
+        Device: "Device",
+        DeviceObservationReport: "DeviceObservationReport",
+        DiagnosticOrder: "DiagnosticOrder",
+        DiagnosticReport: "DiagnosticReport",
+        DocumentReference: "DocumentReference",
+        DocumentManifest: "DocumentManifest",
+        Encounter: "Encounter",
+        FamilyHistory: "FamilyHistory",
+        Group: "Group",
+        ImagingStudy: "ImagingStudy",
+        Immunization: "Immunization",
+        ImmunizationRecommendation: "ImmunizationRecommendation",
+        List: "List",
+        Location: "Location",
+        Media: "Media",
+        Medication: "Medication",
+        MedicationAdministration: "MedicationAdministration",
+        MedicationDispense: "MedicationDispense",
+        MedicationPrescription: "MedicationPrescription",
+        MedicationStatement: "MedicationStatement",
+        MessageHeader: "MessageHeader",
+        Namespace: "Namespace",
+        Observation: "Observation",
+        OperationOutcome: "OperationOutcome",
+        Order: "Order",
+        OrderResponse: "OrderResponse",
+        Organization: "Organization",
+        Other: "Other",
+        Patient: "Patient",
+        Practitioner: "Practitioner",
+        Procedure: "Procedure",
+        Profile: "Profile",
+        Provenance: "Provenance",
+        Query: "Query",
+        Questionnaire: "Questionnaire",
+        QuestionnaireAnswers: "QuestionnaireAnswers",
+        ReferralRequest: "ReferralRequest",
+        RelatedPerson: "RelatedPerson",
+        RiskAssessment: "RiskAssessment",
+        SecurityEvent: "SecurityEvent",
+        Slot: "Slot",
+        Specimen: "Specimen",
+        Subscription: "Subscription",
+        Substance: "Substance",
+        Supply: "Supply",
+        ValueSet: "ValueSet"
+    }
+
+    var fhirComplexTypes = {
+        Address: "Address",
+        Age: "Age",
+        Attachment: "Attachment",
+        CodeableConcept: "CodeableConcept",
+        Coding: "Coding",
+        Contact: "Contact",
+        Count: "Count",
+        Distance: "Distance",
+        Duration: "Duration",
+        HumanName: "HumanName",
+        Identifier: "Identifier",
+        Money: "Money",
+        Period: "Period",
+        Quantity: "Quantity",
+        Range: "Range",
+        Ratio: "Ratio",
+        SampledData: "SampledData",
+        Schedule: "Schedule"
+    }
+
     var events = {
         controllerActivateSuccess: 'controller.activateSuccess',
         spinnerToggle: 'spinner.toggle'
@@ -53,6 +160,10 @@
         appErrorPrefix: '[FS Error] ', //Configure the exceptionHandler decorator
         docTitle: 'FHIRStarter: ',
         events: events,
+        fhirPrimitiveTypes: fhirPrimitiveTypes,
+        fhirResources: fhirResources,
+        fhirComplexTypes: fhirComplexTypes,
+        fhirTypes: fhirTypes,
         imageSettings: imageSettings,
         keyCodes: keyCodes,
         version: '0.1.0'

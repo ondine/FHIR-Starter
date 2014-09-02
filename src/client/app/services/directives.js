@@ -267,7 +267,7 @@
     app.directive('fsFileInput', function ($parse) {
         // Description:
         //
-        // Usage: <div data-fs-file-input="file" on-change="readFile()"></div>
+        // Usage: <div fs-file-input="file" on-change="readFile()"></div>
         var directive = {
             restrict: "EA",
             template: "<input multiple='false' type='file' />",
@@ -405,23 +405,48 @@
         }
     }]);
 
-    app.directive('fsQuestionnaireGroup', ['$compile', function ($compile) {
+    app.directive('fsQuestionnaireGroup', ['$compile', 'config', function ($compile, config) {
         // Description: Process individual group of profile questionnaire data. This may be entered recursively for sub-groups.
-        // Usage: <fs-questionnaire-group group="group" offset="2" cols="10"/>
-        var directive = {
+        // Usage: <fs-questionnaire-group group="group" offset="2" cols="10" ng-model="vm.answers" />
+        var directiveDefinitionObject = {
             restrict: 'E',
             replace: true,
-            transclude: true,
+            transclude: false,
             link: link,
             scope: {
-                group: "=?",
-                offset: "=",
-                cols: "="
+                group: '=?',
+                offset: '=',
+                cols: '=',
+                ngModel: '='
             }
         };
-        return directive;
+        return directiveDefinitionObject;
 
         function link(scope, element, attrs) {
+            //TODO: handle complex types
+            // If group valueString is a known resource or complex type, this will have multiple questions
+
+            var typeValue = undefined;
+            var questionCount = 0;
+            var fhirType = undefined;
+            if (scope.group.extension) {
+                var groupType = _.find(scope.group.extension, {'url': 'http://www.healthintersections.com.au/fhir/Profile/metadata#type'});
+                if (groupType) {
+                    typeValue = groupType.valueString;
+                    if (_.contains(config.fhirPrimitiveTypes, typeValue)) {
+                        fhirType = config.fhirTypes.Primitive;
+                    } else if (_.contains(config.fhirComplexTypes, typeValue)) {
+                        fhirType = config.fhirTypes.Complex;
+                    } else if (_.contains(config.fhirResources, typeValue)) {
+                        fhirType = config.fhirTypes.Resource;
+                    }
+                }
+            }
+
+            if (scope.group.question && angular.isArray(scope.group.question)) {
+                questionCount = scope.group.question.length;
+            }
+
             var newOffset = scope.offset + 1;
             var newCol = scope.cols - 1;
             var baseTemplate = '<div class="form-group col-md-12" >' +
@@ -435,95 +460,115 @@
 
             if (scope.group && angular.isArray(scope.group.group)) {
                 var subGroup = baseTemplate +
-                    '<data-fs-questionnaire-groups groups="group.group" offset="' + newOffset + '" cols="' + newCol + '"/>' +
+                    '<data-fs-questionnaire-groups groups="group.group" data-ng-model="ngModel" offset="' + newOffset + '" cols="' + newCol + '"/>' +
                     '</div></div>';
-                $compile(subGroup)(scope, function (cloned, scope) {
+                $compile(subGroup)(scope, function (cloned) {
                     element.append(cloned);
                 });
             } else {
                 var mainGroup = baseTemplate +
                     '<div data-ng-repeat="q in group.question">' +
-                    '    <data-fs-questionnaire-question question="q" total-questions="' + (scope.group.question ? scope.group.question.length : 0) + '" extension="' + scope.group.extension + '"/>' +
+                    '    <data-fs-questionnaire-question question="q" data-ng-model="ngModel" total-questions="' + (scope.group.question ? scope.group.question.length : 0) + '" group-type="' + fhirType + '"/>' +
                     '</div>' +
                     '<span data-fs-required="group.required"/></span>' +
                     '<span data-fs-repeats="group.repeats"/></span>' +
                     '</div></div>';
-                $compile(mainGroup)(scope, function (cloned, scope) {
+                $compile(mainGroup)(scope, function (cloned) {
                     element.append(cloned);
                 });
             }
         }
     }]);
 
-    app.directive('fsQuestionnaireGroups', ['$compile', function ($compile) {
+    app.directive('fsQuestionnaireGroups', ['$compile', '$parse', function ($compile, $parse) {
         // Description: Starting point for building profile questionnaire
-        // Usage: <fs-questionnaire-groups groups="questionnaire.groups" />
-        var directive = {
+        // Usage: <data-fs-questionnaire-groups groups="vm.questionnaire.group.group" offset="0" cols="12" ng-model="vm.answers"/>
+        var directiveDefinitionObject = {
             restrict: 'E',
             replace: true,
-            transclude: true,
+            transclude: false,
             link: link,
             scope: {
-                groups: "=?",
-                offset: "=",
-                cols: "="
+                groups: '=',
+                offset: '=',
+                cols: '=',
+                ngModel: '='
             }
         };
-        return directive;
+        return directiveDefinitionObject;
 
         function link(scope, element, attrs) {
-            var newGrouping = '<data-fs-questionnaire-group data-ng-repeat="item in groups" group="item" offset="' + scope.offset + '" cols="' + scope.cols + '"/>';
-            $compile(newGrouping)(scope, function (cloned, scope) {
+            var newGrouping = '<data-fs-questionnaire-group data-ng-repeat="item in groups" data-ng-model="ngModel" group="item" offset="' + scope.offset + '" cols="' + scope.cols + '"/>';
+            $compile(newGrouping)(scope, function (cloned) {
                 element.append(cloned);
             });
         }
     }]);
 
-    app.directive('fsQuestionnaireQuestion', ['$compile', '$filter', function ($compile, $filter) {
+    app.directive('fsQuestionnaireQuestion', ['$compile', '$filter', '$parse', function ($compile, $filter, $parse) {
         // Description: Renders the HTML input element for a specific question
-        // Usage:  <fs-questionnaire-question question="q" total-questions="2" extension="group.extension" />
-        var directive = {
+        // Usage:  <fs-questionnaire-question question="q" total-questions="2" group-type="2" ng-model="vm.answers" />
+        var directiveDefinitionObject = {
             restrict: 'E',
             replace: true,
             transclude: true,
             link: link,
             scope: {
-                question: "=?",
-                totalQuestions: "=?"
+                question: '=?',
+                totalQuestions: '=?',
+                groupType: '=?',
+                ngModel: '='
+            },
+            controller: function($scope, $element) {
+                console.log("Question Controller", arguments);
             }
         };
-        return directive;
+        return directiveDefinitionObject;
 
         function link(scope, element, attrs) {
+            console.log("Question Link", arguments);
             //TODO: handling for different types of questions
             // Question type / Extension valueString
             // -------------  ----------------------
             // choice        / CodeableConcept - needs value set lookup - must also have options property for question of type choice (if not, make this a simple text input)
             // open-choice   / CodeableConcept - needs valueset and drop down must also have options property for question of type choice (if not, make this a simple text input)
             // reference     / ResourceReference - valueString will identify resource type in ext with url = http://www.healthintersections.com.au/fhir/Profile/metadata#reference
-            // string        / string (except in the case where this is a multi-question group)
-            // dateTime      / dateTime
-            // boolean       / boolean
+            // fhirPrimitives will be handled as strings, dates, numbers or booleans
             // need special handling for polymorphic properties (with [x] in linkId)
 
 
             // remove polymorphic indicator from linkId (note: may need to update to handle this in client processing
             var modelLinkId = scope.question.linkId.replace("[x]", "");
+            var modelAccessor = $parse(modelLinkId);
+
+            function updateModel() {
+                var val = element.value;
+                scope.$apply(function(scope) {
+                    modelAccessor.assign(scope, val);
+                });
+            }
+
+            scope.$watch(modelLinkId, function (val) {
+                 element.value = val;
+            });
+
+            element.bind('change', updateModel);
 
             var template =
                 '<input requiredToken@' +
                     'type="' + $filter('questionnaireInputType')(scope.question.type) + '" ' +
                     'id="' + scope.question.linkId + '" ' +
-                    'class="form-control" ' +
-                    'data-ng-model="' + modelLinkId + '" ' +
+                    'class="classToken@" ' +
                     'placeholder="' + scope.question.text + '"><span data-fs-add-to-list=' + scope.question.repeats + '/></span>' +
                     '</div>';
 
+
+            template = scope.question.type === 'boolean' ? template.replace("classToken@", "checkbox") : template.replace("classToken@", "form-control");
             template = scope.question.required ? template.replace("requiredToken@", "required ") : template.replace("requiredToken@", "");
 
-            // TODO: if this is a repeating item, add list
+            // TODO: if this is a repeating item, add list and list management controls
 
-            // TODO: if this a Code or CodeableConcept, built selector
+            // TODO: if this a Code or CodeableConcept, build value set lookup
 
             if (scope.totalQuestions > 1) {
                 template = '<label class="control-label" for="' + scope.question.linkId + '">' + $filter('questionnaireLabel')(modelLinkId) + '</label>&nbsp;&nbsp;' +
@@ -531,12 +576,8 @@
             }
             template = '<div class="form-group-lg" >' + template;
 
-            $compile(template)(scope, function (cloned, scope) {
+            $compile(template)(scope, function (cloned) {
                 element.append(cloned);
-            });
-
-            scope.$watch('fsQuestionnaireQuestion', function (value) {
-
             });
         }
     }]);

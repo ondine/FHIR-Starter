@@ -23,14 +23,17 @@
     function profileQuestionnaire($routeParams, $window, common, profileService, questionnaireService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
+        var logInfo = common.logger.getLogFn(controllerId, 'info');
         var logWarning = common.logger.getLogFn(controllerId, 'warning');
 
+        vm.answers = {};
         vm.cancel = cancel;
         vm.activate = activate;
         vm.getTitle = getTitle;
         vm.goBack = goBack;
         vm.isSaving = false;
         vm.isEditing = true;
+        vm.isRendered = false;
         vm.questionnaire = undefined;
         vm.questionnaireIdParameter = $routeParams.hashKey;
         vm.renderForm = renderForm;
@@ -40,6 +43,7 @@
             isFirstDisabled: false
         };
         vm.title = 'questionnaireDetail';
+        vm.updateAnswers = updateAnswers;
 
         Object.defineProperty(vm, 'canSave', {
             get: canSave
@@ -49,6 +53,10 @@
             get: canDelete
         });
 
+        Object.defineProperty(vm, 'rendered', {
+            get: isRendered
+        });
+
         activate();
 
         function activate() {
@@ -56,7 +64,7 @@
         }
 
         function cancel() {
-
+            vm.isRendered = false;
         }
 
         function canDelete() {
@@ -89,12 +97,22 @@
             $window.history.back();
         }
 
-        function renderForm(formData) {
-            logWarning("Whoops! TODO: add functionality produce a live form...")
+        function isRendered() {
+            return vm.isRendered;
+        }
+
+        function renderForm() {
+            vm.isRendered = true;
         }
 
         function save() {
+            // submit questionnaire answers
+            logWarning("Whoops! TO DO: send this off to the server.");
+            logInfo(vm.answers);
+        }
 
+        function updateAnswers(model, value) {
+            logInfo(model + " updated to " + value);
         }
     }
 })();

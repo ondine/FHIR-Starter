@@ -11,8 +11,7 @@
  * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
- */
-(function () {
+ */ (function () {
     'use strict';
 
     var app = angular.module('FHIRStarter');
@@ -37,7 +36,7 @@
             } else {
                 return "Bad input";
             }
-        }
+        };
     });
 
     app.filter('fullName', function () {
@@ -46,8 +45,7 @@
                 return buildName(humanName[0].given) + ' ' + buildName(humanName[0].family);
             } else if (humanName && humanName.given) {
                 return buildName(humanName.given) + ' ' + buildName(humanName.family);
-            }
-            else {
+            } else {
                 return 'Name Unknown';
             }
 
@@ -58,7 +56,7 @@
                     return '';
                 }
             }
-        }
+        };
     });
 
     app.filter('periodText', function () {
@@ -68,19 +66,27 @@
             } else {
                 return '';
             }
-        }
+        };
     });
 
     app.filter('questionnaireInputType', function () {
         return function (inputType) {
             var retValue = 'text';
             if (inputType) {
-                if (inputType === 'dateTime') {
+                if (_.contains(['date'], inputType)) {
                     retValue = 'date';
+                } else if (_.contains(['time'], inputType)) {
+                    retValue = 'time';
+                } else if (_.contains(['dateTime', 'instant'], inputType)) {
+                    retValue = 'datetime-local';
+                } else if (_.contains(['integer', 'decimal'], inputType)) {
+                    retValue = 'number';
+                } else if (_.contains(['boolean'], inputType)) {
+                    retValue = 'checkbox';
                 }
             }
             return retValue;
-        }
+        };
     });
 
     app.filter('questionnaireFlyover', function () {
@@ -95,7 +101,7 @@
                 }
             }
             return retValue;
-        }
+        };
     });
 
     app.filter('questionnaireLabel', function () {
@@ -121,27 +127,23 @@
             function capitalizeFirstWord(input) {
                 return input.replace(/^./, function (match) {
                     return match.toUpperCase();
-                })
+                });
             }
 
             function spaceWords(input) {
                 return input.replace(/([a-z])([A-Z])/g, '$1 $2');
             }
-        }
+        };
     });
 
     app.filter('singleLineAddress', function () {
         return function (address) {
             if (address) {
-                return (address.line ? address.line.join(' ') + ', ' : '')
-                    + (address.city ? address.city + ', ' : '')
-                    + (address.state ? address.state : '')
-                    + (address.zip ? ' ' + address.zip : '')
-                    + (address.country ? ', ' + address.country : '');
+                return (address.line ? address.line.join(' ') + ', ' : '') + (address.city ? address.city + ', ' : '') + (address.state ? address.state : '') + (address.zip ? ' ' + address.zip : '') + (address.country ? ', ' + address.country : '');
             } else {
                 return '';
             }
-        }
+        };
     });
 
     app.filter('truncate', function () {
@@ -177,11 +179,11 @@
             }
             if (error.outcome && error.outcome.issue) {
                 _.forEach(message.outcome.issue, function (item) {
-                    message = message + item.severity + ": " + item.details + "\n"
-                })
+                    message = message + item.severity + ": " + item.details + "\n";
+                });
             }
             return message;
-        }
+        };
     });
 
 })();
