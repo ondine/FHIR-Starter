@@ -1,0 +1,395 @@
+/**
+ * Copyright 2014 Peter Bernhardt, et. al.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License. You may obtain a copy of the
+ * License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
+(function () {
+    'use strict';
+    var app = angular.module('FHIRStarter');
+
+    app.directive('fsQuestionnaireGroup', ['$compile', 'config',
+        function($compile, config) {
+            // Description: Process individual group of profile questionnaire data. This may be entered recursively for sub-groups.
+            // Usage: <fs-questionnaire-group group="group" offset="2" cols="10" ng-model="vm.answers" />
+            var directiveDefinitionObject = {
+                replace: true,
+                restrict: 'E',
+                link: link,
+                scope: {
+                    group: '=?',
+                    offset: '=',
+                    cols: '=',
+                    ngModel: '='
+                }
+            };
+            return directiveDefinitionObject;
+
+            function link(scope, iElem, iAttrs) {
+                var groupMembers;
+                var typeValue = undefined;
+                var fhirType = undefined;
+                var newOffset = scope.offset + 1;
+                var newCol = scope.cols - 1;
+
+                if (scope.group.repeats) {
+                    _.forEach(scope.group.question, function(item) {
+                        var id = item.linkId;
+                        if (angular.isDefined(groupMembers)) {
+                            groupMembers = groupMembers + '..' + id;
+                        } else {
+                            groupMembers = id;
+                        }
+                    });
+                }
+
+                if (scope.group.extension) {
+                    var groupType = _.find(scope.group.extension, {'url': 'http://www.healthintersections.com.au/fhir/Profile/metadata#type'});
+                    if (groupType) {
+                        typeValue = groupType.valueString;
+                        if (_.contains(config.fhirPrimitiveTypes, typeValue)) {
+                            fhirType = config.fhirTypes.Primitive;
+                        } else if (_.contains(config.fhirComplexTypes, typeValue)) {
+                            fhirType = config.fhirTypes.Complex;
+                        } else if (_.contains(config.fhirResources, typeValue)) {
+                            fhirType = config.fhirTypes.Resource;
+                        }
+                    }
+                }
+
+                var groupTemplate = '<div class="form-group col-md-12" >' +
+                    '<legend>{{group.linkId | questionnaireLabel }}</legend>' +
+                    '<span class="help-block">{{group.text || (group.extension | questionnaireFlyover)}}</span>' +
+                    '<div class="controls col-md-' + scope.cols + ' col-md-offset-' + scope.offset + '" @groupIdToken>';
+/*
+                var groupTemplate = '<div class="form-group col-md-12" >' +
+                    '  <legend>{{group.linkId | questionnaireLabel }}</legend>' +
+                    '  <span class="help-block">{{group.text || (group.extension | questionnaireFlyover)}}</span>' +
+                    '  <div class="controls col-md-12" @groupIdToken>' +
+                    '    <div data-ng-repeat="q in group.question">' +
+                    '      <data-fs-questionnaire-question question="q" repeats="group.repeats" required="group.required" data-ng-model="ngModel"/>' +
+                    '    </div>@repeatDirectiveToken' +
+                    '  </div>' +
+                    '</div>';
+*/
+                if (scope.group && angular.isArray(scope.group.group)) {
+                    groupTemplate = groupTemplate +
+                        '    <data-fs-questionnaire-groups groups="group.group" data-ng-model="ngModel" offset="' + newOffset + '" cols="' + newCol + '"/>' +
+                        '  </div>' +
+                        '</div>';
+                } else {
+                    groupTemplate = groupTemplate +
+                        '    <div data-ng-repeat="q in group.question">' +
+                        '      <data-fs-questionnaire-question question="q" repeats="group.repeats" required="group.required" data-ng-model="ngModel" total-questions="' + (scope.group.question ? scope.group.question.length : 0) + '" group-type="' + fhirType + '"/>' +
+                        '    </div>@repeatDirectiveToken' +
+                        '  </div>' +
+                        '</div>';
+                }
+
+                if (scope.group.repeats) {
+                    groupTemplate = groupTemplate.replace('@groupIdToken', 'id="' + scope.group.linkId + '"');
+                    var repeatDirective = '<fs-questionnaire-repeating-group group-id="' + scope.group.linkId + '" group-members="' + groupMembers + '" data-ng-model="ngModel" />';
+                    groupTemplate = groupTemplate.replace('@repeatDirectiveToken', repeatDirective);
+                } else {
+                    groupTemplate = groupTemplate.replace('@groupIdToken', '');
+                    groupTemplate = groupTemplate.replace('@repeatDirectiveToken', '');
+                }
+
+                $compile(groupTemplate)(scope, function(cloned) {
+                    iElem.append(cloned);
+                });
+            }
+        }
+    ]);
+
+    app.directive('fsQuestionnaireGroups', ['$compile', function ($compile) {
+        // Description: Starting point for building profile questionnaire
+        // Usage: <data-fs-questionnaire-groups groups="vm.questionnaire.group.group" offset="0" cols="12" ng-model="vm.answers"/>
+        var directiveDefinitionObject = {
+            restrict: 'E',
+            replace: true,
+            transclude: false,
+            link: link,
+            scope: {
+                groups: '=',
+                offset: '=',
+                cols: '=',
+                ngModel: '='
+            }
+        };
+        return directiveDefinitionObject;
+
+        function link(scope, iElem, iAttrs) {
+            var newGrouping = '<data-fs-questionnaire-group data-ng-repeat="item in groups" data-ng-model="ngModel" group="item" offset="' + scope.offset + '" cols="' + scope.cols + '"/>';
+            $compile(newGrouping)(scope, function (cloned) {
+                iElem.replaceWith(cloned);
+            });
+        }
+    }]);
+
+    app.directive('fsQuestionnaireQuestion', ['$compile', '$filter', '$parse',
+        function($compile, $filter, $parse) {
+            // Description: Renders the HTML input element for a specific question
+            // Usage:  <fs-questionnaire-question question="q" ng-model="vm.answers" />
+            var directiveDefinitionObject = {
+                restrict: 'E',
+                link: link,
+                scope: {
+                    question: '=?',
+                    repeats: '=?',
+                    required: '=?',
+                    ngModel: '='
+                }
+            };
+            return directiveDefinitionObject;
+            // Question type / Extension valueString
+            // -------------  ----------------------
+            // choice        / CodeableConcept - needs value set lookup - must also have options property for question of type choice (if not, make this a simple text input)
+            // open-choice   / CodeableConcept - needs valueset and drop down must also have options property for question of type choice (if not, make this a simple text input)
+            // reference     / ResourceReference - valueString will identify resource type in ext with url = http://www.healthintersections.com.au/fhir/Profile/metadata#reference
+            // fhirPrimitives will be handled as strings, dates, numbers or booleans
+            // need special handling for polymorphic properties (with [x] in linkId)
+            function link(scope, iElem, iAttrs) {
+                var ngModelGet = $parse(iAttrs.ngModel)(scope);
+                var question = scope.question;
+                var linkId = setLinkId(question.linkId, scope.repeats);
+                setModel(ngModelGet, linkId.replace('[x]', ''), scope.repeats, null);
+
+                function updateModel() {
+                    scope.$apply(function() {
+                        var element = document.getElementById(linkId);
+                        var val = element.value;
+                        setModel(ngModelGet, linkId.replace('[x]', ''), scope.repeats, val);
+                    });
+                }
+                iElem.bind('change', updateModel);
+
+                var template =
+                    '  <input requiredToken@' +
+                        '    type="' + $filter('questionnaireInputType')(question.type) + '" ' +
+                        '    id="' + linkId + '" ' +
+                        '    class="classToken@" ' +
+                        '    placeholder="' + question.text + '">@repeatToken' +
+                        '</div>';
+
+                template = question.type === 'boolean' ? template.replace("classToken@", "checkbox") : template.replace("classToken@", "form-control");
+                template = question.required ? template.replace("requiredToken@", "required ") : template.replace("requiredToken@", "");
+
+                  // TODO: if this a Code or CodeableConcept, build value set lookup
+
+                if (question.repeats) {
+                    var repeatDirective = '<fs-questionnaire-repeating-question model-id="' + linkId + '" data-ng-model="ngModel"/>';
+                    template = template.replace('@repeatToken', repeatDirective);
+                } else {
+                    template = template.replace('@repeatToken', '');
+                }
+
+                if (iAttrs.totalQuestions > 1) {
+                    template = '<label class="control-label" for="' + question.linkId + '">' + $filter('questionnaireLabel')(linkId) + '</label>&nbsp;&nbsp;' +
+                        template;
+                }
+                template = '<div class="form-group-lg" >' + template;
+
+                $compile(template)(scope.$parent, function(cloned) {
+                    iElem.append(cloned);
+                });
+
+                function setModel(obj, path, repeats, value) {
+                    if (repeats) {
+                        return obj;
+                    }
+                    if (typeof path === "string") {
+                        path = path.split('.');
+                    }
+                    if (path.length > 1) {
+                        var p = path.shift();
+                        if (obj[p] === null || !angular.isObject(obj[p])) {
+                            obj[p] = {};
+                        }
+                        setModel(obj[p], path, repeats, value);
+                    } else if (repeats) {
+                        obj[path[0]] = [];
+                    } else {
+                        obj[path[0]] = value;
+                    }
+                    return obj;
+                }
+
+                // removes trailing "value"
+                function setLinkId(path, repeats) {
+                    if (repeats) {
+                        return path;
+                    }
+                    if (typeof path === "string") {
+                        path = path.split('.');
+                        if (path[path.length - 1] === 'value') {
+                            path.pop();
+                        }
+                    }
+                    return path.join('.');
+                }
+            }
+        }
+    ]);
+
+    app.directive('fsQuestionnaireRepeatingGroup', ['$compile', '$filter', '$parse',
+        function($compile, $filter, $parse) {
+            // Description: Manage repeating group of items.
+            // Usage: <fs-questionnaire-repeating-group group-id="groupId" group-members="groupId" ng-model="vm.answers" />
+            var directiveDefinitionObject = {
+                restrict: 'E',
+                link: link,
+                scope: {
+                    ngModel: '='
+                }
+            };
+            return directiveDefinitionObject;
+
+            function link(scope, iElem, iAttrs) {
+                var groupId = iAttrs.groupId;
+                var groupMembers = iAttrs.groupMembers.split('..');
+                var listId = groupId + '-list';
+                var localArray = [];
+                var ngModelGet = $parse(iAttrs.ngModel)(scope);
+
+                var template = '<div class="btn-group col-md-10">' +
+                    '  <button type="submit"' +
+                    '          class="btn btn-info"' +
+                    '          data-ng-click="addToList()">' +
+                    '          <i class="fa fa-plus"></i>&nbsp;Save to List' +
+                    '  </button>' +
+                    '  <button type="button" class="btn btn-info pull-right" data-ng-click="reset()">' +
+                    '      <i class="fa fa-refresh"></i>&nbsp;Reset' +
+                    '  </button>' +
+                    '</div>';
+
+                var listTemplate = '<div data-ng-show="' + (localArray.length > 0) + '" class="col-md-12" id="' + listId + '">' +
+                    ' <form>' +
+                    '   <legend>' + $filter('questionnaireLabel')(groupId) + ' list</legend> ' +
+                    '   <table class="table table-responsive">' +
+                    '     <thead>' +
+                    '       <tr>' + buildHeading() +
+                    '       </tr>' +
+                    '     </thead>' +
+                    '     <tbody>' +
+                    '       <tr>' +
+                    '       </tr>' +
+                    '     </tbody>' +
+                    '   </table>' +
+                    ' </form> ' +
+                    '</div>';
+
+                function buildHeading() {
+                    var heading = '<th></th>';
+                    _.forEach(groupMembers, function(item) {
+                        heading = heading + '<th>' + $filter('questionnaireLabel')(item) + '</th>';
+                    });
+                    return heading;
+                }
+
+                template = template + listTemplate;
+
+                scope.addToList = function() {
+                    var arrayItem = {};
+                    _.forEach(groupMembers, function(item) {
+                        var element = document.getElementById(item);
+                        var val = element.value;
+                        var path = item.replace(groupId + '.', '');
+                        setArrayItem(arrayItem, path, val);
+                        // clear item
+                        element.value = '';
+                    });
+                    localArray.push(arrayItem);
+                    setModel(ngModelGet, groupId, localArray);
+                };
+
+                scope.reset = function() {
+                    _.forEach(groupMembers, function(item) {
+                        var element = document.getElementById(item);
+                        element.value = '';
+                    });
+                };
+
+                $compile(template)(scope, function(cloned) {
+                    iElem.replaceWith(cloned);
+                });
+
+                function setArrayItem(obj, path, value) {
+                    if (typeof path === "string") {
+                        path = path.split('.');
+                    }
+                    if (path.length > 1) {
+                        var p = path.shift();
+                        if (obj[p] === null || !angular.isObject(obj[p])) {
+                            obj[p] = {};
+                        }
+                        setArrayItem(obj[p], path, value);
+                    } else {
+                        obj[path[0]] = value;
+                    }
+                    return obj;
+                }
+
+                function setModel(obj, path, value) {
+                    if (typeof path === "string") {
+                        path = path.split('.');
+                    }
+                    if (path.length > 1) {
+                        var p = path.shift();
+                        if (obj[p] === null || !angular.isObject(obj[p])) {
+                            obj[p] = {};
+                        }
+                        setModel(obj[p], path, value);
+                    } else {
+                        obj[path[0]] = value;
+                    }
+                    return obj;
+                }
+            }
+        }
+    ]);
+
+    app.directive('fsQuestionnaireRepeatingQuestion', ['$compile',
+        function($compile) {
+            // Description: Manage repeating group of items.
+            // Usage: <fs-questionnaire-repeating-question model-id="modelId" ng-model="vm.answers" />
+            var directiveDefinitionObject = {
+                restrict: 'E',
+                link: link,
+                scope: {
+                    ngModel: '='
+                }
+            };
+            return directiveDefinitionObject;
+
+            function link(scope, iElem, iAttrs) {
+                var modelLinkId = iAttrs.modelId;
+                var template = '<span>' +
+                    '  <a href="" ' +
+                    '     data-ng-click="addToList()"' +
+                    '     class="fa fa-plus-square-o">' +
+                    '  </a>' +
+                    '</span>';
+
+                scope.addToList = function() {
+                    console.log('addToList::');
+                    console.log(iAttrs);
+                    console.log(scope);
+                };
+
+                $compile(template)(scope, function(cloned) {
+                    iElem.replaceWith(cloned);
+                });
+            }
+        }
+    ]);
+
+})();

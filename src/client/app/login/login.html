@@ -1,0 +1,17 @@
+<section id="dashboard-view" class="mainbar" data-ng-controller="login as vm">
+    <section class="matter">
+        <div class="container">
+            <h5>{{vm.welcome}}</h5>
+            <data-ng-form data-ng-show="!vm.isAuthenticated" >
+                <input data-ng-model="vm.user.username" type="text" name="user" placeholder="Username" />
+                <input data-ng-model="vm.user.password" type="password" name="pass" placeholder="Password" />
+                <input type="submit" data-ng-click="vm.submit()" value="Login" />
+            </data-ng-form>
+            <div>{{vm.error}}</div>
+            <data-ng-form data-ng-show="vm.isAuthenticated">
+                <div>{{vm.message}}</div>
+                <input type="submit"  data-ng-click="vm.logout()" value="Logout" />
+            </data-ng-form>
+        </div>
+    </section>
+</section>

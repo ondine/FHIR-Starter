@@ -44,6 +44,13 @@
                     }
                 }
             },
+   /*         {
+                url: '/',
+                config: {
+                    templateUrl: 'app/login/login.html',
+                    title: 'login'
+                }
+            },*/
             {
                 url: '/locations',
                 config: {

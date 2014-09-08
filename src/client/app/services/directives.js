@@ -121,13 +121,13 @@
             function minimize(e) {
                 e.preventDefault();
                 var $wcontent = element.parent().parent().next('.widget-content');
-                var iElement = element.children('i');
+                var elementent = element.children('i');
                 if ($wcontent.is(':visible')) {
-                    iElement.removeClass('fa fa-chevron-up');
-                    iElement.addClass('fa fa-chevron-down');
+                    elementent.removeClass('fa fa-chevron-up');
+                    elementent.addClass('fa fa-chevron-down');
                 } else {
-                    iElement.removeClass('fa fa-chevron-down');
-                    iElement.addClass('fa fa-chevron-up');
+                    elementent.removeClass('fa fa-chevron-down');
+                    elementent.addClass('fa fa-chevron-up');
                 }
                 $wcontent.toggle(500);
             }
@@ -238,7 +238,6 @@
             element.bind('change', updateModel);
         }
     });
-
 
     app.directive('fsAddToList', [function () {
         // Description: if value is true, set image to check mark
@@ -362,7 +361,6 @@
         }
     }]);
 
-
     app.directive('fsSearchItem', function () {
         // Description:
         //  renders search results in list
@@ -405,6 +403,7 @@
         }
     }]);
 
+/*
     app.directive('fsQuestionnaireGroup', ['$compile', 'config', function ($compile, config) {
         // Description: Process individual group of profile questionnaire data. This may be entered recursively for sub-groups.
         // Usage: <fs-questionnaire-group group="group" offset="2" cols="10" ng-model="vm.answers" />
@@ -463,23 +462,24 @@
                     '<data-fs-questionnaire-groups groups="group.group" data-ng-model="ngModel" offset="' + newOffset + '" cols="' + newCol + '"/>' +
                     '</div></div>';
                 $compile(subGroup)(scope, function (cloned) {
-                    element.append(cloned);
+                    element.replaceWith(cloned);
                 });
             } else {
                 var mainGroup = baseTemplate +
-                    '<div data-ng-repeat="q in group.question">' +
-                    '    <data-fs-questionnaire-question question="q" data-ng-model="ngModel" total-questions="' + (scope.group.question ? scope.group.question.length : 0) + '" group-type="' + fhirType + '"/>' +
+                    '<span data-fs-repeats="group.repeats"/><div data-ng-repeat="q in group.question">' +
+                    '    <data-fs-questionnaire-question question="q" repeats="group.repeats" data-ng-model="ngModel" total-questions="' + (scope.group.question ? scope.group.question.length : 0) + '" group-type="' + fhirType + '"/>' +
                     '</div>' +
                     '<span data-fs-required="group.required"/></span>' +
-                    '<span data-fs-repeats="group.repeats"/></span>' +
+                    '</span>' +
                     '</div></div>';
                 $compile(mainGroup)(scope, function (cloned) {
-                    element.append(cloned);
+                    element.replaceWith(cloned);
                 });
             }
         }
     }]);
-
+    */
+/*
     app.directive('fsQuestionnaireGroups', ['$compile', '$parse', function ($compile, $parse) {
         // Description: Starting point for building profile questionnaire
         // Usage: <data-fs-questionnaire-groups groups="vm.questionnaire.group.group" offset="0" cols="12" ng-model="vm.answers"/>
@@ -500,11 +500,12 @@
         function link(scope, element, attrs) {
             var newGrouping = '<data-fs-questionnaire-group data-ng-repeat="item in groups" data-ng-model="ngModel" group="item" offset="' + scope.offset + '" cols="' + scope.cols + '"/>';
             $compile(newGrouping)(scope, function (cloned) {
-                element.append(cloned);
+                element.replaceWith(cloned);
             });
         }
     }]);
-
+    */
+/*
     app.directive('fsQuestionnaireQuestion', ['$compile', '$filter', '$parse', function ($compile, $filter, $parse) {
         // Description: Renders the HTML input element for a specific question
         // Usage:  <fs-questionnaire-question question="q" total-questions="2" group-type="2" ng-model="vm.answers" />
@@ -516,17 +517,14 @@
             scope: {
                 question: '=?',
                 totalQuestions: '=?',
+                repeats: '=?',
                 groupType: '=?',
                 ngModel: '='
-            },
-            controller: function($scope, $element) {
-                console.log("Question Controller", arguments);
             }
         };
         return directiveDefinitionObject;
 
         function link(scope, element, attrs) {
-            console.log("Question Link", arguments);
             //TODO: handling for different types of questions
             // Question type / Extension valueString
             // -------------  ----------------------
@@ -536,42 +534,39 @@
             // fhirPrimitives will be handled as strings, dates, numbers or booleans
             // need special handling for polymorphic properties (with [x] in linkId)
 
-
             // remove polymorphic indicator from linkId (note: may need to update to handle this in client processing
-            var modelLinkId = scope.question.linkId.replace("[x]", "");
-            var modelAccessor = $parse(modelLinkId);
+
+            var ngModelGet = $parse(attrs.ngModel)(scope);
+            var question = scope.question;
+            var linkId = setLinkId(question.linkId);
+            setModel(ngModelGet, linkId.replace("[x]", ""), scope.repeats, null);
 
             function updateModel() {
-                var val = element.value;
-                scope.$apply(function(scope) {
-                    modelAccessor.assign(scope, val);
+                scope.$apply(function() {
+                    var element = document.getElementById(linkId);
+                    var val = element.value;
+                    setModel(ngModelGet, linkId, scope.repeats, val);
                 });
             }
-
-            scope.$watch(modelLinkId, function (val) {
-                 element.value = val;
-            });
-
             element.bind('change', updateModel);
 
             var template =
                 '<input requiredToken@' +
-                    'type="' + $filter('questionnaireInputType')(scope.question.type) + '" ' +
-                    'id="' + scope.question.linkId + '" ' +
-                    'class="classToken@" ' +
-                    'placeholder="' + scope.question.text + '"><span data-fs-add-to-list=' + scope.question.repeats + '/></span>' +
-                    '</div>';
+                '    type="' + $filter('questionnaireInputType')(question.type) + '" ' +
+                '    id="' + linkId + '" ' +
+                '    class="classToken@" ' +
+                '    placeholder="' + question.text + '"><span data-fs-add-to-list=' + question.repeats + '/></span>' +
+                '</div>';
 
-
-            template = scope.question.type === 'boolean' ? template.replace("classToken@", "checkbox") : template.replace("classToken@", "form-control");
-            template = scope.question.required ? template.replace("requiredToken@", "required ") : template.replace("requiredToken@", "");
+            template = question.type === 'boolean' ? template.replace("classToken@", "checkbox") : template.replace("classToken@", "form-control");
+            template = question.required ? template.replace("requiredToken@", "required ") : template.replace("requiredToken@", "");
 
             // TODO: if this is a repeating item, add list and list management controls
 
             // TODO: if this a Code or CodeableConcept, build value set lookup
 
             if (scope.totalQuestions > 1) {
-                template = '<label class="control-label" for="' + scope.question.linkId + '">' + $filter('questionnaireLabel')(modelLinkId) + '</label>&nbsp;&nbsp;' +
+                template = '<label class="control-label" for="' + linkId + '">' + $filter('questionnaireLabel')(linkId) + '</label>&nbsp;&nbsp;' +
                     template;
             }
             template = '<div class="form-group-lg" >' + template;
@@ -579,7 +574,36 @@
             $compile(template)(scope, function (cloned) {
                 element.append(cloned);
             });
+
+            function setModel(obj, path, repeats, value) {
+                if (typeof path === "string") {
+                    path = path.split('.');
+                }
+                if (path.length > 1) {
+                    var p = path.shift();
+                    if (obj[p] === null || !angular.isObject(obj[p])) {
+                        obj[p] = {};
+                    }
+                    setModel(obj[p], path, repeats, value);
+                } else if (repeats) {
+                    obj[path[0]] = [];
+                } else {
+                    obj[path[0]] = value;
+                }
+                return obj;
+            }
+
+            // removes trailing "value"
+            function setLinkId(path) {
+                if (typeof path === "string") {
+                    path = path.split('.');
+                    if (path[path.length - 1] === 'value') {
+                        path.pop();
+                    }
+                }
+                return path.join('.');
+            }
         }
     }]);
-
+*/
 })();

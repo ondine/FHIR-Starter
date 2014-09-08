@@ -17,17 +17,18 @@
 
     var serviceId = 'profileService';
 
-    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', profileService]);
+    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', 'fhirServers', profileService]);
 
-    function profileService(common, dataCache, fhirClient) {
+    function profileService(common, dataCache, fhirClient, fhirServers) {
         var dataCacheKey = 'localProfiles';
         var linksCacheKey = 'linksProfiles';
-        var isLoaded = false;
+        var isLoaded = undefined;
         var _isFetching = false;
         var $q = common.$q;
 
 
         var service = {
+            addAnswer: addAnswer,
             addProfile: addProfile,
             clearCache: clearCache,
             deleteProfile: deleteProfile,
@@ -38,10 +39,27 @@
             getProfilesCount: getProfilesCount,
             getProfiles: getProfiles,
             isFetching: isFetching,
+            updateAnswer: updateAnswer,
             updateProfile: updateProfile
         };
 
         return service;
+
+        function addAnswer(resource) {
+            var deferred = $q.defer();
+
+            fhirServers.getActiveServer()
+                .then(function (server) {
+                    var url = server.baseUrl + '/$qa-post';
+                    fhirClient.addResource(url, resource)
+                        .then(function (results) {
+                            deferred.resolve(results);
+                        }, function (outcome) {
+                            deferred.reject(outcome);
+                        });
+                });
+            return deferred.promise;
+        }
 
         function addProfile(baseUrl) {
             var deferred = $q.defer();
@@ -67,6 +85,7 @@
                 .then(function (results) {
                     deferred.resolve(results);
                 },
+
                 function (outcome) {
                     deferred.reject(outcome);
                 });
@@ -95,6 +114,7 @@
                         .then(function (results) {
                             deferred.resolve(results.data);
                         },
+
                         function (outcome) {
                             deferred.reject(outcome);
                         });
@@ -108,6 +128,7 @@
                 .then(function (results) {
                     deferred.resolve(results);
                 },
+
                 function (outcome) {
                     deferred.reject(outcome);
                 });
@@ -118,6 +139,7 @@
             var deferred = $q.defer();
             _getAllLocal()
                 .then(getProfile,
+
                 function () {
                     deferred.reject('Profile search results not found in cache.');
                 });
@@ -132,7 +154,7 @@
                     }
                 }
                 if (cachedProfile) {
-                    deferred.resolve(cachedProfile)
+                    deferred.resolve(cachedProfile);
                 } else {
                     deferred.reject('Profile not found in cache: ' + hashKey);
                 }
@@ -162,6 +184,7 @@
                 _isFetching = true;
                 fhirClient.getResource(baseUrl + '/Profile?_count=200')
                     .then(querySucceeded,
+
                     function (outcome) {
                         deferred.reject(outcome);
                     }).then(getByPage);
@@ -187,8 +210,7 @@
                     if (angular.isDefined(filteredEntries) && angular.isArray(filteredEntries)) {
                         if (filteredEntries.length < size) {
                             pagedProfiles = filteredEntries;
-                        }
-                        else {
+                        } else {
                             var start = (skip < filteredEntries.length) ? skip : (filteredEntries - size);
                             var items = ((start + size) >= filteredEntries.length) ? (filteredEntries.length) : (start + size);
                             pagedProfiles = filteredEntries.slice(start, items);
@@ -212,6 +234,10 @@
             return _isFetching;
         }
 
+        function updateAnswer() {
+            //TODO
+        }
+
         function updateProfile(resourceId, resource) {
             var deferred = $q.defer();
 
@@ -219,6 +245,7 @@
                 .then(function (data) {
                     deferred.resolve(data);
                 },
+
                 function (outcome) {
                     deferred.reject(outcome);
                 });
@@ -235,11 +262,12 @@
         }
 
         function _areProfilesLoaded(value) {
-            if (value === undefined) {
+            return true;
+            if (angular.isDefined(isLoaded)) {
                 return isLoaded;
+            } else {
+                return (angular.isDefined(value) ? value : false);
             }
-            return isLoaded = true;
         }
     }
-})
-    ();
+})();

@@ -186,6 +186,7 @@
         $httpProvider.defaults.headers.common = { 'Accept': 'application/json+fhir, application/json, text/plain, */*'};
         $httpProvider.defaults.headers.put = { 'Content-Type': 'application/json+fhir' };
         $httpProvider.defaults.headers.post = { 'Content-Type': 'application/json+fhir' };
+  //      $httpProvider.interceptors.push('authInterceptor');
     }]);
 
     app.config(['commonConfigProvider', function (cfg) {

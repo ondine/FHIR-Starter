@@ -20,17 +20,20 @@
     angular.module('FHIRStarter').controller(controllerId,
         ['$routeParams', '$window', 'common', 'profileService', 'questionnaireService', profileQuestionnaire]);
 
-    function profileQuestionnaire($routeParams, $window, common, profileService, questionnaireService) {
+    function profileQuestionnaire($routeParams, $window, common, profileService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
         var logInfo = common.logger.getLogFn(controllerId, 'info');
+        var logSuccess = common.logger.getLogFn(controllerId, 'success');
         var logWarning = common.logger.getLogFn(controllerId, 'warning');
 
         vm.answers = {};
+        vm.busyMessage = "Rendering profile questionnaire ...";
         vm.cancel = cancel;
         vm.activate = activate;
         vm.getTitle = getTitle;
         vm.goBack = goBack;
+        vm.isBusy = false;
         vm.isSaving = false;
         vm.isEditing = true;
         vm.isRendered = false;
@@ -76,17 +79,22 @@
         }
 
         function getRequestedQuestionnaire() {
+            vm.busyMessage = "Rendering profile questionnaire ...";
+            toggleSpinner(true);
             var key = $routeParams.hashKey;
             profileService.getProfileQuestionnaire(key)
                 .then(function (data) {
-                    return vm.questionnaire = data;
+                    toggleSpinner(false);
+                    vm.questionnaire = data;
+                    return vm.questionnaire;
                 }, function (error) {
+                    toggleSpinner(false);
                     if (error.outcome && error.status) {
                         logError(error.status + ' error: ' + error.outcome.issue[0].details);
                     } else {
                         logError("Unknown error: " + error);
                     }
-                });
+                }).then(renderForm);
         }
 
         function getTitle() {
@@ -101,14 +109,46 @@
             return vm.isRendered;
         }
 
+        function prepResource(obj) {
+            var vals = _.values(obj);
+            var keys = _.keys(obj);
+            var fhirResource = vals[0];
+            fhirResource.resourceType = keys[0];
+            return fhirResource;
+        }
+
+        function processResult(results) {
+            toggleSpinner(false);
+            var resourceVersionId = results.headers.location || results.headers["content-location"];
+            if (angular.isUndefined(resourceVersionId)) {
+                logWarning("Answers saved, but remote location is unavailable. CORS not implemented correctly at remote host.");
+            } else {
+                logSuccess("Answers saved at " + resourceVersionId);
+            }
+            vm.location.resourceVersionId = resourceVersionId;
+            vm.location.fullName = location.name;
+            vm.isEditing = true;
+            getTitle();
+        }
+
         function renderForm() {
             vm.isRendered = true;
         }
 
         function save() {
-            // submit questionnaire answers
-            logWarning("Whoops! TO DO: send this off to the server.");
-            logInfo(vm.answers);
+            vm.busyMessage = "Sending answers to remote host ...";
+            toggleSpinner(true);
+            var fhirResource = prepResource(vm.answers);
+            profileService.addAnswer(fhirResource)
+                .then(processResult,
+                function (error) {
+                    toggleSpinner(false);
+                    logError(common.unexpectedOutcome(error));
+                });
+        }
+
+        function toggleSpinner(on) {
+            vm.isBusy = on;
         }
 
         function updateAnswers(model, value) {

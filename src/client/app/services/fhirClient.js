@@ -51,7 +51,6 @@
 
         function deleteResource(resourceUrl) {
             var deferred = $q.defer();
-
             $http.delete(resourceUrl)
                 .success(function (data, status, headers, config) {
                     var results = {};
@@ -79,7 +78,6 @@
 
         function getResource(resourceUrl) {
             var deferred = $q.defer();
-
             $http.get(resourceUrl)
                 .success(function (data, status, headers, config) {
                     var results = {};
@@ -98,7 +96,6 @@
 
         function updateResource(resourceUrl, resource) {
             var deferred = $q.defer();
-
             $http.put(resourceUrl, common.removeNullProperties(resource))
                 .success(function (data, status, headers, config) {
                     var results = {};

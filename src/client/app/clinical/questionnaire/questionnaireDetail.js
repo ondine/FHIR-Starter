@@ -28,6 +28,7 @@
         vm.activate = activate;
         vm.getTitle = getTitle;
         vm.goBack = goBack;
+        vm.isBusy = false;
         vm.isSaving = false;
         vm.isEditing = true;
         vm.questionnaire = undefined;
@@ -66,14 +67,17 @@
         }
 
         function getRequestedQuestionnaire() {
+            toggleSpinner(true);
             var val = $routeParams.hashKey;
             if (val !== 'new') {
                 return questionnaireService.getCachedQuestionnaire(val)
-                .then(function(data) {
-                    vm.questionnaire = data;
-                }, function(error) {
-                    logError(error);
-                });
+                    .then(function (data) {
+                        vm.questionnaire = data;
+                        toggleSpinner(false);
+                    }, function (error) {
+                        toggleSpinner(true);
+                        logError(error);
+                    });
             }
         }
 
@@ -87,6 +91,10 @@
 
         function save() {
 
+        }
+
+        function toggleSpinner(on) {
+            vm.isBusy = on;
         }
     }
 })();
