@@ -205,9 +205,9 @@
                 if (angular.isUndefined(resourceVersionId)) {
                     logWarning("Organization saved, but location is unavailable. CORS not implemented correctly at remote host.");
                 } else {
+                    vm.organization.resourceId = common.setResourceId(vm.organization.resourceId, resourceVersionId);
                     logSuccess("Organization saved at " + resourceVersionId);
                 }
-                vm.organization.resourceVersionId = resourceVersionId;
                 vm.organization.fullName = organization.name;
                 vm.isEditing = true;
                 getTitle();

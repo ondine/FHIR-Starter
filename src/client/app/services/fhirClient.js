@@ -32,8 +32,9 @@
         return service;
 
         function addResource(baseUrl, resource) {
+            var fhirResource = common.removeNullProperties(resource);
             var deferred = $q.defer();
-            $http.post(baseUrl, common.removeNullProperties(resource))
+            $http.post(baseUrl, fhirResource)
                 .success(function (data, status, headers, config) {
                     var results = {};
                     results.data = data;
@@ -95,8 +96,9 @@
         }
 
         function updateResource(resourceUrl, resource) {
+            var fhirResource = common.removeNullProperties(resource);
             var deferred = $q.defer();
-            $http.put(resourceUrl, common.removeNullProperties(resource))
+            $http.put(resourceUrl, fhirResource)
                 .success(function (data, status, headers, config) {
                     var results = {};
                     results.data = data;

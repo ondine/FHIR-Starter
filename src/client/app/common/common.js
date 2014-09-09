@@ -61,6 +61,7 @@
             makeHumanName: makeHumanName,
             mapDisplayToCoding: mapDisplayToCoding,
             removeNullProperties: removeNullProperties,
+            setResourceId: setResourceId,
             textContains: textContains,
             unexpectedOutcome: unexpectedOutcome
         };
@@ -140,15 +141,6 @@
             }
         }
 
-        function isNumber(val) {
-            // negative or positive
-            return /^[-]?\d+$/.test(val);
-        }
-
-        function textContains(text, searchText) {
-            return text && -1 !== text.toLowerCase().indexOf(searchText.toLowerCase());
-        }
-
         function generateUUID() {
             var d = new Date().getTime();
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
@@ -157,6 +149,11 @@
                     d = Math.floor(d / 16);
                     return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
                 });
+        }
+
+        function isNumber(val) {
+            // negative or positive
+            return /^[-]?\d+$/.test(val);
         }
 
         function isAbsoluteUri(input) {
@@ -220,6 +217,25 @@
                 }
             });
             return target;
+        }
+
+        function setResourceId(resourceId, resourceVersionId) {
+            var id = resourceId;
+            if (angular.isUndefined(resourceVersionId) === false) {
+                if (angular.isUndefined(resourceId)) {
+                    var index = resourceVersionId.indexOf('/_history');
+                    if (index > 0) {
+                        id = resourceVersionId.substring(0, index);
+                    } else {
+                        id = resourceVersionId;
+                    }
+                }
+            }
+            return id;
+        }
+
+        function textContains(text, searchText) {
+            return text && -1 !== text.toLowerCase().indexOf(searchText.toLowerCase());
         }
 
         function unexpectedOutcome(error) {

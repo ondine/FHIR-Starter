@@ -229,9 +229,9 @@
                 if (angular.isUndefined(resourceVersionId)) {
                     logWarning("Person saved, but location is unavailable. CORS not implemented correctly at remote host.");
                 } else {
+                    vm.person.resourceId = common.setResourceId(vm.person.resourceId, resourceVersionId);
                     logSuccess("Person saved at " + resourceVersionId);
                 }
-                vm.person.resourceVersionId = resourceVersionId;
                 vm.person.fullName = humanNameService.getFullName();
                 vm.isEditing = true;
                 vm.title = getTitle();

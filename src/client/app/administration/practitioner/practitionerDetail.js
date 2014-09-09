@@ -222,9 +222,9 @@
             if (angular.isUndefined(resourceVersionId)) {
                 logWarning("Practitioner saved, but location is unavailable. CORS not implemented correctly at remote host.");
             } else {
+                vm.practitioner.resourceId = common.setResourceId(vm.practitioner.resourceId, resourceVersionId);
                 logSuccess("Practitioner saved at " + resourceVersionId);
             }
-            vm.practitioner.resourceVersionId = resourceVersionId;
             vm.practitioner.fullName = humanNameService.getFullName();
             vm.isEditing = true;
             vm.title = getTitle();

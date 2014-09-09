@@ -238,8 +238,9 @@
                     logWarning("Patient saved, but location is unavailable. CORS not implemented correctly at remote host.");
                 } else {
                     logSuccess("Patient saved at " + resourceVersionId);
+                    vm.patient.resourceVersionId = resourceVersionId;
+                    vm.patient.resourceId = common.setResourceId(vm.patient.resourceId, resourceVersionId);
                 }
-                vm.patient.resourceVersionId = resourceVersionId;
                 vm.patient.fullName = humanNameService.getFullName();
                 vm.isEditing = true;
                 vm.title = getTitle();
