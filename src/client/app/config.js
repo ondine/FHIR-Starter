@@ -186,6 +186,22 @@
         $httpProvider.defaults.headers.common = { 'Accept': 'application/json+fhir, application/json, text/plain, */*'};
         $httpProvider.defaults.headers.put = { 'Content-Type': 'application/json+fhir' };
         $httpProvider.defaults.headers.post = { 'Content-Type': 'application/json+fhir' };
+
+        /*
+        // adds a delay to response: use only for local dev/testing
+        var handlerFactory = function($q, $timeout) {
+            return function(promise) {
+                return promise.then(function(response) {
+                    return $timeout(function() {
+                        return response;
+                    }, 500);
+                }, function(response) {
+                    return $q.reject(response);
+                });
+            };
+        }
+        $httpProvider.responseInterceptors.push(handlerFactory);
+        */
      }]);
 
     app.config(['commonConfigProvider', function (cfg) {

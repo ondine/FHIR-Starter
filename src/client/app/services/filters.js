@@ -136,6 +136,23 @@
         };
     });
 
+    app.filter('renderObject', function() {
+        return function(item) {
+            var objectString;
+            var keys = _.keys(item);
+            _.forEach(keys, function(key) {
+                if (angular.isDefined(item[key]) && (key !== '$$hashKey')) {
+                    if (angular.isDefined(objectString)) {
+                        objectString = objectString + ", " + key + ": " + item[key];
+                    } else {
+                        objectString = key + ": " + item[key];
+                    }
+                }
+            });
+            return objectString;
+        };
+    });
+
     app.filter('singleLineAddress', function () {
         return function (address) {
             if (address) {
@@ -163,7 +180,6 @@
                     break;
                 }
             }
-
             if (resultString.length > len && resultString.indexOf(' ')) {
                 resultString = (resultString.substring(0, len)) + ' ...';
             }

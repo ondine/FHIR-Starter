@@ -43,6 +43,5 @@
             }
             return $q.reject(rejection);
         }
-
     }
 })();
