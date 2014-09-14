@@ -112,9 +112,8 @@
                 .then(function (profile) {
                     fhirClient.getResource(profile.id + '/$questionnaire')
                         .then(function (results) {
-                            deferred.resolve(results.data);
+                            deferred.resolve(results);
                         },
-
                         function (outcome) {
                             deferred.reject(outcome);
                         });

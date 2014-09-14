@@ -73,6 +73,8 @@
         return function (inputType) {
             if (_.contains(['choice', 'open-choice'], inputType)) {
                 return "valueCoding";
+            } else if (inputType === 'reference') {  //NOTE: may change with DSTU 2
+                return "valueResource";
             } else {
                 return "value" + capitalizeFirstWord(inputType);
             }
@@ -89,11 +91,11 @@
         return function (inputType) {
             var retValue = 'text';
             if (inputType) {
-                if (_.contains(['date'], inputType)) {
+                if (_.contains(['date', 'dateTime'], inputType)) { // datetime workaround for now
                     retValue = 'date';
                 } else if (_.contains(['time'], inputType)) {
                     retValue = 'time';
-                } else if (_.contains(['dateTime', 'instant'], inputType)) {
+                } else if (_.contains(['instant'], inputType)) {
                     retValue = 'datetime-local';
                 } else if (_.contains(['integer', 'decimal'], inputType)) {
                     retValue = 'number';

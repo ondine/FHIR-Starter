@@ -18,15 +18,16 @@
     var controllerId = 'profileQuestionnaire';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$routeParams', '$window', 'common', 'profileService', 'questionnaireService', profileQuestionnaire]);
+        ['$routeParams', '$window', 'common', 'localValueSets', 'profileService', 'questionnaireService', profileQuestionnaire]);
 
-    function profileQuestionnaire($routeParams, $window, common, profileService) {
+    function profileQuestionnaire($routeParams, $window, common, localValueSets, profileService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
         var logInfo = common.logger.getLogFn(controllerId, 'info');
         var logSuccess = common.logger.getLogFn(controllerId, 'success');
         var logWarning = common.logger.getLogFn(controllerId, 'warning');
 
+        vm.answerStatuses = [];
         vm.answers = {};
         vm.busyMessage = "Rendering profile questionnaire ...";
         vm.cancel = cancel;
@@ -63,7 +64,7 @@
         activate();
 
         function activate() {
-            common.activateController([getRequestedQuestionnaire()], controllerId);
+            common.activateController([getAnswerStatuses(), getRequestedQuestionnaire()], controllerId);
         }
 
         function cancel() {
@@ -78,28 +79,27 @@
             return !vm.isSaving;
         }
 
+        function getAnswerStatuses() {
+            return vm.answerStatuses = localValueSets.questionnaireAnswerStatus();
+        }
+
         function getRequestedQuestionnaire() {
             vm.busyMessage = "Rendering profile questionnaire ...";
             toggleSpinner(true);
             var key = $routeParams.hashKey;
             profileService.getProfileQuestionnaire(key)
-                .then(function (data) {
+                .then(function (results) {
                     toggleSpinner(false);
-                    vm.questionnaire = data;
+                    vm.questionnaire = results.data;
                     vm.answers.resourceType = "QuestionnaireAnswers";
-                    vm.answers.questionnaire = vm.questionnaire.resourceType;
-                    vm.answers.status = {code: "inprogress", display: "in progress", system: "http://hl7.org/fhir/questionnaire-answers-status"};
-                    vm.answers.authored = new Date().toISOString();
+                    vm.answers.questionnaire = { "reference": results.config.url };
+                    vm.answers.status = "in progress";
                     vm.answers.group = {};
                     vm.answers.group.title = vm.questionnaire.group.title;
                     vm.answers.group.linkId = vm.questionnaire.group.linkId;
                     vm.answers.group.text = vm.questionnaire.group.text;
-                    vm.answers.group.subject = ''; // reference to patient here
-                    if (angular.isArray(vm.questionnaire.group.group)) {
-                        vm.answers.group.group = [];
-                    } else {
-                        vm.answers.group.group = {};
-                    }
+                    vm.answers.group.subject = { "reference": "/Patient/1" };
+                    vm.answers.group.group = [];
                     return vm.questionnaire;
                 }, function (error) {
                     toggleSpinner(false);
@@ -139,10 +139,10 @@
             } else {
                 logSuccess("Answers saved at " + resourceVersionId);
             }
-            vm.location.resourceVersionId = resourceVersionId;
-            vm.location.fullName = location.name;
+            vm.questionnaire.resourceVersionId = resourceVersionId;
+            //vm.questionnaire.fullName = questionnaire.name;
             vm.isEditing = true;
-            getTitle();
+           // getTitle();
         }
 
         function renderForm() {
@@ -152,7 +152,7 @@
         function save() {
             vm.busyMessage = "Sending answers to remote host ...";
             toggleSpinner(true);
-   //         var fhirResource = prepResource(vm.answers);
+            vm.answers.authored = "2014-09-14";
             profileService.addAnswer(vm.answers)
                 .then(processResult,
                 function (error) {

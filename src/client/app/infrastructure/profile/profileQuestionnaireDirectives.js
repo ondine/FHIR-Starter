@@ -220,6 +220,21 @@
                     scope.answerGroup.question.push(answeredQuestion);
                 }
 
+                if (question.type === 'reference') {
+                    if (angular.isArray(scope.questionGroup.extension)) {
+                        console.log(scope.questionGroup.extension);
+                        var reference = _.find(scope.questionGroup.extension, function(item) {
+                            return item.url === "http://www.healthintersections.com.au/fhir/Profile/metadata#reference";
+                        });
+                        var index = reference.valueString.indexOf('?');
+                        if (index > 0) {
+                            var ref = reference.valueString.slice(0, index);
+                            scope.referenceType = ref.replace("/", "");
+                        }
+                        console.log(scope.referenceType);
+                    }
+                }
+
                 var template =
                     '  <input requiredToken@' +
                         '    type="' + $filter('questionnaireInputType')(question.type) + '" ' +
@@ -290,6 +305,8 @@
                         var val = element.value;
                         if (scope.question.type === 'choice') {
                             val = JSON.parse(val);
+                        } else if (scope.question.type === 'reference') {
+                            val = { "reference": val };
                         }
                         var answer = {};
                         answer[scope.answerType] = val;

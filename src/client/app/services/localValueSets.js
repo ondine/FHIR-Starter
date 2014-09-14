@@ -30,6 +30,7 @@
             locationStatus: locationStatus,
             maritalStatus: maritalStatus,
             organizationType: organizationType,
+            questionnaireAnswerStatus: questionnaireAnswerStatus,
             usaStates: usaStates
         };
 
@@ -302,6 +303,14 @@
                 {"code": "edu", "display": "Educational Institute", "system": "http://hl7.org/fhir/organization-type"},
                 {"code": "reli", "display": "Religious Institution", "system": "http://hl7.org/fhir/organization-type"},
                 {"code": "pharm", "display": "Pharmacy", "system": "http://hl7.org/fhir/organization-type"}
+            ];
+        }
+
+        function questionnaireAnswerStatus() {
+            return [
+                {"code" : "in progress","display" : "in progress","definition" : "This QuestionnaireAnswers has been partially filled out with answers, but changes or additions are still expected to be made to it."},
+                {"code" : "completed","display" : "completed","definition" : "This QuestionnaireAnswers has been filled out with answers, and the current content is regarded as definitive."},
+                {"code" : "amended","display" : "amended","definition" : "This QuestionnaireAnswers has been filled out with answers, then marked as complete, yet changes or additions have been made to it afterwards."}
             ];
         }
 

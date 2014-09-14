@@ -83,6 +83,22 @@
                                   data-ng-model="vm.answers">
                         <fieldset>
                             <div class="form-group col-md-12">
+                                <legend>Answer Status</legend>
+                                <span class="help-block">The lifecycle status of the questionnaire answers as a whole.</span>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label pull-left" for="answer-status">Status</label>&nbsp;&nbsp;
+                                    <select class="form-control" id="answer-status"
+                                            data-ng-model="vm.answers.status">
+                                        <option data-ng-repeat="coding in vm.answerStatuses" value="{{coding.code}}"
+                                                data-ng-selected="coding.code===vm.answers.status">
+                                            {{coding.code || ''}}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12">
                                 <data-fs-questionnaire-groups question-groups="vm.questionnaire.group.group"
                                                               answer-group="vm.answers.group.group"
                                                               offset="0"
