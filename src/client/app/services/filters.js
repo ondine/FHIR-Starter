@@ -69,6 +69,22 @@
         };
     });
 
+    app.filter('questionnaireAnswerType', function () {
+        return function (inputType) {
+            if (_.contains(['choice', 'open-choice'], inputType)) {
+                return "valueCoding";
+            } else {
+                return "value" + capitalizeFirstWord(inputType);
+            }
+        };
+
+        function capitalizeFirstWord(input) {
+            return input.replace(/^./, function (match) {
+                return match.toUpperCase();
+            });
+        }
+    });
+
     app.filter('questionnaireInputType', function () {
         return function (inputType) {
             var retValue = 'text';

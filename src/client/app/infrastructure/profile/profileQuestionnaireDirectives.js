@@ -19,12 +19,13 @@
     app.directive('fsQuestionnaireGroup', ['$compile', 'config',
         function($compile, config) {
             // Description: Process individual group of profile questionnaire data. This may be entered recursively for sub-groups.
-            // Usage: <fs-questionnaire-group group="group" offset="2" cols="10" ng-model="vm.answers" value-sets="vm.valueSets" />
+            // Usage: <fs-questionnaire-group question-group="group" answer-group="group" offset="2" cols="10" ng-model="vm.answers" value-sets="vm.valueSets" />
             var directiveDefinitionObject = {
                 restrict: 'E',
                 link: link,
                 scope: {
-                    group: '=?',
+                    answerGroup: '=?',
+                    questionGroup: '=?',
                     offset: '=',
                     cols: '=',
                     ngModel: '=',
@@ -40,8 +41,24 @@
                 var newOffset = scope.offset + 1;
                 var newCol = scope.cols - 1;
 
-                if (scope.group.repeats) {
-                    _.forEach(scope.group.question, function(item) {
+                if (angular.isDefined(scope.questionGroup)) {
+                    var newGroup = {};
+                    newGroup.linkId = scope.questionGroup.linkId;
+                    newGroup.title = scope.questionGroup.title;
+                    if (angular.isDefined(scope.questionGroup.question)) {
+                        newGroup.question = [];
+                    } else if (angular.isDefined(scope.questionGroup.group)) {
+                        newGroup.group = {};
+                        scope.answerGroup.group = newGroup;
+                    }
+                    if (angular.isArray(scope.answerGroup)){
+                        scope.answerGroup.push(newGroup);
+                    }
+                }
+                var groupIndex = scope.answerGroup.length - 1;
+
+                if (scope.questionGroup.repeats) {
+                    _.forEach(scope.questionGroup.question, function(item) {
                         var id = item.linkId;
                         if (angular.isDefined(groupMembers)) {
                             groupMembers = groupMembers + '..' + id;
@@ -51,8 +68,8 @@
                     });
                 }
 
-                if (scope.group.extension) {
-                    var groupType = _.find(scope.group.extension, {'url': 'http://www.healthintersections.com.au/fhir/Profile/metadata#type'});
+                if (scope.questionGroup.extension) {
+                    var groupType = _.find(scope.questionGroup.extension, {'url': 'http://www.healthintersections.com.au/fhir/Profile/metadata#type'});
                     if (groupType) {
                         typeValue = groupType.valueString;
                         if (_.contains(config.fhirPrimitiveTypes, typeValue)) {
@@ -66,27 +83,28 @@
                 }
 
                 var groupTemplate = '<div class="form-group col-md-12" >' +
-                    '<legend>{{group.linkId | questionnaireLabel }}</legend>' +
-                    '<span class="help-block">{{group.text || (group.extension | questionnaireFlyover)}}</span>' +
+                    '<legend>{{questionGroup.linkId | questionnaireLabel }}</legend>' +
+                    '<span class="help-block">{{questionGroup.text || (questionGroup.extension | questionnaireFlyover)}}</span>' +
                     '<div class="controls col-md-' + scope.cols + ' col-md-offset-' + scope.offset + '" @groupIdToken>';
 
-                if (scope.group && angular.isArray(scope.group.group)) {
+                if (scope.questionGroup && angular.isArray(scope.questionGroup.group)) {
+                    scope.answerGroup[groupIndex].group = [];
                     groupTemplate = groupTemplate +
-                        '    <data-fs-questionnaire-groups groups="group.group" data-ng-model="ngModel" value-sets="valueSets" offset="' + newOffset + '" cols="' + newCol + '"/>' +
+                        '    <data-fs-questionnaire-groups question-groups="questionGroup.group" answer-group="answerGroup[' + groupIndex + '].group" " data-ng-model="ngModel" value-sets="valueSets" offset="' + newOffset + '" cols="' + newCol + '"/>' +
                         '  </div>' +
                         '</div>';
                 } else {
                     groupTemplate = groupTemplate +
-                        '    <div data-ng-repeat="q in group.question">' +
-                        '      <data-fs-questionnaire-question question="q" repeats="group.repeats" required="group.required" data-ng-model="ngModel" value-sets="valueSets" total-questions="' + (scope.group.question ? scope.group.question.length : 0) + '" group-type="' + fhirType + '"/>' +
+                        '    <div data-ng-repeat="q in questionGroup.question">' +
+                        '      <data-fs-questionnaire-question question="q" question-group="questionGroup" answer-group="answerGroup[' + groupIndex + ']" " data-ng-model="ngModel" value-sets="valueSets" total-questions="' + (scope.questionGroup.question ? scope.questionGroup.question.length : 0) + '" group-type="' + fhirType + '"/>' +
                         '    </div>@repeatDirectiveToken' +
                         '  </div>' +
                         '</div>';
                 }
 
-                if (scope.group.repeats) {
-                    groupTemplate = groupTemplate.replace('@groupIdToken', 'id="' + scope.group.linkId + '"');
-                    var repeatDirective = '<fs-questionnaire-repeating-group group-id="' + scope.group.linkId + '" group-members="' + groupMembers + '" data-ng-model="ngModel" value-sets="valueSets" />';
+                if (scope.questionGroup.repeats) {
+                    groupTemplate = groupTemplate.replace('@groupIdToken', 'id="' + scope.questionGroup.linkId + '"');
+                    var repeatDirective = '<fs-questionnaire-repeating-group group-id="' + scope.questionGroup.linkId + '" group-members="' + groupMembers + '" data-ng-model="ngModel" value-sets="valueSets" />';
                     groupTemplate = groupTemplate.replace('@repeatDirectiveToken', repeatDirective);
                 } else {
                     groupTemplate = groupTemplate.replace('@groupIdToken', '');
@@ -139,12 +157,13 @@
 
     app.directive('fsQuestionnaireGroups', ['$compile', function ($compile) {
         // Description: Starting point for building profile questionnaire
-        // Usage: <data-fs-questionnaire-groups groups="vm.questionnaire.group.group" offset="0" cols="12" ng-model="vm.answers" value-sets="valueSets" />
+        // Usage: <data-fs-questionnaire-groups question-groups="vm.questionnaire.group.group" offset="0" cols="12" ng-model="vm.answers" value-sets="valueSets" />
         var directiveDefinitionObject = {
             restrict: 'E',
             link: link,
             scope: {
-                groups: '=',
+                answerGroup: '=',
+                questionGroups: '=',
                 offset: '=',
                 cols: '=',
                 ngModel: '=',
@@ -154,7 +173,7 @@
         return directiveDefinitionObject;
 
         function link(scope, iElem, iAttrs) {
-            var newGrouping = '<data-fs-questionnaire-group data-ng-repeat="item in groups" data-ng-model="ngModel" value-sets="valueSets" group="item" offset="' + scope.offset + '" cols="' + scope.cols + '"/>';
+            var newGrouping = '<data-fs-questionnaire-group data-ng-repeat="item in questionGroups" data-ng-model="ngModel" value-sets="valueSets" answer-group="answerGroup" question-group="item" offset="' + scope.offset + '" cols="' + scope.cols + '"/>';
             $compile(newGrouping)(scope, function (cloned) {
                 iElem.replaceWith(cloned);
             });
@@ -169,9 +188,9 @@
                 restrict: 'E',
                 link: link,
                 scope: {
+                    answerGroup: '=',
+                    questionGroup: '=',
                     question: '=?',
-                    repeats: '=?',
-                    required: '=?',
                     ngModel: '=',
                     valueSets: '=?'
                 }
@@ -187,8 +206,19 @@
             function link(scope, iElem, iAttrs) {
                 var ngModelGet = scope.ngModel;
                 var question = scope.question;
-                var linkId = setLinkId(question.linkId, scope.repeats);
-                setModel(ngModelGet, linkId.replace('[x]', ''), scope.repeats, null);
+                var linkId = setLinkId(question.linkId, scope.questionGroup.repeats);
+              //  setModel(ngModelGet, linkId.replace('[x]', ''), scope.questionGroup.repeats, null);
+
+                var answeredQuestion = {};
+                answeredQuestion.linkId = question.linkId;
+                scope.answerType = $filter('questionnaireAnswerType')(question.type);
+                answeredQuestion.answer = [];
+                console.log(answeredQuestion);
+                scope.answeredQuestion = answeredQuestion;
+
+                if (angular.isDefined(scope.questionGroup.question)) {
+                    scope.answerGroup.question.push(answeredQuestion);
+                }
 
                 var template =
                     '  <input requiredToken@' +
@@ -221,7 +251,6 @@
                                 options.push(coding);
                             });
                             scope.valueSet = options;
-                            console.log(scope.valueSet);
                             template =
                                 ' <select ' +
                                     '   class="form-control"' +
@@ -239,7 +268,7 @@
                 template = question.required ? template.replace("requiredToken@", "required ") : template.replace("requiredToken@", "");
 
                 if (question.repeats) {
-                    var repeatDirective = '<fs-questionnaire-repeating-question model-id="' + linkId + '" data-ng-model="ngModel" value-sets="valueSets" />';
+                    var repeatDirective = '<fs-questionnaire-repeating-question model-id="' + linkId + '" data-ng-model="ngModel" answer-group="answerGroup" value-sets="valueSets" />';
                     template = template.replace('@repeatToken', repeatDirective);
                 } else {
                     template = template.replace('@repeatToken', '');
@@ -259,7 +288,13 @@
                     scope.$apply(function() {
                         var element = document.getElementById(linkId);
                         var val = element.value;
-                        setModel(ngModelGet, linkId.replace('[x]', ''), scope.repeats, val);
+                        if (scope.question.type === 'choice') {
+                            val = JSON.parse(val);
+                        }
+                        var answer = {};
+                        answer[scope.answerType] = val;
+                        scope.answeredQuestion.answer = [answer];
+                     //   setModel(ngModelGet, linkId.replace('[x]', ''), scope.repeats, val);
                     });
                 }
 

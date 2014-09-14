@@ -86,6 +86,20 @@
                 .then(function (data) {
                     toggleSpinner(false);
                     vm.questionnaire = data;
+                    vm.answers.resourceType = "QuestionnaireAnswers";
+                    vm.answers.questionnaire = vm.questionnaire.resourceType;
+                    vm.answers.status = {code: "inprogress", display: "in progress", system: "http://hl7.org/fhir/questionnaire-answers-status"};
+                    vm.answers.authored = new Date().toISOString();
+                    vm.answers.group = {};
+                    vm.answers.group.title = vm.questionnaire.group.title;
+                    vm.answers.group.linkId = vm.questionnaire.group.linkId;
+                    vm.answers.group.text = vm.questionnaire.group.text;
+                    vm.answers.group.subject = ''; // reference to patient here
+                    if (angular.isArray(vm.questionnaire.group.group)) {
+                        vm.answers.group.group = [];
+                    } else {
+                        vm.answers.group.group = {};
+                    }
                     return vm.questionnaire;
                 }, function (error) {
                     toggleSpinner(false);
@@ -138,8 +152,8 @@
         function save() {
             vm.busyMessage = "Sending answers to remote host ...";
             toggleSpinner(true);
-            var fhirResource = prepResource(vm.answers);
-            profileService.addAnswer(fhirResource)
+   //         var fhirResource = prepResource(vm.answers);
+            profileService.addAnswer(vm.answers)
                 .then(processResult,
                 function (error) {
                     toggleSpinner(false);
