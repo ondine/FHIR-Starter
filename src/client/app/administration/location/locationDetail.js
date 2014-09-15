@@ -127,7 +127,7 @@
         }
 
         function getLocationRoleTypes() {
-            valuesetService.getExpansion(vm.activeServer.baseUrl, "http://hl7.org/fhir/v3/vs/ServiceDeliveryLocationRoleType")
+            valuesetService.getExpansion("http://hl7.org/fhir/v3/vs/ServiceDeliveryLocationRoleType")
                 .then(function (expansions) {
                     return vm.locationRoleTypes = expansions;
                 }, function (error) {

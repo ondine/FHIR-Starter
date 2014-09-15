@@ -17,9 +17,9 @@
 
     var serviceId = 'valuesetService';
 
-    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', valuesetService]);
+    angular.module('FHIRStarter').factory(serviceId, ['common', 'dataCache', 'fhirClient', 'fhirServers', valuesetService]);
 
-    function valuesetService(common, dataCache, fhirClient) {
+    function valuesetService(common, dataCache, fhirClient, fhirServers) {
         var dataCacheKey = 'localValuesets';
         var expansionCacheKey = 'localValuesetExpansions';
         var linksCacheKey = 'linksValuesets';
@@ -118,20 +118,25 @@
             }
         }
 
-        function getExpansion(baseUrl, identifier) {
+        function getExpansion(identifier) {
             // e.g., http://fhir-dev.healthintersections.com.au/open/ValueSet/$expand?identifier=http://hl7.org/fhir/vs/location-status
-            var resourceId = baseUrl + "/ValueSet/$expand?identifier=" + identifier;
             var deferred = $q.defer();
-            fhirClient.getResource(resourceId)
-                .then(function (results) {
-                    if (results.data && results.data.expansion && angular.isArray(results.data.expansion.contains)) {
-                        deferred.resolve(results.data.expansion.contains);
-                    } else {
-                        deferred.reject("Response did not include expected expansion");
-                    }
-                },
-                function (outcome) {
-                    deferred.reject(outcome);
+            fhirServers.getActiveServer()
+                .then(function (server) {
+                    var url = server.baseUrl + "/ValueSet/$expand?identifier=" + identifier;
+                    fhirClient.getResource(url)
+                        .then(function (results) {
+                            if (results.data && results.data.expansion && angular.isArray(results.data.expansion.contains)) {
+                                deferred.resolve(results.data.expansion.contains);
+                            } else {
+                                deferred.reject("Response did not include expected expansion");
+                            }
+                        },
+                        function (outcome) {
+                            deferred.reject(outcome);
+                        });
+                }, function (error) {
+                    deferred.reject(error);
                 });
             return deferred.promise;
         }

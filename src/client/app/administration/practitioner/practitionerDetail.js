@@ -124,7 +124,7 @@
         }
 
         function getPractitionerRoles() {
-            valuesetService.getExpansion(vm.activeServer.baseUrl, "http://hl7.org/fhir/vs/practitioner-role")
+            valuesetService.getExpansion("http://hl7.org/fhir/vs/practitioner-role")
                 .then(function (expansions) {
                     return vm.practitionerRoles = expansions;
                 }, function (error) {
@@ -133,7 +133,7 @@
         }
 
         function getPractitionerSpecialties() {
-            valuesetService.getExpansion(vm.activeServer.baseUrl, "http://hl7.org/fhir/vs/practitioner-specialty")
+            valuesetService.getExpansion("http://hl7.org/fhir/vs/practitioner-specialty")
                 .then(function (expansions) {
                     return vm.practitionerSpecialties = expansions;
                 }, function (error) {

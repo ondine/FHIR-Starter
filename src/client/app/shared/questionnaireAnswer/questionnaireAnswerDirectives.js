@@ -31,7 +31,7 @@
     var app = angular.module('FHIRStarter');
 
     app.directive('fsQuestionnaireGroup', ['$compile', 'config',
-        function($compile, config) {
+        function ($compile, config) {
             // Description: Process individual group of profile questionnaire data. This may be entered recursively for sub-groups.
             // Usage: <fs-questionnaire-group question-group="group" answer-group="group" offset="2" cols="10" ng-model="vm.answers" value-sets="vm.valueSets" />
             var directiveDefinitionObject = {
@@ -65,14 +65,14 @@
                         newGroup.group = {};
                         scope.answerGroup.group = newGroup;
                     }
-                    if (angular.isArray(scope.answerGroup)){
+                    if (angular.isArray(scope.answerGroup)) {
                         scope.answerGroup.push(newGroup);
                     }
                 }
                 var groupIndex = scope.answerGroup.length - 1;
 
                 if (scope.questionGroup.repeats) {
-                    _.forEach(scope.questionGroup.question, function(item) {
+                    _.forEach(scope.questionGroup.question, function (item) {
                         var id = item.linkId;
                         if (angular.isDefined(groupMembers)) {
                             groupMembers = groupMembers + '..' + id;
@@ -125,7 +125,7 @@
                     groupTemplate = groupTemplate.replace('@repeatDirectiveToken', '');
                 }
 
-                $compile(groupTemplate)(scope, function(cloned) {
+                $compile(groupTemplate)(scope, function (cloned) {
                     iElem.append(cloned);
                 });
             }
@@ -133,7 +133,7 @@
     ]);
 
     app.directive('fsQuestionnaireGroupList', ['$compile', '$filter',
-        function($compile, $filter) {
+        function ($compile, $filter) {
             // Description: Manages the list of saved group items
             // Usage:  <fs-questionnaire-group-list items="listArray" group-id="groupId"/>
             var directiveDefinitionObject = {
@@ -160,8 +160,8 @@
 
                 iElem.append($compile(listTemplate)(scope));
 
-                scope.remove = function(item) {
-                    _.remove(scope.items, function(i) {
+                scope.remove = function (item) {
+                    _.remove(scope.items, function (i) {
                         return item.$$hashKey === i.$$hashKey;
                     });
                 };
@@ -195,7 +195,7 @@
     }]);
 
     app.directive('fsQuestionnaireQuestion', ['$compile', '$filter', '$parse', 'valuesetService',
-        function($compile, $filter, $parse, valuesetService) {
+        function ($compile, $filter, $parse, valuesetService) {
             // Description: Renders the HTML input element for a specific question
             // Usage:  <fs-questionnaire-question question="q" ng-model="vm.answers" value-sets="valueSets" />
             var directiveDefinitionObject = {
@@ -237,7 +237,7 @@
                 if (question.type === 'reference') {
                     if (angular.isArray(scope.questionGroup.extension)) {
                         console.log(scope.questionGroup.extension);
-                        var reference = _.find(scope.question.extension, function(item) {
+                        var reference = _.find(scope.question.extension, function (item) {
                             return item.url === "http://www.healthintersections.com.au/fhir/Profile/metadata#reference";
                         });
                         var index = reference.valueString.indexOf('?');
@@ -262,38 +262,56 @@
                     if (angular.isDefined(question.options)) {
                         vsReference = question.options.reference;
                     }
-
-                    // for local references
-                    if (angular.isDefined(vsReference) && (vsReference.indexOf('#') > -1)) {
-
-                        vsReference = vsReference.replace('#', '');
-                        if (angular.isArray(scope.valueSets)) {
-                            var valueSet;
-                            _.forEach(scope.valueSets, function(vs) {
-                                if (vs.id === vsReference) {
-                                    valueSet = vs;
-                                }
-                            });
-                            var options = [];
-                            _.forEach(valueSet.expansion.contains, function(item) {
-                                var coding = {};
-                                coding.code = item.code;
-                                coding.display = item.display;
-                                coding.system = item.system;
-                                options.push(coding);
-                            });
-                            scope.valueSet = options;
-                            template =
-                                ' <select ' +
-                                    '   class="form-control"' +
-                                    '   id="' + linkId + '"> ' +
-                                    '    <option data-ng-repeat="coding in valueSet" value="{{ coding }}" >' +
-                                    '             {{coding.display || ""}}' +
-                                    '    </option><option value=null>--</option>' +
-                                    '  </select>' +
-                                    '</div>';
+                    if (angular.isDefined(vsReference)) {
+                        if (vsReference.indexOf('#') > -1) {
+                            // local reference
+                            buildLocalValueSet(vsReference);
+                        } else {
+                            buildExternalValueSet(vsReference);
                         }
+                        template =
+                            ' <select ' +
+                                '   class="form-control"' +
+                                '   id="' + linkId + '"> ' +
+                                '    </option><option value=null>--</option>' +
+                                '    <option data-ng-repeat="coding in valueSet" value="{{ coding }}" >' +
+                                '             {{coding.display || ""}}' +
+                                '  </select>' +
+                                '</div>';
                     }
+                }
+
+                function buildLocalValueSet(vsReference) {
+                    var options = [];
+                    vsReference = vsReference.replace('#', '');
+                    if (angular.isArray(scope.valueSets)) {
+                        var valueSet;
+                        _.forEach(scope.valueSets, function (vs) {
+                            if (vs.id === vsReference) {
+                                valueSet = vs;
+                            }
+                        });
+                        _.forEach(valueSet.expansion.contains, function (item) {
+                            var coding = {};
+                            coding.code = item.code;
+                            coding.display = item.display;
+                            coding.system = item.system;
+                            options.push(coding);
+                        });
+                    }
+                    return scope.valueSet = options;
+                }
+
+                function buildExternalValueSet(vsReference) {
+                    valuesetService.getExpansion(vsReference)
+                        .then(function (expansions) {
+                            return scope.valueSet = expansions;
+                        }, function (error) {
+                            //TODO - add proper error handler
+                            var item = { "code": "any", "display": "Unavailable", "system": vsReference};
+                            var options = [item];
+                            return scope.valueSet = options;
+                        });
                 }
 
                 template = question.type === 'boolean' ? template.replace("classToken@", "checkbox") : template.replace("classToken@", "form-control");
@@ -312,12 +330,12 @@
                 }
                 template = '<div class="form-group-lg" >' + template;
 
-                $compile(template)(scope, function(cloned) {
+                $compile(template)(scope, function (cloned) {
                     iElem.append(cloned);
                 });
 
                 function updateModel() {
-                    scope.$apply(function() {
+                    scope.$apply(function () {
                         var element = document.getElementById(linkId);
                         var val = element.value;
                         if (scope.question.type === 'choice') {
@@ -372,7 +390,7 @@
     ]);
 
     app.directive('fsQuestionnaireRepeatingGroup', ['$compile', '$filter', '$parse',
-        function($compile, $filter, $parse) {
+        function ($compile, $filter, $parse) {
             // Description: Manage repeating group of items.
             // Usage: <fs-questionnaire-repeating-group group-id="groupId" group-members="groupId" ng-model="vm.answers" />
             var directiveDefinitionObject = {
@@ -405,9 +423,9 @@
 
                 template = template + listDirective;
 
-                scope.addToList = function() {
+                scope.addToList = function () {
                     var arrayItem = {};
-                    _.forEach(members, function(item) {
+                    _.forEach(members, function (item) {
                         var element = document.getElementById(item);
                         var val = element.value;
                         var path = item.replace(groupId + '.', '');
@@ -418,14 +436,14 @@
                     setModel(ngModelGet, groupId, localArray);
                 };
 
-                scope.reset = function() {
-                    _.forEach(members, function(item) {
+                scope.reset = function () {
+                    _.forEach(members, function (item) {
                         var element = document.getElementById(item);
                         element.value = '';
                     });
                 };
 
-                $compile(template)(scope, function(cloned) {
+                $compile(template)(scope, function (cloned) {
                     iElem.replaceWith(cloned);
                 });
 
@@ -465,7 +483,7 @@
     ]);
 
     app.directive('fsQuestionnaireRepeatingQuestion', ['$compile',
-        function($compile) {
+        function ($compile) {
             // Description: Manage repeating group of items.
             // Usage: <fs-questionnaire-repeating-question model-id="modelId" ng-model="vm.answers" />
             var directiveDefinitionObject = {
@@ -486,13 +504,13 @@
                     '  </a>' +
                     '</span>';
 
-                scope.addToList = function() {
+                scope.addToList = function () {
                     console.log('addToList::');
                     console.log(iAttrs);
                     console.log(scope);
                 };
 
-                $compile(template)(scope, function(cloned) {
+                $compile(template)(scope, function (cloned) {
                     iElem.replaceWith(cloned);
                 });
             }

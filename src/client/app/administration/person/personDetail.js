@@ -122,7 +122,7 @@
         }
 
         function getRelationshipCodes() {
-            valuesetService.getExpansion(vm.activeServer.baseUrl, "http://hl7.org/fhir/vs/relatedperson-relationshiptype")
+            valuesetService.getExpansion("http://hl7.org/fhir/vs/relatedperson-relationshiptype")
                 .then(function (expansions) {
                     return vm.relationshipCodes = expansions;
                 }, function (error) {
