@@ -36,17 +36,20 @@
     function questionnaireAnswerService(common, dataCache, fhirClient, fhirServers) {
         var dataCacheKey = 'localProfiles';
         var linksCacheKey = 'linksProfiles';
+        var _patient;
         var $q = common.$q;
 
         var service = {
-            addAnswers: addAnswers,
+            addAnswer: addAnswer,
+            getPatientContext: getPatientContext,
             getProfiles: getProfiles,
-            getQuestions: getQuestions
+            getQuestions: getQuestions,
+            init: init
         };
 
         return service;
 
-        function addAnswers(resource) {
+        function addAnswer(resource) {
             var deferred = $q.defer();
             fhirServers.getActiveServer()
                 .then(function (server) {
@@ -59,6 +62,10 @@
                         });
                 });
             return deferred.promise;
+        }
+
+        function getPatientContext() {
+            return _patient;
         }
 
         function getProfiles() {
@@ -86,6 +93,10 @@
                             deferred.reject(outcome);
                         });
             return deferred.promise;
+        }
+
+        function init(patient) {
+            _patient = patient;
         }
     }
 })();

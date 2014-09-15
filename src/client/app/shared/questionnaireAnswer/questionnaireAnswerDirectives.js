@@ -194,8 +194,8 @@
         }
     }]);
 
-    app.directive('fsQuestionnaireQuestion', ['$compile', '$filter', '$parse', 'valuesetService',
-        function ($compile, $filter, $parse, valuesetService) {
+    app.directive('fsQuestionnaireQuestion', ['$compile', '$filter', '$parse', 'questionnaireAnswerService', 'valuesetService',
+        function ($compile, $filter, $parse, questionnaireAnswerService, valuesetService) {
             // Description: Renders the HTML input element for a specific question
             // Usage:  <fs-questionnaire-question question="q" ng-model="vm.answers" value-sets="valueSets" />
             var directiveDefinitionObject = {
@@ -218,9 +218,10 @@
             // fhirPrimitives will be handled as strings, dates, numbers or booleans
             // need special handling for polymorphic properties (with [x] in linkId)
             function link(scope, iElem, iAttrs) {
-                var ngModelGet = scope.ngModel;
+                //var ngModelGet = scope.ngModel;
                 var question = scope.question;
                 var linkId = setLinkId(question.linkId, scope.questionGroup.repeats);
+                var readOnlyView;
                 //  setModel(ngModelGet, linkId.replace('[x]', ''), scope.questionGroup.repeats, null);
 
                 var answeredQuestion = {};
@@ -245,15 +246,23 @@
                             var ref = reference.valueString.slice(0, index);
                             scope.referenceType = ref.replace("/", "");
                         }
-                        console.log(scope.referenceType);
+                    }
+                    // if patient is subject of questionnaire - make readonly
+                    if (scope.referenceType === 'Patient') {
+                        var patient = questionnaireAnswerService.getPatientContext();
+                        console.log("Patient ==>" + patient.fullName);
+                        var answer = {};
+                        answer[scope.answerType] = { "reference": patient.resourceId };
+                        scope.answeredQuestion.answer = [answer];
+                        readOnlyView = patient.fullName;
                     }
                 }
 
                 var template =
-                    '  <input requiredToken@' +
+                    '  <input readOnlyToken@ requiredToken@' +
                         '    type="' + $filter('questionnaireInputType')(question.type) + '" ' +
                         '    id="' + linkId + '" ' +
-                        '    class="classToken@" ' +
+                        '    class="classToken@" valueToken@ ' +
                         '    placeholder="' + question.text + '">@repeatToken' +
                         '</div>';
 
@@ -281,41 +290,10 @@
                     }
                 }
 
-                function buildLocalValueSet(vsReference) {
-                    var options = [];
-                    vsReference = vsReference.replace('#', '');
-                    if (angular.isArray(scope.valueSets)) {
-                        var valueSet;
-                        _.forEach(scope.valueSets, function (vs) {
-                            if (vs.id === vsReference) {
-                                valueSet = vs;
-                            }
-                        });
-                        _.forEach(valueSet.expansion.contains, function (item) {
-                            var coding = {};
-                            coding.code = item.code;
-                            coding.display = item.display;
-                            coding.system = item.system;
-                            options.push(coding);
-                        });
-                    }
-                    return scope.valueSet = options;
-                }
-
-                function buildExternalValueSet(vsReference) {
-                    valuesetService.getExpansion(vsReference)
-                        .then(function (expansions) {
-                            return scope.valueSet = expansions;
-                        }, function (error) {
-                            //TODO - add proper error handler
-                            var item = { "code": "any", "display": "Unavailable", "system": vsReference};
-                            var options = [item];
-                            return scope.valueSet = options;
-                        });
-                }
-
                 template = question.type === 'boolean' ? template.replace("classToken@", "checkbox") : template.replace("classToken@", "form-control");
                 template = question.required ? template.replace("requiredToken@", "required ") : template.replace("requiredToken@", "");
+                template = angular.isDefined(readOnlyView) ? template.replace("valueToken@", 'value="' + readOnlyView + '"' ) : template.replace("valueToken@", "");
+                template = angular.isDefined(readOnlyView) ? template.replace("readOnlyToken@", "readonly") : template.replace("readOnlyToken@", "");
 
                 if (question.repeats) {
                     var repeatDirective = '<fs-questionnaire-repeating-question model-id="' + linkId + '" data-ng-model="ngModel" answer-group="answerGroup" value-sets="valueSets" />';
@@ -351,6 +329,40 @@
                 }
 
                 iElem.bind('change', updateModel);
+
+                function buildLocalValueSet(vsReference) {
+                    var options = [];
+                    vsReference = vsReference.replace('#', '');
+                    if (angular.isArray(scope.valueSets)) {
+                        var valueSet;
+                        _.forEach(scope.valueSets, function (vs) {
+                            if (vs.id === vsReference) {
+                                valueSet = vs;
+                            }
+                        });
+                        _.forEach(valueSet.expansion.contains, function (item) {
+                            var coding = {};
+                            coding.code = item.code;
+                            coding.display = item.display;
+                            coding.system = item.system;
+                            options.push(coding);
+                        });
+                    }
+                    return scope.valueSet = options;
+                }
+
+                function buildExternalValueSet(vsReference) {
+                    valuesetService.getExpansion(vsReference)
+                        .then(function (expansions) {
+                            return scope.valueSet = expansions;
+                        }, function (error) {
+                            //TODO - add proper error handler
+                            var item = { "code": "any", "display": "Unavailable", "system": vsReference};
+                            var options = [item];
+                            return scope.valueSet = options;
+                        });
+                }
+
                 function setModel(obj, path, repeats, value) {
                     if (repeats) {
                         return obj;

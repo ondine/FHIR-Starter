@@ -125,7 +125,6 @@
                     vm.answers.group.title = vm.questionnaire.group.title;
                     vm.answers.group.linkId = vm.questionnaire.group.linkId;
                     vm.answers.group.text = vm.questionnaire.group.text;
-                    vm.answers.group.subject = { "reference": "/Patient/1" };
                     vm.answers.group.group = [];
                     return vm.questionnaire;
                 }, function (error) {
@@ -179,8 +178,8 @@
         function save() {
             vm.busyMessage = "Sending answers to remote host ...";
             toggleSpinner(true);
-            vm.answers.authored = "2014-09-14";
-            profileService.addAnswer(vm.answers)
+            vm.answers.authored = "2014-09-15";  //TODO - fix date
+            questionnaireAnswerService.addAnswer(vm.answers)
                 .then(processResult,
                 function (error) {
                     toggleSpinner(false);

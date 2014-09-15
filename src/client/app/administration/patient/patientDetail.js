@@ -166,6 +166,7 @@
                 addressService.init(vm.patient.address, true);
                 telecomService.init(vm.patient.telecom, true, true);
                 vm.patient.fullName = humanNameService.getFullName();
+                questionnaireAnswerService.init(vm.patient);
                 if (vm.patient.managingOrganization && vm.patient.managingOrganization.reference) {
                     var reference = vm.patient.managingOrganization.reference;
                     if (common.isAbsoluteUri(reference) === false) {
