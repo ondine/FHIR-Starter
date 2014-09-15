@@ -194,8 +194,8 @@
         }
     }]);
 
-    app.directive('fsQuestionnaireQuestion', ['$compile', '$filter', '$parse',
-        function($compile, $filter, $parse) {
+    app.directive('fsQuestionnaireQuestion', ['$compile', '$filter', '$parse', 'valuesetService',
+        function($compile, $filter, $parse, valuesetService) {
             // Description: Renders the HTML input element for a specific question
             // Usage:  <fs-questionnaire-question question="q" ng-model="vm.answers" value-sets="valueSets" />
             var directiveDefinitionObject = {
@@ -262,7 +262,10 @@
                     if (angular.isDefined(question.options)) {
                         vsReference = question.options.reference;
                     }
-                    if (angular.isDefined(vsReference)) {
+
+                    // for local references
+                    if (angular.isDefined(vsReference) && (vsReference.indexOf('#') > -1)) {
+
                         vsReference = vsReference.replace('#', '');
                         if (angular.isArray(scope.valueSets)) {
                             var valueSet;
