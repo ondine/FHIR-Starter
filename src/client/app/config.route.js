@@ -50,7 +50,7 @@
                     templateUrl: 'app/login/login.html',
                     title: 'login'
                 }
-            },*/
+            },
             {
                 url: '/locations',
                 config: {
@@ -131,7 +131,7 @@
                     templateUrl: '/app/administration/practitioner/practitionerDetail.html',
                     settings: { }
                 }
-            },
+            },*/
             {
                 url: '/patients',
                 config: {
@@ -159,7 +159,7 @@
                     settings: { }
                 }
             },
-            {
+ /*           {
                 url: '/persons',
                 config: {
                     title: 'person',
@@ -258,7 +258,7 @@
                     templateUrl: '/app/infrastructure/conceptmap/conceptmapDetail.html',
                     settings: { }
                 }
-            },
+            },*/
             {
                 url: '/profiles',
                 config: {
@@ -286,7 +286,7 @@
                     settings: { }
                 }
             },
-            {
+  /*          {
                 url: '/compositions',
                 config: {
                     title: 'compositions',
@@ -304,7 +304,7 @@
                     templateUrl: '/app/infrastructure/composition/compositionDetail.html',
                     settings: { }
                 }
-            },
+            },*/
         ];
     }
 })();

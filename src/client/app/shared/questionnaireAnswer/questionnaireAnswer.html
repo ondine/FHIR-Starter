@@ -1,0 +1,51 @@
+<div data-ng-controller="questionnaireAnswer as vm">
+    <div class="form-group col-md-12">
+        <div class="form-group col-md-6">
+            <legend>Clinical Questionnaire Profiles</legend>
+            <select class="form-control" id="profile"
+                    data-ng-model="vm.selectedProfile"
+                    data-ng-change="vm.loadQuestions()">
+                <option value="null">--</option>
+                <option data-ng-repeat="item in vm.profiles" value="{{item.id}}">
+                    {{item.content.name || ''}}
+                </option>
+            </select>
+        </div>
+        <div class="form-group col-md-12">
+            <div class="widget wlightblue" data-ng-show="vm.rendered">
+                <div data-cc-widget-header title="{{vm.questionnaire.group.title}}"></div>
+                <span class="help-block">{{vm.questionnaire.group.text}}</span>
+                <data-ng-form name="questionnaireAnswerForm" class="form-horizontal"
+                              data-ng-model="vm.answers">
+                    <fieldset>
+                        <div class="form-group col-md-12">
+                            <legend>Answer Status</legend>
+                            <span class="help-block">The lifecycle status of the questionnaire answers as a whole.</span>
+
+                            <div class="form-group col-md-4">
+                                <label class="control-label pull-left" for="answer-status">Status</label>&nbsp;&nbsp;
+                                <select class="form-control" id="answer-status"
+                                        data-ng-model="vm.answers.status">
+                                    <option data-ng-repeat="coding in vm.answerStatuses" value="{{coding.code}}"
+                                            data-ng-selected="coding.code===vm.answers.status">
+                                        {{coding.code || ''}}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <data-fs-questionnaire-groups question-groups="vm.questionnaire.group.group"
+                                                          answer-group="vm.answers.group.group"
+                                                          offset="0"
+                                                          cols="12"
+                                                          data-ng-model="vm.answers"
+                                                          value-sets="vm.questionnaire.contained"/>
+                        </div>
+                    </fieldset>
+                </data-ng-form>
+            </div>
+        </div>
+    </div>
+</div>

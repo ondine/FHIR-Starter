@@ -1,148 +1,209 @@
 <section class="mainbar" data-ng-controller="patientDetail as vm">
-    <section class="matter">
-        <div class="container">
-            <div class="row">
-                <div class="btn-group col-md-12">
-                    <button class="btn btn-info" data-ng-click="vm.goBack()"><i class="fa fa-hand-o-left"></i>Back
-                    </button>
-                    <button class="btn btn-info" data-ng-click="vm.edit(vm.patient)"><i class="fa fa-edit"></i>Edit
-                    </button>
-                    <div class="btn-group pull-right">
-                        <button class="btn btn-danger" data-ng-click="vm.delete(vm.patient)"><i
-                                class="fa fa-trash-o"></i>Delete
-                        </button>
-                    </div>
+<section class="matter">
+<div class="container">
+<div class="row">
+    <div class="btn-group col-md-12">
+        <button class="btn btn-info" data-ng-click="vm.goBack()"><i class="fa fa-hand-o-left"></i>Back
+        </button>
+        <button class="btn btn-info" data-ng-click="vm.edit(vm.patient)"><i class="fa fa-edit"></i>Edit
+        </button>
+        <div class="btn-group pull-right">
+            <button class="btn btn-danger" data-ng-click="vm.delete(vm.patient)"><i
+                    class="fa fa-trash-o"></i>Delete
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row">
+<div class="widget wblue">
+    <div data-cc-widget-header title="{{ vm.patient.name | fullName }}">
+    </div>
+    <div class="widget-content user col-md-12">
+        <div class="col-md-3">
+            <img data-fs-img-person="vm.patient.photo[0]"
+                 class="img-polaroid" src="/content/images/unknown_person.jpg"/>
+
+            <div class="widget wlightblue">
+                <div data-cc-widget-header title="Vitals"
+                     allow-collapse="true"></div>
+                <div class="widget-content text-left text-info">
+                    <accordion>
+                        <accordion-group heading="Allergies">
+
+                        </accordion-group>
+                        <accordion-group heading="Conditions">
+
+                        </accordion-group>
+                        <accordion-group heading="Medications">
+
+                        </accordion-group>
+                    </accordion>
                 </div>
             </div>
-            <div class="row">
-                <div class="widget wblue">
-                    <div data-cc-widget-header title="{{ vm.patient.name | fullName }}">
-                    </div>
-                    <div class="widget-content user col-md-12">
-                        <div class="col-md-2">
-                            <img data-fs-img-person="vm.patient.photo[0]"
-                                 class="img-polaroid" src="/content/images/unknown_person.jpg"/>
-                        </div>
-                        <div class="col-md-10">
-                            <table class="table table-striped table-hover">
-                                <tr>
-                                    <td>Name</td>
-                                    <td>{{vm.patient.name | fullName }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Date of Birth</td>
-                                    <td>
-                                        <div data-ng-show="vm.patient.birthDate">
-                                            {{vm.patient.birthDate | date: longDate}}
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Gender</td>
-                                    <td>
-                                        {{vm.patient.gender | codeableConcept}}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Addresses</td>
-                                    <td>
-                                        <p class="small" data-ng-repeat="a in vm.patient.address">
-                                            <strong>{{a.use}}</strong>: {{a | singleLineAddress}}
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Telecommunication</td>
-                                    <td>
-                                        <p class="small" data-ng-repeat="t in vm.patient.telecom">
-                                            <strong>{{t.use}} {{t.system}}</strong>: {{t.value}}
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Contact</td>
-                                    <td>
-                                        <p class="small" data-ng-repeat="c in vm.patient.contact">
-                                            {{c.name.given.join(' ')}} {{c.name.family.join(' ')}}
-                                            ({{c.relationship.text || "relationship unspecified"}})
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Links</td>
-                                    <td>
-                                        <div data-ng-repeat="l in vm.patient.link">
-                                            <a href="{{l.other.reference}}">{{l.other.type || "Link Type
-                                                Unspecified"}}</a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Languages</td>
-                                    <td>
-                                        <p class="small" data-ng-repeat="l in vm.patient.communication">
-                                            {{l | codeableConcept}}<br/>
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Marital Status</td>
-                                    <td>
-                                        {{vm.patient.maritalStatus | codeableConcept}}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Multiple Birth</td>
-                                    <td>
-                                        {{vm.patient.multipleBirthInteger || vm.patient.multipleBirthBoolean}}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Deceased</td>
-                                    <td>
-                                        {{vm.patient.deceasedDateTime || vm.patient.deceasedBoolean}}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Managing Organization</td>
-                                    <td>
-                                        <a href="{{vm.patient.managingOrganization.reference}}">{{vm.patient.managingOrganization.display}}</a>
-                                    </td>
-                                </tr>
-                                <tr data-ng-show="vm.patient.identifier">
-                                    <td>Identifiers</td>
-                                    <td>
-                                        <table class="table table-striped table-hover small">
-                                            <thead>
-                                            <tr>
-                                                <th>System</th>
-                                                <th>Value</th>
-                                                <th>Label</th>
-                                                <th>Use</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr data-ng-repeat="id in vm.patient.identifier">
-                                                <td>{{id.system}}</td>
-                                                <td>{{id.value}}</td>
-                                                <td>{{id.label}}</td>
-                                                <td>{{id.use}}</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Active</td>
-                                    <td>
-                                        <i data-fs-true-check="vm.patient.active"></i>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
+
+            <div class="widget wgreen">
+                <div data-cc-widget-header title="History"
+                     allow-collapse="true"></div>
+                <div class="widget-content text-left text-info">
                 </div>
             </div>
         </div>
-    </section>
+        <div class="col-md-9">
+            <tabset vertical="false">
+                <tab heading="Demographics">
+                    <table class="table table-striped table-hover">
+                        <tr>
+                            <td>Name</td>
+                            <td>{{vm.patient.name | fullName }}</td>
+                        </tr>
+                        <tr>
+                            <td>Date of Birth</td>
+                            <td>
+                                <div data-ng-show="vm.patient.birthDate">
+                                    {{vm.patient.birthDate | date: longDate}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Gender</td>
+                            <td>
+                                {{vm.patient.gender | codeableConcept}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Addresses</td>
+                            <td>
+                                <p class="small" data-ng-repeat="a in vm.patient.address">
+                                    <strong>{{a.use}}</strong>: {{a | singleLineAddress}}
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Telecommunication</td>
+                            <td>
+                                <p class="small" data-ng-repeat="t in vm.patient.telecom">
+                                    <strong>{{t.use}} {{t.system}}</strong>: {{t.value}}
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Contact</td>
+                            <td>
+                                <p class="small" data-ng-repeat="c in vm.patient.contact">
+                                    {{c.name.given.join(' ')}} {{c.name.family.join(' ')}}
+                                    ({{c.relationship.text || "relationship unspecified"}})
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Links</td>
+                            <td>
+                                <div data-ng-repeat="l in vm.patient.link">
+                                    <a href="{{l.other.reference}}">{{l.other.type || "Link Type
+                                        Unspecified"}}</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Languages</td>
+                            <td>
+                                <p class="small" data-ng-repeat="l in vm.patient.communication">
+                                    {{l | codeableConcept}}<br/>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Marital Status</td>
+                            <td>
+                                {{vm.patient.maritalStatus | codeableConcept}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Multiple Birth</td>
+                            <td>
+                                {{vm.patient.multipleBirthInteger || vm.patient.multipleBirthBoolean}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Deceased</td>
+                            <td>
+                                {{vm.patient.deceasedDateTime || vm.patient.deceasedBoolean}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Managing Organization</td>
+                            <td>
+                                <a href="{{vm.patient.managingOrganization.reference}}">{{vm.patient.managingOrganization.display}}</a>
+                            </td>
+                        </tr>
+                        <tr data-ng-show="vm.patient.identifier">
+                            <td>Identifiers</td>
+                            <td>
+                                <table class="table table-striped table-hover small">
+                                    <thead>
+                                    <tr>
+                                        <th>System</th>
+                                        <th>Value</th>
+                                        <th>Label</th>
+                                        <th>Use</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr data-ng-repeat="id in vm.patient.identifier">
+                                        <td>{{id.system}}</td>
+                                        <td>{{id.value}}</td>
+                                        <td>{{id.label}}</td>
+                                        <td>{{id.use}}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Active</td>
+                            <td>
+                                <i data-fs-true-check="vm.patient.active"></i>
+                            </td>
+                        </tr>
+                    </table>
+                </tab>
+                <tab heading="New Consult">
+                    <div data-ng-include="'../../app/shared/questionnaireAnswer/questionnaireAnswer.html'"></div>
+                </tab>
+                <tab heading="Preview Record">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Narrative</th>
+                            <th>Resource</th>
+                            <th>Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </tab>
+                <tab heading="Allergy History">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>History</th>
+                            <th>Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </tab>
+            </tabset>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</section>
 </section>

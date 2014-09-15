@@ -18,9 +18,13 @@
     var controllerId = 'patientDetail';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$location', '$routeParams', '$window', 'addressService', 'attachmentService', 'bootstrap.dialog', 'common', 'demographicsService', 'fhirServers', 'humanNameService', 'identifierService', 'localValueSets', 'organizationService', 'patientService', 'telecomService', patientDetail]);
+        ['$location', '$routeParams', '$window', 'addressService', 'attachmentService', 'bootstrap.dialog', 'common',
+            'demographicsService', 'fhirServers', 'humanNameService', 'identifierService', 'localValueSets', 'organizationService',
+            'patientService', 'questionnaireAnswerService', 'telecomService', patientDetail]);
 
-    function patientDetail($location, $routeParams, $window, addressService, attachmentService, bsDialog, common, demographicsService, fhirServers, humanNameService, identifierService, localValueSets, organizationService, patientService, telecomService) {
+        function patientDetail($location, $routeParams, $window, addressService, attachmentService, bsDialog, common,
+                               demographicsService, fhirServers, humanNameService, identifierService, localValueSets,
+                               organizationService, patientService, questionnaireAnswerService, telecomService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
         var logSuccess = common.logger.getLogFn(controllerId, 'success');
@@ -57,6 +61,7 @@
         function activate() {
             common.activateController([getActiveServer()], controllerId).then(function () {
                 getRequestedPatient();
+                getProfiles();
             });
         }
 
@@ -111,6 +116,15 @@
             fhirServers.getActiveServer()
                 .then(function (server) {
                     return vm.activeServer = server;
+                });
+        }
+
+        function getProfiles() {
+            questionnaireAnswerService.getProfiles()
+                .then(function (results) {
+                    vm.profiles = results.data.entry;
+                }, function (error) {
+                    logError(common.unexpectedOutcome(error));
                 });
         }
 
