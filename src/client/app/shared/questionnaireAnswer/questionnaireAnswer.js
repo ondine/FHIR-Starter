@@ -32,9 +32,9 @@
     var controllerId = 'questionnaireAnswer';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$routeParams', '$window', 'common', 'localValueSets', 'profileService', 'questionnaireAnswerService', questionnaireAnswer]);
+        ['$routeParams', '$window', 'common', 'localValueSets', 'questionnaireAnswerService', questionnaireAnswer]);
 
-    function questionnaireAnswer($routeParams, $window, common, localValueSets, profileService, questionnaireAnswerService) {
+    function questionnaireAnswer($routeParams, $window, common, localValueSets, questionnaireAnswerService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
         var logInfo = common.logger.getLogFn(controllerId, 'info');
@@ -169,6 +169,7 @@
             //vm.questionnaire.fullName = questionnaire.name;
             vm.isEditing = true;
             // getTitle();
+            common.$broadcast('vitalsUpdateEvent', vm.answers);
         }
 
         function renderForm() {

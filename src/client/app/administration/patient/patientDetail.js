@@ -18,13 +18,11 @@
     var controllerId = 'patientDetail';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$location', '$routeParams', '$window', 'addressService', 'attachmentService', 'bootstrap.dialog', 'common',
+        ['$location', '$routeParams', '$scope', '$window', 'addressService', 'attachmentService', 'bootstrap.dialog', 'common',
             'demographicsService', 'fhirServers', 'humanNameService', 'identifierService', 'localValueSets', 'organizationService',
             'patientService', 'questionnaireAnswerService', 'telecomService', patientDetail]);
 
-        function patientDetail($location, $routeParams, $window, addressService, attachmentService, bsDialog, common,
-                               demographicsService, fhirServers, humanNameService, identifierService, localValueSets,
-                               organizationService, patientService, questionnaireAnswerService, telecomService) {
+    function patientDetail($location, $routeParams, $scope, $window, addressService, attachmentService, bsDialog, common, demographicsService, fhirServers, humanNameService, identifierService, localValueSets, organizationService, patientService, questionnaireAnswerService, telecomService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
         var logSuccess = common.logger.getLogFn(controllerId, 'success');
@@ -104,6 +102,12 @@
                 }
             }
         }
+
+        $scope.$on('vitalsUpdateEvent',
+            function (event, data) {
+                console.log("event received");
+            }
+        );
 
         function edit(patient) {
             if (patient && patient.hashKey) {

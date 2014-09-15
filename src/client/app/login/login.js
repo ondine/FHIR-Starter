@@ -18,14 +18,14 @@
     var controllerId = 'login';
 
     angular.module('FHIRStarter')
-        .controller(controllerId, ['$http', '$window', login]);
+        .controller(controllerId, ['$http', '$rootScope', '$window', 'common', login]);
 
-    function login($http, $window) {
+    function login($http, $rootScope, $window, common) {
         var vm = this;
 
         vm.activate = activate;
         vm.isAuthenticated = false;
-        vm.callRestricted = callRestricted;
+//        vm.callRestricted = callRestricted;
         vm.logout = logout;
         vm.message = '';
         vm.submit = submit;
@@ -35,8 +35,30 @@
         activate();
 
         function activate() {
+            common.activateController([], controllerId)
+                .then(function () {
+                }, function (error) {
+                    log('Error ' + error);
+                });
         }
 
+
+        function logout() {
+            vm.welcome = 'Please login';
+            vm.message = '';
+            vm.isAuthenticated = false;
+            delete $window.sessionStorage.username;
+            common.$broadcast('logoutEvent');
+        }
+
+        function submit() {
+            $window.sessionStorage.username = vm.user.username;
+            vm.isAuthenticate = true;
+            vm.welcome = 'Welcome ' + $window.sessionStorage.username;
+            common.$broadcast('loginEvent', vm.user.username);
+        }
+
+/*
         function submit() {
             $http
                 .post('/authenticate', vm.user)
@@ -101,5 +123,6 @@
             }
             return window.atob(output); //polyfill https://github.com/davidchambers/Base64.js
         }
+        */
     }
 })();

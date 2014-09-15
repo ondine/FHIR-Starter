@@ -1,5 +1,19 @@
-<nav class="navbar navbar-fixed-top navbar-inverse">
-    <div class="navbar-header">
-        <a href="/" class="navbar-brand"><span class="brand-title">FHIR Starter</span></a>
-    </div>
-</nav>
+<div data-cc-sidebar data-ng-controller="topnav as vm">
+    <nav class="navbar navbar-fixed-top navbar-inverse">
+        <div class="navbar-header">
+            <a href="/" class="navbar-brand"><span
+                    class="brand-title">FHIR Starter</span></a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <div class="pull-right navbar-logo">
+                <ul class="nav navbar-nav pull-right" data-ng-show="vm.userName">
+                    <li data-ng-show="vm.userName">
+                        <a href="/">
+                           Current User: {{vm.userName}}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
