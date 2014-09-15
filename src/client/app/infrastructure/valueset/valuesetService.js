@@ -118,6 +118,29 @@
             }
         }
 
+        function getFilteredExpansion(identifier, filter) {
+            // http://fhir-dev.healthintersections.com.au/open/ValueSet/$expand?identifier=http://hl7.org/fhir/vs/condition-code&filter=xxx
+            var deferred = $q.defer();
+            fhirServers.getActiveServer()
+                .then(function (server) {
+                    var url = server.baseUrl + "/ValueSet/$expand?identifier=" + identifier + "$filter=" + filter;
+                    fhirClient.getResource(url)
+                        .then(function (results) {
+                            if (results.data && results.data.expansion && angular.isArray(results.data.expansion.contains)) {
+                                deferred.resolve(results.data.expansion.contains);
+                            } else {
+                                deferred.reject("Response did not include expected expansion");
+                            }
+                        },
+                        function (outcome) {
+                            deferred.reject(outcome);
+                        });
+                }, function (error) {
+                    deferred.reject(error);
+                });
+            return deferred.promise;
+        }
+
         function getExpansion(identifier) {
             // e.g., http://fhir-dev.healthintersections.com.au/open/ValueSet/$expand?identifier=http://hl7.org/fhir/vs/location-status
             var deferred = $q.defer();
