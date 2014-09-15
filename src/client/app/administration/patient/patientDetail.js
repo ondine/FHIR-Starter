@@ -61,7 +61,6 @@
         function activate() {
             common.activateController([getActiveServer()], controllerId).then(function () {
                 getRequestedPatient();
-                getProfiles();
             });
         }
 
@@ -116,15 +115,6 @@
             fhirServers.getActiveServer()
                 .then(function (server) {
                     return vm.activeServer = server;
-                });
-        }
-
-        function getProfiles() {
-            questionnaireAnswerService.getProfiles()
-                .then(function (results) {
-                    vm.profiles = results.data.entry;
-                }, function (error) {
-                    logError(common.unexpectedOutcome(error));
                 });
         }
 

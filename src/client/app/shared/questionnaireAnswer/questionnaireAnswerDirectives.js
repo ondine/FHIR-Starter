@@ -237,7 +237,7 @@
                 if (question.type === 'reference') {
                     if (angular.isArray(scope.questionGroup.extension)) {
                         console.log(scope.questionGroup.extension);
-                        var reference = _.find(scope.questionGroup.extension, function(item) {
+                        var reference = _.find(scope.question.extension, function(item) {
                             return item.url === "http://www.healthintersections.com.au/fhir/Profile/metadata#reference";
                         });
                         var index = reference.valueString.indexOf('?');
