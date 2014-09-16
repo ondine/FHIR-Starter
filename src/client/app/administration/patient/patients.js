@@ -59,7 +59,7 @@
         function activate() {
             common.activateController([getActiveServer(), getCachedPatients()], controllerId)
                 .then(function () {
-                    // nothing to do
+
                 }, function (error) {
                     log('Error ' + error);
                 });

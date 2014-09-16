@@ -40,6 +40,7 @@
         vm.getTitle = getTitle;
         vm.goBack = goBack;
         vm.history = {"allergy": {"list": []}, "medication": {"list": []}, "condition": {"list": []}};
+        vm.lookupKey = undefined;
         vm.isBusy = false;
         vm.isSaving = false;
         vm.isEditing = true;
@@ -154,14 +155,26 @@
         }
 
         function getRequestedPatient() {
-            if ($routeParams.hashKey === 'new') {
+            vm.lookupKey = $routeParams.hashKey;
+            if (vm.lookupKey === "current") {
+                if (angular.isUndefined($window.sessionStorage.patient) || $window.sessionStorage.patient === "null" ) {
+                    if (angular.isUndefined($routeParams.id)){
+                        //redirect to search
+                        $location.path('/patients');
+                    }
+                } else {
+                    vm.patient = JSON.parse($window.sessionStorage.patient);
+                    intitializeRelatedData(vm.patient);
+                }
+            }
+            if (vm.lookupKey === 'new') {
                 var data = patientService.initializeNewPatient();
                 intitializeRelatedData(data);
                 vm.title = 'Add New Patient';
                 vm.isEditing = false;
             } else {
-                if ($routeParams.hashKey) {
-                    patientService.getCachedPatient($routeParams.hashKey)
+                if (vm.lookupKey !== "current") {
+                    patientService.getCachedPatient(vm.lookupKey)
                         .then(intitializeRelatedData, function (error) {
                             logError(common.unexpectedOutcome(error));
                         });
@@ -197,6 +210,7 @@
                     }
                 }
                 vm.title = getTitle();
+                $window.sessionStorage.patient = JSON.stringify(vm.patient);
             }
         }
 
@@ -235,7 +249,7 @@
         }
 
         function goBack() {
-            $window.history.back();
+            $location.path('/patients');
         }
 
         function save() {
@@ -292,6 +306,7 @@
                 vm.patient.fullName = humanNameService.getFullName();
                 vm.isEditing = true;
                 vm.title = getTitle();
+                $window.sessionStorage.patient = JSON.stringify(vm.patient);
                 toggleSpinner(false);
             }
         }

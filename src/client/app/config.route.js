@@ -141,10 +141,6 @@
                 config: {
                     title: 'patients',
                     templateUrl: '/app/administration/patient/patients.html',
-                    settings: {
-                        nav: 3,
-                        content: '<i class="fa fa-wheelchair"></i> Patient'
-                    }
                 }
             },
             {
@@ -159,8 +155,18 @@
                 url: '/patient/view/:hashKey',
                 config: {
                     title: 'patient',
+                    templateUrl: '/app/administration/patient/patientDetail.html'
+                }
+            },
+            {
+                url: '/patient/view/current',
+                config: {
+                    title: 'patient',
                     templateUrl: '/app/administration/patient/patientDetail.html',
-                    settings: { }
+                    settings: {
+                        nav: 3,
+                        content: '<i class="fa fa-wheelchair"></i> Patient'
+                    }
                 }
             },
             /*           {
