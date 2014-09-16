@@ -61,6 +61,7 @@
         function activate() {
             common.activateController([getActiveServer()], controllerId).then(function () {
                 getRequestedPatient();
+                initStoredVitals();
             });
         }
 
@@ -107,15 +108,20 @@
 
         $scope.$on('vitalsUpdateEvent',
             function (event, data) {
-                var item = { "profile" : data.group.linkId, "narrative": data.$$narrative };
+                var clone = _.cloneDeep(data);
+                var item = { "profile" : data.group.linkId, "narrative": data.$$narrative, "date": data.$$eventDate, "user": data.$$user };
                 if (item.profile.indexOf("Allergy") > -1) {
-                    vm.history.allergy.list.push(data);
+                    vm.history.allergy.list.push(clone);
+                    $window.sessionStorage.allergy = JSON.stringify(vm.history.allergy.list);
                 } else if (item.profile.indexOf("Medication") > -1) {
-                    vm.history.medication.list.push(data);
+                    vm.history.medication.list.push(clone);
+                    $window.sessionStorage.medication = JSON.stringify(vm.history.medication.list);
                 } else {
-                    vm.history.condition.list.push(data);
+                    vm.history.condition.list.push(clone);
+                    $window.sessionStorage.condition = JSON.stringify(vm.history.condition.list);
                 }
                 vm.dataEvents.push(item);
+                $window.sessionStorage.dataEvents = JSON.stringify(vm.dataEvents);
             }
         );
 
@@ -191,6 +197,29 @@
                     }
                 }
                 vm.title = getTitle();
+            }
+        }
+
+        function initStoredVitals() {
+            if ($window.sessionStorage.allergy) {
+                if ($window.sessionStorage.allergy.length > 0) {
+                    vm.history.allergy.list = JSON.parse($window.sessionStorage.allergy);
+                }
+            }
+            if ($window.sessionStorage.medication) {
+                if ($window.sessionStorage.medication.length > 0) {
+                    vm.history.medication.list = JSON.parse($window.sessionStorage.medication);
+                }
+            }
+            if ($window.sessionStorage.condition) {
+                if ($window.sessionStorage.condition.length > 0) {
+                    vm.history.condition.list = JSON.parse($window.sessionStorage.condition);
+                }
+            }
+            if ($window.sessionStorage.dataEvents) {
+                if ($window.sessionStorage.dataEvents.length > 0) {
+                    vm.dataEvents = JSON.parse($window.sessionStorage.dataEvents);
+                }
             }
         }
 

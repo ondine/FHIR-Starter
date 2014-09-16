@@ -17,9 +17,9 @@
 
     var controllerId = 'dashboard';
 
-    angular.module('FHIRStarter').controller(controllerId, ['common', 'conformanceService', 'fhirServers', 'organizationService', 'patientService', 'profileService', dashboard]);
+    angular.module('FHIRStarter').controller(controllerId, ['$window', 'common', 'conformanceService', 'fhirServers', 'organizationService', 'patientService', 'profileService', dashboard]);
 
-    function dashboard(common, conformanceService, fhirServers, organizationService, patientService, profileService) {
+    function dashboard($window, common, conformanceService, fhirServers, organizationService, patientService, profileService) {
         var getLogFn = common.logger.getLogFn;
         var logError = getLogFn(controllerId, "error");
         var logSuccess = getLogFn(controllerId, "success");
@@ -59,7 +59,7 @@
                 })
                 .then(setActiveServer)
                 .then(fetchConformance)
-                .then(fetchProfiles);
+ //               .then(fetchProfiles);
         }
 
         function fetchConformance(server) {

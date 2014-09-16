@@ -188,7 +188,12 @@
                 </tr>
                 </thead>
                 <tbody>
-
+                <tr ng-repeat="item in vm.dataEvents">
+                    <td>{{item.date | date: 'short'}}</td>
+                    <td>{{item.user}}</td>
+                    <td>{{item.narrative}}</td>
+                    <td>{{item.profile}}</td>
+                </tr>
                 </tbody>
             </table>
         </tab>
@@ -203,13 +208,13 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr data-ng-repeat="item in vm.history.allergy.list">
+                <tr data-ng-repeat="item in vm.history.allergy.list" >
                         <td>{{item.$$eventDate | date: 'medium' }}</td>
                         <td>{{item.$$user}}</td>
                         <td>
                             <ul class="list-unstyled">
-                                <li data-ng-repeat="item in history.list">
-                                    <div data-ng-switch on="item.deleted">
+                                <li>
+                                    <div data-ng-switch on="item.$$deleted">
                                             <span data-ng-switch-when="true">
                                                 <span class="removed"> {{item.$$narrative}} </span> ({{item.deletedReason}})
                                             </span>

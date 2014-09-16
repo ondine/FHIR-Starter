@@ -17,15 +17,21 @@
 
     var controllerId = 'topnav';
     angular.module('FHIRStarter').controller(controllerId,
-        ['$scope', 'common', topnav]);
+        ['$scope', '$window', 'common', topnav]);
 
-    function topnav($scope, common) {
+    function topnav($scope, $window, common) {
         var vm = this;
         vm.userName = undefined;
 
         activate();
 
         function activate() {
+            if ($window.sessionStorage.username) {
+                vm.userName = $window.sessionStorage.username;
+            } else {
+                vm.userName = "Please Login";
+            }
+
         }
 
         $scope.$on('logoutEvent',

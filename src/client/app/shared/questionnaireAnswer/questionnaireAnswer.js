@@ -165,11 +165,14 @@
             } else {
                 logSuccess("Answers saved at " + resourceVersionId);
             }
-            vm.questionnaire.resourceVersionId = resourceVersionId;
-            vm.isEditing = true;
-            vm.answers.$$user = $window.sessionStorage.username;
-            vm.answers.$$eventDate = new Date();
-            common.$broadcast('vitalsUpdateEvent', vm.answers);
+            var localAnswer = vm.answers;
+            localAnswer.$$resourceId = common.setResourceId(undefined, resourceVersionId);
+            vm.isEditing = false;
+            localAnswer.$$user = $window.sessionStorage.username;
+            localAnswer.$$eventDate = new Date();
+            localAnswer.$$deleted = false;
+            common.$broadcast('vitalsUpdateEvent', localAnswer);
+            loadQuestions();
         }
 
         function renderForm() {
@@ -179,7 +182,7 @@
         function save() {
             vm.busyMessage = "Sending answers to remote host ...";
             toggleSpinner(true);
-            vm.answers.authored = "2014-09-15";  //TODO - fix date
+            vm.answers.authored = moment();  //TODO - fix date
             questionnaireAnswerService.addAnswer(vm.answers)
                 .then(processResult,
                 function (error) {

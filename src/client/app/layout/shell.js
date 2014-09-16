@@ -17,9 +17,9 @@
 
     var controllerId = 'shell';
     angular.module('FHIRStarter').controller(controllerId,
-        ['$rootScope', 'common', 'config', shell]);
+        ['$rootScope', '$window', 'common', 'config', shell]);
 
-    function shell($rootScope, common, config) {
+    function shell($rootScope, $window, common, config) {
         var vm = this;
         var logSuccess = common.logger.getLogFn(controllerId, 'success');
         var events = config.events;
