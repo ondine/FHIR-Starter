@@ -228,7 +228,6 @@
                 answeredQuestion.linkId = question.linkId;
                 scope.answerType = $filter('questionnaireAnswerType')(question.type);
                 answeredQuestion.answer = [];
-                console.log(answeredQuestion);
                 scope.answeredQuestion = answeredQuestion;
 
                 if (angular.isDefined(scope.questionGroup.question)) {
@@ -237,7 +236,6 @@
 
                 if (question.type === 'reference') {
                     if (angular.isArray(scope.questionGroup.extension)) {
-                        console.log(scope.questionGroup.extension);
                         var reference = _.find(scope.question.extension, function (item) {
                             return item.url === "http://www.healthintersections.com.au/fhir/Profile/metadata#reference";
                         });
@@ -250,7 +248,6 @@
                     // if patient is subject of questionnaire - make readonly
                     if (scope.referenceType === 'Patient') {
                         var patient = questionnaireAnswerService.getPatientContext();
-                        console.log("Patient ==>" + patient.fullName);
                         var answer = {};
                         answer[scope.answerType] = { "reference": patient.resourceId };
                         scope.answeredQuestion.answer = [answer];
@@ -268,10 +265,16 @@
 
                 if (question.type === 'choice') {
                     var vsReference;
+                    var needsFilter = false;
                     if (angular.isDefined(question.options)) {
                         vsReference = question.options.reference;
+                        var filter = _.find(question.options.extension, function (item) {
+                            return item.url === "http://www.healthintersections.com.au/fhir/Profile/metadata#expandNeedsFilter";
+                        });
+                        needsFilter = vsReference === "http://www.healthintersections.com.au/fhir/ValueSet/anything";
                     }
                     if (angular.isDefined(vsReference)) {
+
                         if (vsReference.indexOf('#') > -1) {
                             // local reference
                             buildLocalValueSet(vsReference);
@@ -287,12 +290,27 @@
                                 '             {{coding.display || ""}}' +
                                 '  </select>' +
                                 '</div>';
+
+                        /*    template =
+                         '  <input readOnlyToken@ requiredToken@' +
+                         '    type="' + $filter('questionnaireInputType')(question.type) + '" ' +
+                         '    id="' + linkId + '" ' +
+                         '    class="classToken@" valueToken@ ' +
+                         '    typeahead="item as item.display for item in filteredValueSet($viewValue) | filter:$viewValue" ' +
+                         '    typeahead-wait-ms="300" ' +
+                         '    typeahead-editable="false" ' +
+                         '    typeahead-min-length="5" ' +
+                         '    data-ng-model="answeredQuestion.answer[0]" ' +
+                         '    placeholder="' + question.text + '">@repeatToken' +
+                         '</div>';
+                         */
                     }
+
                 }
 
                 template = question.type === 'boolean' ? template.replace("classToken@", "checkbox") : template.replace("classToken@", "form-control");
                 template = question.required ? template.replace("requiredToken@", "required ") : template.replace("requiredToken@", "");
-                template = angular.isDefined(readOnlyView) ? template.replace("valueToken@", 'value="' + readOnlyView + '"' ) : template.replace("valueToken@", "");
+                template = angular.isDefined(readOnlyView) ? template.replace("valueToken@", 'value="' + readOnlyView + '"') : template.replace("valueToken@", "");
                 template = angular.isDefined(readOnlyView) ? template.replace("readOnlyToken@", "readonly") : template.replace("readOnlyToken@", "");
 
                 if (question.repeats) {
@@ -329,6 +347,10 @@
                 }
 
                 iElem.bind('change', updateModel);
+
+                function filteredValueSet(input) {
+                    console.log(input);
+                }
 
                 function buildLocalValueSet(vsReference) {
                     var options = [];
@@ -399,7 +421,8 @@
                 }
             }
         }
-    ]);
+    ])
+    ;
 
     app.directive('fsQuestionnaireRepeatingGroup', ['$compile', '$filter', '$parse',
         function ($compile, $filter, $parse) {
@@ -529,4 +552,5 @@
         }
     ]);
 
-})();
+})
+    ();

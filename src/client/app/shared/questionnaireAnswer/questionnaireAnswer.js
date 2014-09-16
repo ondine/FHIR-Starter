@@ -166,9 +166,9 @@
                 logSuccess("Answers saved at " + resourceVersionId);
             }
             vm.questionnaire.resourceVersionId = resourceVersionId;
-            //vm.questionnaire.fullName = questionnaire.name;
             vm.isEditing = true;
-            // getTitle();
+            vm.answers.$$user = $window.sessionStorage.username;
+            vm.answers.$$eventDate = new Date();
             common.$broadcast('vitalsUpdateEvent', vm.answers);
         }
 

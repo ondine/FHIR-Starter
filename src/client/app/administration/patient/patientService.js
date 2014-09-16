@@ -33,9 +33,11 @@
             getCachedPatient: getCachedPatient,
             getCachedSearchResults: getCachedSearchResults,
             getPatient: getPatient,
+            getPatientContext: getPatientContext,
             getPatientReference: getPatientReference,
             getPatients: getPatients,
             initializeNewPatient: initializeNewPatient,
+            setPatientContext: setPatientContext,
             updatePatient: updatePatient
         };
 
@@ -122,6 +124,7 @@
                     }
                 }
                 if (cachedPatient) {
+
                     deferred.resolve(cachedPatient.content)
                 } else {
                     deferred.reject('Patient not found in cache: ' + hashKey);
@@ -150,6 +153,10 @@
                     deferred.reject(outcome);
                 });
             return deferred.promise;
+        }
+
+        function getPatientContext() {
+            return dataCache.readFromCache(dataCacheKey);
         }
 
         function getPatientReference(baseUrl, input) {
@@ -219,6 +226,10 @@
                 "contact": [],
                 "link": [],
                 "active": true};
+        }
+
+        function setPatientContext(data) {
+            dataCache.addToCache(itemCacheKey, data);
         }
 
         function updatePatient(resourceVersionId, resource) {

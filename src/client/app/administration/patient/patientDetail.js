@@ -34,10 +34,12 @@
         vm.cancel = cancel;
         vm.activate = activate;
         vm.delete = deletePatient;
+        vm.dataEvents = [];
         vm.edit = edit;
         vm.getOrganizationReference = getOrganizationReference;
         vm.getTitle = getTitle;
         vm.goBack = goBack;
+        vm.history = {"allergy": {"list": []}, "medication": {"list": []}, "condition": {"list": []}};
         vm.isBusy = false;
         vm.isSaving = false;
         vm.isEditing = true;
@@ -105,7 +107,15 @@
 
         $scope.$on('vitalsUpdateEvent',
             function (event, data) {
-                console.log("event received");
+                var item = { "profile" : data.group.linkId, "narrative": data.$$narrative };
+                if (item.profile.indexOf("Allergy") > -1) {
+                    vm.history.allergy.list.push(data);
+                } else if (item.profile.indexOf("Medication") > -1) {
+                    vm.history.medication.list.push(data);
+                } else {
+                    vm.history.condition.list.push(data);
+                }
+                vm.dataEvents.push(item);
             }
         );
 

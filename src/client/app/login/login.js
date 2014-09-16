@@ -18,9 +18,9 @@
     var controllerId = 'login';
 
     angular.module('FHIRStarter')
-        .controller(controllerId, ['$http', '$rootScope', '$window', 'common', login]);
+        .controller(controllerId, ['$http', '$window', 'common', login]);
 
-    function login($http, $rootScope, $window, common) {
+    function login($http, $window, common) {
         var vm = this;
 
         vm.activate = activate;
@@ -29,7 +29,7 @@
         vm.logout = logout;
         vm.message = '';
         vm.submit = submit;
-        vm.user = {username: 'elizabeth.corday', password: 'secret'};
+        vm.user = {username: undefined, password: undefined};
         vm.welcome = 'Please login';
 
         activate();
@@ -42,7 +42,6 @@
                 });
         }
 
-
         function logout() {
             vm.welcome = 'Please login';
             vm.message = '';
@@ -53,7 +52,7 @@
 
         function submit() {
             $window.sessionStorage.username = vm.user.username;
-            vm.isAuthenticate = true;
+            vm.isAuthenticated = true;
             vm.welcome = 'Welcome ' + $window.sessionStorage.username;
             common.$broadcast('loginEvent', vm.user.username);
         }
