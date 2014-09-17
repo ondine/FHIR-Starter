@@ -28,14 +28,24 @@
              allow-collapse="true"></div>
         <div class="widget-content text-left text-info">
             <accordion>
-                <accordion-group heading="Allergies">
-
+                <accordion-group heading="Allergies ({{vm.vitals.allergy.length}})">
+                    <div class="list-group">
+                        <a href='#'
+                           data-ng-repeat="a in vm.vitals.allergy track by a.id" class="list-group-item"> {{
+                            a.$$narrative }}</a>
+                    </div>
                 </accordion-group>
-                <accordion-group heading="Conditions">
-
+                <accordion-group heading="Conditions ({{vm.vitals.condition.length}})">
+                    <div class="list-group">
+                        <a href='#'
+                           data-ng-repeat="a in vm.vitals.condition" class="list-group-item"> {{ c.$$narrative }}</a>
+                    </div>
                 </accordion-group>
-                <accordion-group heading="Medications">
-
+                <accordion-group heading="Medications ({{vm.vitals.medication.length}})">
+                    <div class="list-group">
+                        <a href='#'
+                           data-ng-repeat="a in vm.vitals.medication" class="list-group-item"> {{ m.$$narrative }}</a>
+                    </div>
                 </accordion-group>
             </accordion>
         </div>
@@ -74,7 +84,7 @@
                 <tr>
                     <td>Gender</td>
                     <td>
-                        {{vm.patient.gender | codeableConcept}}
+                        {{vm.patient.gender}}
                     </td>
                 </tr>
                 <tr>
@@ -188,11 +198,13 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="item in vm.dataEvents">
+                <tr ng-repeat="item in vm.dataEvents track by item.id">
                     <td>{{item.date | date: 'short'}}</td>
                     <td>{{item.user}}</td>
                     <td>{{item.narrative}}</td>
-                    <td>{{item.profile}}</td>
+                    <td>{{item.profile}} <br/>
+
+                        <p class="small">{{item.resourceid}}</p></td>
                 </tr>
                 </tbody>
             </table>
@@ -208,21 +220,36 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr data-ng-repeat="item in vm.history.allergy.list" >
-                        <td>{{item.$$eventDate | date: 'medium' }}</td>
-                        <td>{{item.$$user}}</td>
-                        <td>
-                            <ul class="list-unstyled">
-                                <li>
-                                    <div data-ng-switch on="item.$$deleted">
+                <tr data-ng-repeat="item in vm.history.allergy.list track by item.id">
+                    <td>{{item.$$eventDate | date: 'medium' }}</td>
+                    <td>{{item.$$user}}</td>
+                    <td>
+                        <ul class="list-unstyled">
+                            <li>
+                                <div data-ng-switch on="item.$$deleted">
                                             <span data-ng-switch-when="true">
                                                 <span class="removed"> {{item.$$narrative}} </span> ({{item.deletedReason}})
                                             </span>
-                                        <span data-ng-switch-default>{{item.$$narrative}}</span>
-                                    </div>
-                                </li>
-                            </ul>
-                        </td>
+                                    <span data-ng-switch-default>{{item.$$narrative}}</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </tab>
+        <tab heading="Errors" data-ng-click="vm.loadErrors()">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Error</th>
+                    <th><button type="button" class="btn btn-info btn-xs" data-ng-click="vm.clearErrors()">Clear List</button></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr data-ng-repeat="item in vm.errors track by item.id">
+                    <td colspan="2">{{item.message}}</td>
                 </tr>
                 </tbody>
             </table>

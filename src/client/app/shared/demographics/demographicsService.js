@@ -12,7 +12,7 @@
         var _deceasedDate = null;
         var _language = [];
         var _multipleBirth = false;
-        var _gender = { "coding": [] };
+        var _gender = null;
         var _maritalStatus = { "coding": [] };
 
         var service = {
@@ -123,14 +123,7 @@
 
         // only 1 item in array permitted
         function setGender(value) {
-            _gender.coding = [];
-            if (value) {
-                if (angular.isObject(value)) {
-                    _gender.coding.push(value);
-                } else {
-                    _gender.coding.push(JSON.parse(value));
-                }
-            }
+            _gender = value;
         }
 
         function setLanguage(value) {

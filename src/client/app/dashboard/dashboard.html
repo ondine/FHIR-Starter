@@ -15,6 +15,13 @@
                 </div>
             </div>
             <div class="row">
+                <div class="btn-group pull-right">
+                    <button class="btn btn-warning" data-ng-click="vm.clearLocalStorage()"><i
+                            class="fa fa-trash-can"></i>Clear Local Storage
+                    </button>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-md-3">
                     <div class="widget wviolet">
                         <div data-cc-widget-header title="FHIR Servers"
@@ -23,7 +30,8 @@
                             <ul class="list-group">
                                 <div data-ng-repeat="s in vm.servers">
                                     <li class="list-group-item">
-                                        <a href="#" data-ng-click="vm.changeServer(s.id)" tooltip="Click to change to {{s.name}}">{{s.name}}</a>
+                                        <a href="#" data-ng-click="vm.changeServer(s.id)"
+                                           tooltip="Click to change to {{s.name}}">{{s.name}}</a>
                                     </li>
                                 </div>
                             </ul>
@@ -101,7 +109,8 @@
                                                     <td>
                                                         <ul data-ng-repeat="item in vm.conformance.rest[0].security.extension"
                                                             class="list-group">
-                                                            <li data-ng-repeat="(key, val) in item" class="list-group-item">
+                                                            <li data-ng-repeat="(key, val) in item"
+                                                                class="list-group-item">
                                                                 <strong>{{key}}</strong>: {{val}}
                                                             </li>
                                                         </ul>
@@ -134,7 +143,8 @@
             </div>
         </div>
         <div data-ng-show="vm.isBusy" class="page-splash dissolve-animation">
-            <div class="page-splash-message page-splash-message-subtle">{{vm.busyMessage}}&nbsp;&nbsp;<i class="fa fa-spinner fa-spin"></i></div>
+            <div class="page-splash-message page-splash-message-subtle">{{vm.busyMessage}}&nbsp;&nbsp;<i
+                    class="fa fa-spinner fa-spin"></i></div>
         </div>
     </section>
 </section>

@@ -268,7 +268,7 @@
              templateUrl: '/app/infrastructure/conceptmap/conceptmapDetail.html',
              settings: { }
              }
-             },*/
+             },
             {
                 url: '/profiles',
                 config: {
@@ -296,7 +296,26 @@
                     settings: { }
                 }
             },
-            /*          {
+            {
+                url: '/valuesets',
+                config: {
+                    title: 'valuesets',
+                    templateUrl: '/app/infrastructure/valueset/valuesets.html',
+                    settings: {
+                        nav: 6,
+                        content: '<i class="fa fa-codepen"></i> ValueSet'
+                    }
+                }
+            },
+            {
+                url: '/valueset/:hashKey',
+                config: {
+                    title: 'valueset',
+                    templateUrl: '/app/infrastructure/valueset/valuesetDetail.html',
+                    settings: { }
+                }
+            },
+         {
              url: '/compositions',
              config: {
              title: 'compositions',
@@ -313,7 +332,8 @@
              title: 'composition',
              templateUrl: '/app/infrastructure/composition/compositionDetail.html',
              settings: { }
-             }
+             },
+
              },*/
         ];
     }

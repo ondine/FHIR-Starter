@@ -16,9 +16,9 @@
     'use strict';
     
     angular.module('common')
-        .factory('logger', ['$log', logger]);
+        .factory('logger', ['$log', '$window', logger]);
 
-    function logger($log) {
+    function logger($log, $window) {
         var service = {
             getLogFn: getLogFn,
             log: log,
@@ -61,7 +61,28 @@
         }
 
         function logError(message, data, source, showToast) {
+            var errors;
+            if ($window.localStorage.errors) {
+                errors = JSON.parse($window.localStorage.errors);
+            } else {
+                errors = [];
+            }
+            var localError = { "message": message};
+            localError.id = generateUUID();
+            errors.push(localError);
+            $window.localStorage.errors = JSON.stringify(errors);
+
             logIt(message, data, source, showToast, 'error');
+
+            function generateUUID() {
+                var d = new Date().getTime();
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
+                    function (c) {
+                        var r = (d + Math.random() * 16) % 16 | 0;
+                        d = Math.floor(d / 16);
+                        return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
+                    });
+            }
         }
 
         function logIt(message, data, source, showToast, toastType) {

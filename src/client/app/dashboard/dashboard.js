@@ -27,6 +27,7 @@
 
         vm.activeServer = null;
         vm.busyMessage = "Contacting remote server ...";
+        vm.clearLocalStorage = clearLocalStorage;
         vm.cacheInfo = null;
         vm.changeServer = changeServer;
         vm.conformance = null;
@@ -60,6 +61,10 @@
                 .then(setActiveServer)
                 .then(fetchConformance)
  //               .then(fetchProfiles);
+        }
+
+        function clearLocalStorage(){
+            $window.localStorage.clear();
         }
 
         function fetchConformance(server) {

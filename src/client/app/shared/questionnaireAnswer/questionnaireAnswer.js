@@ -149,14 +149,6 @@
             return vm.isRendered;
         }
 
-        function prepResource(obj) {
-            var vals = _.values(obj);
-            var keys = _.keys(obj);
-            var fhirResource = vals[0];
-            fhirResource.resourceType = keys[0];
-            return fhirResource;
-        }
-
         function processResult(results) {
             toggleSpinner(false);
             var resourceVersionId = results.headers.location || results.headers["content-location"];
@@ -182,7 +174,7 @@
         function save() {
             vm.busyMessage = "Sending answers to remote host ...";
             toggleSpinner(true);
-            vm.answers.authored = moment();  //TODO - fix date
+            vm.answers.authored = moment();
             questionnaireAnswerService.addAnswer(vm.answers)
                 .then(processResult,
                 function (error) {

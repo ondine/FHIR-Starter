@@ -32,18 +32,22 @@
         vm.activeServer = null;
         vm.calculateAge = calculateAge;
         vm.cancel = cancel;
+        vm.clearErrors = clearErrors;
         vm.activate = activate;
         vm.delete = deletePatient;
         vm.dataEvents = [];
+        vm.errors = [];
         vm.edit = edit;
         vm.getOrganizationReference = getOrganizationReference;
         vm.getTitle = getTitle;
         vm.goBack = goBack;
         vm.history = {"allergy": {"list": []}, "medication": {"list": []}, "condition": {"list": []}};
+        vm.vitals = {"allergy": [], "medication": [], "condition": []};
         vm.lookupKey = undefined;
         vm.isBusy = false;
         vm.isSaving = false;
         vm.isEditing = true;
+        vm.loadErrors = loadErrors;
         vm.loadingOrganizations = false;
         vm.patient = undefined;
         vm.save = save;
@@ -88,6 +92,11 @@
             return !vm.isSaving;
         }
 
+        function clearErrors() {
+            $window.localStorage.errors = JSON.stringify([]);
+            loadErrors();
+        }
+
         function deletePatient(patient) {
             return bsDialog.deleteDialog(patient.fullName)
                 .then(confirmDelete);
@@ -107,22 +116,32 @@
             }
         }
 
+        function loadErrors() {
+            if ($window.localStorage.errors) {
+                vm.errors = JSON.parse($window.localStorage.errors);
+            }
+        }
+
         $scope.$on('vitalsUpdateEvent',
             function (event, data) {
                 var clone = _.cloneDeep(data);
-                var item = { "profile" : data.group.linkId, "narrative": data.$$narrative, "date": data.$$eventDate, "user": data.$$user };
-                if (item.profile.indexOf("Allergy") > -1) {
+                clone.id = common.generateUUID();
+                var dataEvent = { "profile": clone.group.linkId, "narrative": clone.$$narrative, "date": clone.$$eventDate, "user": clone.$$user, "resourceid": clone.$$resourceId, "id": clone.id };
+                if (dataEvent.profile.indexOf("Allergy") > -1) {
                     vm.history.allergy.list.push(clone);
-                    $window.sessionStorage.allergy = JSON.stringify(vm.history.allergy.list);
-                } else if (item.profile.indexOf("Medication") > -1) {
+                    vm.vitals.allergy.push(clone);
+                    $window.localStorage.allergy = JSON.stringify(vm.history.allergy.list);
+                    $window.localStorage.vitals = JSON.stringify(vm.vitals);
+                } else if (dataEvent.profile.indexOf("Medication") > -1) {
                     vm.history.medication.list.push(clone);
-                    $window.sessionStorage.medication = JSON.stringify(vm.history.medication.list);
+                    $window.localStorage.medication = JSON.stringify(vm.history.medication.list);
                 } else {
                     vm.history.condition.list.push(clone);
-                    $window.sessionStorage.condition = JSON.stringify(vm.history.condition.list);
+                    $window.localStorage.condition = JSON.stringify(vm.history.condition.list);
                 }
-                vm.dataEvents.push(item);
-                $window.sessionStorage.dataEvents = JSON.stringify(vm.dataEvents);
+                vm.dataEvents.push(dataEvent);
+                $window.localStorage.dataEvents = JSON.stringify(vm.dataEvents);
+                loadErrors();
             }
         );
 
@@ -157,13 +176,14 @@
         function getRequestedPatient() {
             vm.lookupKey = $routeParams.hashKey;
             if (vm.lookupKey === "current") {
-                if (angular.isUndefined($window.sessionStorage.patient) || $window.sessionStorage.patient === "null" ) {
-                    if (angular.isUndefined($routeParams.id)){
+                if (angular.isUndefined($window.localStorage.patient) || $window.localStorage.patient === "null") {
+                    if (angular.isUndefined($routeParams.id)) {
                         //redirect to search
                         $location.path('/patients');
                     }
                 } else {
-                    vm.patient = JSON.parse($window.sessionStorage.patient);
+                    vm.patient = JSON.parse($window.localStorage.patient);
+                    vm.patient.hashKey = "current";
                     intitializeRelatedData(vm.patient);
                 }
             }
@@ -210,29 +230,34 @@
                     }
                 }
                 vm.title = getTitle();
-                $window.sessionStorage.patient = JSON.stringify(vm.patient);
+                $window.localStorage.patient = JSON.stringify(vm.patient);
             }
         }
 
         function initStoredVitals() {
-            if ($window.sessionStorage.allergy) {
-                if ($window.sessionStorage.allergy.length > 0) {
-                    vm.history.allergy.list = JSON.parse($window.sessionStorage.allergy);
+            if ($window.localStorage.vitals) {
+                if ($window.localStorage.vitals.length > 0) {
+                    vm.vitals = JSON.parse($window.localStorage.vitals);
                 }
             }
-            if ($window.sessionStorage.medication) {
-                if ($window.sessionStorage.medication.length > 0) {
-                    vm.history.medication.list = JSON.parse($window.sessionStorage.medication);
+            if ($window.localStorage.allergy) {
+                if ($window.localStorage.allergy.length > 0) {
+                    vm.history.allergy.list = JSON.parse($window.localStorage.allergy);
                 }
             }
-            if ($window.sessionStorage.condition) {
-                if ($window.sessionStorage.condition.length > 0) {
-                    vm.history.condition.list = JSON.parse($window.sessionStorage.condition);
+            if ($window.localStorage.medication) {
+                if ($window.localStorage.medication.length > 0) {
+                    vm.history.medication.list = JSON.parse($window.localStorage.medication);
                 }
             }
-            if ($window.sessionStorage.dataEvents) {
-                if ($window.sessionStorage.dataEvents.length > 0) {
-                    vm.dataEvents = JSON.parse($window.sessionStorage.dataEvents);
+            if ($window.localStorage.condition) {
+                if ($window.localStorage.condition.length > 0) {
+                    vm.history.condition.list = JSON.parse($window.localStorage.condition);
+                }
+            }
+            if ($window.localStorage.dataEvents) {
+                if ($window.localStorage.dataEvents.length > 0) {
+                    vm.dataEvents = JSON.parse($window.localStorage.dataEvents);
                 }
             }
         }
@@ -306,7 +331,7 @@
                 vm.patient.fullName = humanNameService.getFullName();
                 vm.isEditing = true;
                 vm.title = getTitle();
-                $window.sessionStorage.patient = JSON.stringify(vm.patient);
+                $window.localStorage.patient = JSON.stringify(vm.patient);
                 toggleSpinner(false);
             }
         }
