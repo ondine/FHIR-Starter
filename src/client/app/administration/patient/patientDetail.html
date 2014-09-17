@@ -38,13 +38,13 @@
                 <accordion-group heading="Conditions ({{vm.vitals.condition.length}})">
                     <div class="list-group">
                         <a href='#'
-                           data-ng-repeat="a in vm.vitals.condition" class="list-group-item"> {{ c.$$narrative }}</a>
+                           data-ng-repeat="c in vm.vitals.condition" class="list-group-item"> {{ c.$$narrative }}</a>
                     </div>
                 </accordion-group>
                 <accordion-group heading="Medications ({{vm.vitals.medication.length}})">
                     <div class="list-group">
                         <a href='#'
-                           data-ng-repeat="a in vm.vitals.medication" class="list-group-item"> {{ m.$$narrative }}</a>
+                           data-ng-repeat="m in vm.vitals.medication" class="list-group-item"> {{ m.$$narrative }}</a>
                     </div>
                 </accordion-group>
             </accordion>
@@ -198,13 +198,13 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="item in vm.dataEvents track by item.id">
-                    <td>{{item.date | date: 'short'}}</td>
-                    <td>{{item.user}}</td>
-                    <td>{{item.narrative}}</td>
-                    <td>{{item.profile}} <br/>
+                <tr data-ng-repeat="d in vm.dataEvents track by $index">
+                    <td>{{d.date | date: 'short'}}</td>
+                    <td>{{d.user}}</td>
+                    <td>{{d.narrative}}</td>
+                    <td>{{d.profile}} <br/>
 
-                        <p class="small">{{item.resourceid}}</p></td>
+                        <p class="small">{{d.resourceid}}</p></td>
                 </tr>
                 </tbody>
             </table>
@@ -220,17 +220,17 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr data-ng-repeat="item in vm.history.allergy.list track by item.id">
-                    <td>{{item.$$eventDate | date: 'medium' }}</td>
-                    <td>{{item.$$user}}</td>
+                <tr data-ng-repeat="hx in vm.history.allergy.list track by $index">
+                    <td>{{hx.$$eventDate | date: 'medium' }}</td>
+                    <td>{{hx.$$user}}</td>
                     <td>
                         <ul class="list-unstyled">
                             <li>
-                                <div data-ng-switch on="item.$$deleted">
+                                <div data-ng-switch on="hx.$$deleted">
                                             <span data-ng-switch-when="true">
-                                                <span class="removed"> {{item.$$narrative}} </span> ({{item.deletedReason}})
+                                                <span class="removed"> {{hx.$$narrative}} </span> ({{hx.deletedReason}})
                                             </span>
-                                    <span data-ng-switch-default>{{item.$$narrative}}</span>
+                                    <span data-ng-switch-default>{{hx.$$narrative}}</span>
                                 </div>
                             </li>
                         </ul>
@@ -248,7 +248,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr data-ng-repeat="item in vm.errors track by item.id">
+                <tr data-ng-repeat="item in vm.errors track by $index">
                     <td colspan="2">{{item.message}}</td>
                 </tr>
                 </tbody>

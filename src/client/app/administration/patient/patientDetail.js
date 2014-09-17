@@ -125,8 +125,7 @@
         $scope.$on('vitalsUpdateEvent',
             function (event, data) {
                 var clone = _.cloneDeep(data);
-                clone.id = common.generateUUID();
-                var dataEvent = { "profile": clone.group.linkId, "narrative": clone.$$narrative, "date": clone.$$eventDate, "user": clone.$$user, "resourceid": clone.$$resourceId, "id": clone.id };
+                var dataEvent = { "profile": clone.group.linkId, "narrative": clone.$$narrative, "date": clone.$$eventDate, "user": clone.$$user, "resourceid": clone.$$resourceId };
                 if (dataEvent.profile.indexOf("Allergy") > -1) {
                     vm.history.allergy.list.push(clone);
                     vm.vitals.allergy.push(clone);
