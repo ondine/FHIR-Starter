@@ -14,11 +14,11 @@
         <div class="widget wlightblue" data-ng-show="vm.rendered">
             <div data-cc-widget-header title="{{vm.questionnaire.group.title}}"></div>
             <span class="help-block">{{vm.questionnaire.group.text}}</span>
-            <data-ng-form name="questionnaireAnswerForm" class="form-horizontal"
-                          data-ng-model="vm.answers">
+            <form name="questionnaireAnswerForm" class="form-horizontal"
+                          data-ng-model="vm.answers" data-ng-submit="vm.save(vm.answers)">
                 <div class="row">
-                    <div class="btn-group pull-right">
-                        <button class="btn btn-success" data-ng-click="vm.save(vm.answers)"><i
+                     <div class="btn-group pull-right">
+                        <button class="btn btn-success" type="submit"><i
                                 class="fa fa fa-save"></i>Save
                         </button>
                     </div>
@@ -55,11 +55,11 @@
                     </div>
                 </fieldset>
                 <div class="btn-group pull-right">
-                    <button class="btn btn-success" data-ng-click="vm.save(vm.answers)"><i
+                    <button class="btn btn-success" type="submit"><i
                             class="fa fa fa-save"></i>Save
                     </button>
                 </div>
-            </data-ng-form>
+            </form>
         </div>
     </div>
     <div data-ng-show="vm.isBusy" class="page-splash dissolve-animation">

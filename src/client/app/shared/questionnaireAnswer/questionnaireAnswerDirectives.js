@@ -284,12 +284,14 @@
                         }
                         template =
                             ' <select ' +
-                                '   class="form-control"' +
-                                '   id="' + linkId + '"> ' +
-                                '    </option><option value=null>--</option>' +
-                                '    <option data-ng-repeat="coding in valueSet" value="{{ coding }}" >' +
-                                '             {{coding.display || ""}}' +
-                                '  </select>' +
+                                'requiredToken@' +
+                                'class="form-control"' +
+                                'name="' + linkId + '" ' +
+                                'id="' + linkId + '"> ' +
+                                '</option><option value="">--</option>' +
+                                ' <option data-ng-repeat="coding in valueSet" value="{{ coding }}" >' +
+                                '{{coding.display || ""}}' +
+                                '</select>' +
                                 '</div>';
 
                         /*    template =
@@ -310,7 +312,7 @@
                 }
 
                 template = question.type === 'boolean' ? template.replace("classToken@", "checkbox") : template.replace("classToken@", "form-control");
-                template = question.required ? template.replace("requiredToken@", "required ") : template.replace("requiredToken@", "");
+                template = (question.required || (scope.questionGroup.required && (scope.questionGroup.question.length === 1))) ? template.replace("requiredToken@", "required ") : template.replace("requiredToken@", "");
                 template = angular.isDefined(readOnlyView) ? template.replace("valueToken@", 'value="' + readOnlyView + '"') : template.replace("valueToken@", "");
                 template = angular.isDefined(readOnlyView) ? template.replace("readOnlyToken@", "readonly") : template.replace("readOnlyToken@", "");
 
