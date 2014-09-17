@@ -299,7 +299,7 @@
                                 'name="' + linkId + '" ' +
                                 'id="' + linkId + '"> ' +
                                 '</option><option value="">--</option>' +
-                                ' <option data-ng-repeat="coding in valueSet" value="{{ coding }}" >' +
+                                '<option data-ng-repeat="coding in valueSet | orderBy:\'display\'" value="{{ coding }}" >' +
                                 '{{coding.display || ""}}' +
                                 '</select>' +
                                 '</div>';
@@ -366,7 +366,7 @@
                 iElem.bind('change', updateModel);
 
                 function filteredValueSet(input) {
-                    // TODO: will need a custom directive for typeahead search 
+                    // TODO: will need a custom directive for typeahead search
                     console.log(input);
                 }
 
