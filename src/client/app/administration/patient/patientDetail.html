@@ -23,34 +23,6 @@
     <img data-fs-img-person="vm.patient.photo[0]"
          class="img-polaroid" src="/content/images/unknown_person.jpg"/>
 
-    <div class="widget wlightblue">
-        <div data-cc-widget-header title="Vitals"
-             allow-collapse="true"></div>
-        <div class="widget-content text-left text-info">
-            <accordion>
-                <accordion-group heading="Allergies ({{vm.vitals.allergy.length}})">
-                    <div class="list-group">
-                        <a href='#'
-                           data-ng-repeat="a in vm.vitals.allergy track by $index" class="list-group-item"> {{
-                            a.$$narrative }}</a>
-                    </div>
-                </accordion-group>
-                <accordion-group heading="Conditions ({{vm.vitals.condition.length}})">
-                    <div class="list-group">
-                        <a href='#'
-                           data-ng-repeat="c in vm.vitals.condition" class="list-group-item"> {{ c.$$narrative }}</a>
-                    </div>
-                </accordion-group>
-                <accordion-group heading="Medications ({{vm.vitals.medication.length}})">
-                    <div class="list-group">
-                        <a href='#'
-                           data-ng-repeat="m in vm.vitals.medication" class="list-group-item"> {{ m.$$narrative }}</a>
-                    </div>
-                </accordion-group>
-            </accordion>
-        </div>
-    </div>
-
     <div class="widget wgreen">
         <div data-cc-widget-header title="History"
              allow-collapse="true">

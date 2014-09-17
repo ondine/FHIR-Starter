@@ -101,6 +101,8 @@
                     retValue = 'number';
                 } else if (_.contains(['boolean'], inputType)) {
                     retValue = 'checkbox';
+                } else if (_.contains(['Attachment'], inputType)) {
+                    retValue = 'file';
                 }
             }
             return retValue;
@@ -154,11 +156,11 @@
         };
     });
 
-    app.filter('renderObject', function() {
-        return function(item) {
+    app.filter('renderObject', function () {
+        return function (item) {
             var objectString;
             var keys = _.keys(item);
-            _.forEach(keys, function(key) {
+            _.forEach(keys, function (key) {
                 if (angular.isDefined(item[key]) && (key !== '$$hashKey')) {
                     if (angular.isDefined(objectString)) {
                         objectString = objectString + ", " + key + ": " + item[key];

@@ -222,6 +222,7 @@
                 var question = scope.question;
                 var linkId = setLinkId(question.linkId, scope.questionGroup.repeats);
                 var readOnlyView;
+                var defaultValue = '';
                 //  setModel(ngModelGet, linkId.replace('[x]', ''), scope.questionGroup.repeats, null);
 
                 var answeredQuestion = {};
@@ -256,12 +257,21 @@
                     }
                 }
 
+                //TODO: temporary for CC - use default date
+                if (_.contains(['date', 'dateTime', 'instant'], question.type)) {
+                    defaultValue = moment().format("YYYY-MM-DD");
+                    var defaultDate = {};
+                    defaultDate[scope.answerType] = defaultValue;
+                    scope.answeredQuestion.answer = defaultDate;
+                }
+
                 var template =
                     '  <input readOnlyToken@ requiredToken@' +
-                        '    type="' + $filter('questionnaireInputType')(question.type) + '" ' +
-                        '    id="' + linkId + '" ' +
-                        '    class="classToken@" valueToken@ ' +
-                        '    placeholder="' + question.text + '">@repeatToken' +
+                        'type="' + $filter('questionnaireInputType')(question.type) + '" ' +
+                        'id="' + linkId + '" ' +
+                        'class="classToken@" valueToken@ ' +
+                        'value="' + defaultValue + '"' +
+                        'placeholder="' + question.text + '">@repeatToken' +
                         '</div>';
 
                 if (question.type === 'choice') {
@@ -356,6 +366,7 @@
                 iElem.bind('change', updateModel);
 
                 function filteredValueSet(input) {
+                    // TODO: will need a custom directive for typeahead search 
                     console.log(input);
                 }
 
@@ -454,10 +465,7 @@
                     '  <button type="submit"' +
                     '          class="btn btn-info"' +
                     '          data-ng-click="addToList()">' +
-                    '          <i class="fa fa-plus"></i>&nbsp;Save to List' +
-                    '  </button>' +
-                    '  <button type="button" class="btn btn-info pull-right" data-ng-click="reset()">' +
-                    '      <i class="fa fa-refresh"></i>&nbsp;Reset' +
+                    '          <i class="fa fa-plus"></i>&nbsp;Add to List' +
                     '  </button>' +
                     '</div>';
 
