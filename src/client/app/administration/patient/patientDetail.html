@@ -57,7 +57,7 @@
         </div>
         <div class="widget-content text-left text-info">
             <div class='list-group'>
-                <a href='#' data-ng-repeat="item in vm.dataEvents" class='list-group-item'>
+                <a href='#' data-ng-repeat="item in vm.dataEvents track by $index" class='list-group-item'>
                     {{item.profile}}
                     <div><em>{{item.narrative}}</em></div>
                 </a>

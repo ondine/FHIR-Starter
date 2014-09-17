@@ -248,7 +248,7 @@
                     // if patient is subject of questionnaire - make readonly
                     if (scope.referenceType === 'Patient') {
                         var patient = questionnaireAnswerService.getPatientContext();
-                        var relPath = patient.resourceId.substr(patient.resourceId.indexOf("/Patient/")+ 1);
+                        var relPath = patient.resourceId.substr(patient.resourceId.indexOf("/Patient/") + 1);
                         var answer = {};
                         answer[scope.answerType] = { "reference": relPath };
                         scope.answeredQuestion.answer = [answer];
@@ -338,7 +338,11 @@
                         var element = document.getElementById(linkId);
                         var val = element.value;
                         if (scope.question.type === 'choice') {
-                            val = JSON.parse(val);
+                            if (val.length > 2) {
+                                val = JSON.parse(val);
+                            } else {
+                                val = null;
+                            }
                         } else if (scope.question.type === 'reference') {
                             val = { "reference": val };
                         }
