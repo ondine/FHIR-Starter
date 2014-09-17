@@ -271,7 +271,7 @@
                         'id="' + linkId + '" ' +
                         'class="classToken@" valueToken@ ' +
                         'value="' + defaultValue + '"' +
-                        'placeholder="' + question.text + '">@repeatToken' +
+                        'placeholder="' + question.text + '">repeatToken@ requiredIcon@' +
                         '</div>';
 
                 if (question.type === 'choice') {
@@ -301,7 +301,7 @@
                                 '</option><option value="">--</option>' +
                                 '<option data-ng-repeat="coding in valueSet | orderBy:\'display\'" value="{{ coding }}" >' +
                                 '{{coding.display || ""}}' +
-                                '</select>' +
+                                '</select>requiredIcon@' +
                                 '</div>';
 
                         /*    template =
@@ -314,7 +314,7 @@
                          '    typeahead-editable="false" ' +
                          '    typeahead-min-length="5" ' +
                          '    data-ng-model="answeredQuestion.answer[0]" ' +
-                         '    placeholder="' + question.text + '">@repeatToken' +
+                         '    placeholder="' + question.text + '">repeatToken@' +
                          '</div>';
                          */
                     }
@@ -322,15 +322,23 @@
                 }
 
                 template = question.type === 'boolean' ? template.replace("classToken@", "checkbox") : template.replace("classToken@", "form-control");
-                template = (question.required || (scope.questionGroup.required && (scope.questionGroup.question.length === 1))) ? template.replace("requiredToken@", "required ") : template.replace("requiredToken@", "");
                 template = angular.isDefined(readOnlyView) ? template.replace("valueToken@", 'value="' + readOnlyView + '"') : template.replace("valueToken@", "");
                 template = angular.isDefined(readOnlyView) ? template.replace("readOnlyToken@", "readonly") : template.replace("readOnlyToken@", "");
 
                 if (question.repeats) {
                     var repeatDirective = '<fs-questionnaire-repeating-question model-id="' + linkId + '" data-ng-model="ngModel" answer-group="answerGroup" value-sets="valueSets" />';
-                    template = template.replace('@repeatToken', repeatDirective);
+                    template = template.replace("repeatToken@", repeatDirective);
                 } else {
-                    template = template.replace('@repeatToken', '');
+                    template = template.replace("repeatToken@", '');
+                }
+
+                if (question.required || (scope.questionGroup.required && (scope.questionGroup.question.length === 1))) {
+                    template = template.replace("requiredToken@", "required ");
+                    var requiredIcon = '<a href="#" class="fa fa-asterisk" tooltip="Required"></a>';
+                    template = template.replace("requiredIcon@", requiredIcon);
+                } else {
+                    template = template.replace("requiredToken@", '');
+                    template = template.replace("requiredIcon@", '');
                 }
 
                 if (iAttrs.totalQuestions > 1) {
@@ -566,6 +574,4 @@
             }
         }
     ]);
-
-})
-    ();
+})();
