@@ -19,10 +19,10 @@
 <div data-cc-widget-header title="{{ vm.patient.name | fullName }}">
 </div>
 <div class="widget-content user col-md-12">
-<div class="col-md-3">
+<div class="col-md-2">
     <img data-fs-img-person="vm.patient.photo[0]"
          class="img-polaroid" src="/content/images/unknown_person.jpg"/>
-
+<!--
     <div class="widget wgreen">
         <div data-cc-widget-header title="History"
              allow-collapse="true">
@@ -35,9 +35,9 @@
                 </a>
             </div>
         </div>
-    </div>
+    </div>-->
 </div>
-<div class="col-md-9">
+<div class="col-md-10">
     <tabset vertical="false">
         <tab heading="Demographics">
             <table class="table table-striped table-hover">
@@ -181,6 +181,7 @@
                 </tbody>
             </table>
         </tab>
+        <!--
         <tab heading="Allergy History">
             <table class="table table-striped table-hover">
                 <caption class="text-center">History of Changes to Allergy List</caption>
@@ -211,6 +212,7 @@
                 </tbody>
             </table>
         </tab>
+        -->
         <tab heading="Errors" data-ng-click="vm.loadErrors()">
             <table class="table table-striped table-hover" style="table-layout: fixed;
     word-wrap: break-word;">
