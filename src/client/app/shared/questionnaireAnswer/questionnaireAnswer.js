@@ -126,6 +126,7 @@
                     vm.answers.group.linkId = vm.questionnaire.group.linkId;
                     vm.answers.group.text = vm.questionnaire.group.text;
                     vm.answers.group.group = [];
+                    vm.answers.$$narrative = null;
                     return vm.questionnaire;
                 }, function (error) {
                     toggleSpinner(false);
