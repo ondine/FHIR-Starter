@@ -109,7 +109,7 @@
         }
 
         function loadQuestions() {
-            if (vm.selectedProfile === null) {
+            if (vm.selectedProfile === null || vm.selectedProfile === "") {
                 return;
             }
             vm.busyMessage = "Rendering profile questionnaire ...";
@@ -151,7 +151,6 @@
         }
 
         function processResult(results) {
-            toggleSpinner(false);
             var resourceVersionId = results.headers.location || results.headers["content-location"];
             if (angular.isUndefined(resourceVersionId)) {
                 logWarning("Answers saved, but remote location is unavailable. CORS not implemented correctly at remote host.");
@@ -166,6 +165,7 @@
             localAnswer.$$deleted = false;
             common.$broadcast('vitalsUpdateEvent', localAnswer);
             loadQuestions();
+            toggleSpinner(false);
         }
 
         function renderForm() {

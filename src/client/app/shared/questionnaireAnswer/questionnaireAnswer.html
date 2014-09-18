@@ -4,7 +4,7 @@
         <select class="form-control" id="profile"
                 data-ng-model="vm.selectedProfile"
                 data-ng-change="vm.loadQuestions()">
-            <option value="null">--</option>
+            <option value="">--</option>
             <option data-ng-repeat="item in vm.profiles | orderBy: 'content.name'" value="{{item.id}}">
                 {{item.content.name || ''}}
             </option>

@@ -262,12 +262,12 @@
                     defaultValue = moment().format("YYYY-MM-DD");
                     var defaultDate = {};
                     defaultDate[scope.answerType] = defaultValue;
-                    scope.answeredQuestion.answer = defaultDate;
+                    scope.answeredQuestion.answer = [defaultDate];
                 }
 
                 var template =
                     '  <input readOnlyToken@ requiredToken@' +
-                        'type="' + $filter('questionnaireInputType')(question.type) + '" ' +
+                        'type="' + $filter('questionnaireInputType')(question.type) + '" stepToken@' +
                         'id="' + linkId + '" ' +
                         'class="classToken@" valueToken@ ' +
                         'value="' + defaultValue + '"' +
@@ -325,6 +325,11 @@
                 template = angular.isDefined(readOnlyView) ? template.replace("valueToken@", 'value="' + readOnlyView + '"') : template.replace("valueToken@", "");
                 template = angular.isDefined(readOnlyView) ? template.replace("readOnlyToken@", "readonly") : template.replace("readOnlyToken@", "");
 
+                if (_.contains(['integer','decimal'], question.type)) {
+                    template = template.replace("stepToken@", 'step="any"')
+                } else {
+                    template = template.replace("stepToken@", '');
+                }
                 if (question.repeats) {
                     var repeatDirective = '<fs-questionnaire-repeating-question model-id="' + linkId + '" data-ng-model="ngModel" answer-group="answerGroup" value-sets="valueSets" />';
                     template = template.replace("repeatToken@", repeatDirective);
@@ -363,6 +368,8 @@
                             }
                         } else if (scope.question.type === 'reference') {
                             val = { "reference": val };
+                        } else if (scope.question.type === 'integer') {
+                            val = parseInt(val);
                         }
                         var answer = {};
                         answer[scope.answerType] = val;
