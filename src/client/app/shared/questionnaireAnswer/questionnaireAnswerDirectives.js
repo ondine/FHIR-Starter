@@ -389,6 +389,9 @@
                         if (matchId === linkId) {
                             var text = document.getElementById(matchId);
                             text.value = data.display;
+                            var textAnswer = {};
+                            textAnswer[scope.answerType] = data.display;
+                            scope.answeredQuestion.answer = [textAnswer];
                         }
                     }
                 );
