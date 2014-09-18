@@ -367,7 +367,7 @@
                                 val = null;
                             }
                         } else if (scope.question.type === 'reference') {
-                            val = { "reference": val };
+                            val = { "display": val };  //TODO: will change once this has supporting lookup
                         } else if (scope.question.type === 'integer') {
                             val = parseInt(val);
                         }
