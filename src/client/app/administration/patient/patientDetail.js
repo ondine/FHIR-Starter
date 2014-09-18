@@ -126,6 +126,7 @@
             function (event, data) {
                 var clone = _.cloneDeep(data);
                 var dataEvent = { "profile": clone.group.linkId, "narrative": clone.$$narrative, "date": clone.$$eventDate, "user": clone.$$user, "resourceid": clone.$$resourceId };
+/*
                 if (dataEvent.profile.indexOf("Allergy") > -1) {
                     vm.history.allergy.list.push(clone);
                     vm.vitals.allergy.push(clone);
@@ -137,7 +138,7 @@
                 } else {
                     vm.history.condition.list.push(clone);
                     $window.localStorage.condition = JSON.stringify(vm.history.condition.list);
-                }
+                }*/
                 vm.dataEvents.push(dataEvent);
                 $window.localStorage.dataEvents = JSON.stringify(vm.dataEvents);
                 loadErrors();
