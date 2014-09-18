@@ -146,11 +146,10 @@
             var deferred = $q.defer();
             fhirServers.getActiveServer()
                 .then(function (server) {
-                    // &filter='health'&_limit=1000
                     if (identifier === "http://www.healthintersections.com.au/fhir/ValueSet/anything"){
                         identifier = identifier + "&filter='health'";
                     }
-                    var url = server.baseUrl + "/ValueSet/$expand?identifier=" + identifier + "&_limit=3000";
+                    var url = server.baseUrl + "/ValueSet/$expand?identifier=" + identifier + "&_limit=3000&_incomplete=1";
                     fhirClient.getResource(url)
                         .then(function (results) {
                             if (results.data && results.data.expansion && angular.isArray(results.data.expansion.contains)) {
