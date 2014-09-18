@@ -274,7 +274,7 @@
                         'placeholder="' + question.text + '">repeatToken@ requiredIcon@' +
                         '</div>';
 
-                if (question.type === 'choice') {
+                if (_.contains(['choice', 'open-choice'], question.type)) {
                     var vsReference;
                     var needsFilter = false;
                     if (angular.isDefined(question.options)) {
@@ -360,7 +360,7 @@
                     scope.$apply(function () {
                         var element = document.getElementById(linkId);
                         var val = element.value;
-                        if (scope.question.type === 'choice') {
+                        if (_.contains(['choice', 'open-choice'], scope.question.type)) {
                             if (val.length > 2) {
                                 val = JSON.parse(val);
                                 if (linkId.indexOf('.coding') > 1) {
@@ -369,6 +369,9 @@
                             } else {
                                 val = null;
                             }
+                        } else if (scope.question.type == 'open-choice') {
+                            //TODO: pending implementation of dynamic lookup
+                            return;
                         } else if (scope.question.type === 'reference') {
                             val = { "display": val };  //TODO: will change once this has supporting lookup
                         } else if (scope.question.type === 'integer') {
