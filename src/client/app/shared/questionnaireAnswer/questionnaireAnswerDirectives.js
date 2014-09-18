@@ -148,8 +148,8 @@
             function link(scope, iElem, iAttrs) {
                 var listTemplate = '<div data-ng-show="items.length>0" class="col-md-12">' +
                     ' <form>' +
-                    '   <legend>' + $filter('questionnaireLabel')(iAttrs.groupId) + ' list</legend> ' +
                     '   <table class="table table-responsive">' +
+                    '   <caption style="text-align: left">' + $filter('questionnaireLabel')(iAttrs.groupId) + ' list</caption> ' +
                     '     <tbody>' +
                     '       <tr data-ng-repeat="item in items"><td>{{item | renderObject }}</td><td><button data-ng-click="remove(item)">x</button></td>' +
                     '       </tr>' +
@@ -472,8 +472,8 @@
         }
     ]);
 
-    app.directive('fsQuestionnaireRepeatingGroup', ['$compile', '$filter', '$parse',
-        function ($compile, $filter, $parse) {
+    app.directive('fsQuestionnaireRepeatingGroup', ['$compile', '$filter', '$parse', 'common',
+        function ($compile, $filter, $parse, common) {
             // Description: Manage repeating group of items.
             // Usage: <fs-questionnaire-repeating-group group-id="groupId" group-members="groupId" ng-model="vm.answers" />
             var directiveDefinitionObject = {
@@ -490,10 +490,11 @@
                 var members = iAttrs.groupMembers.split('..');
                 var localArray = [];
                 var ngModelGet = $parse(iAttrs.ngModel)(scope);
+                var logWarning = common.logger.getLogFn('fsQuestionnaireRepeatingGroup', 'warning');
 
                 var template = '<div class="btn-group col-md-10">' +
                     '  <button type="button"' +
-                    '          class="btn btn-info"' +
+                    '          class="btn btn-info btn-xs"' +
                     '          data-ng-click="addToList()">' +
                     '          <i class="fa fa-plus"></i>&nbsp;Add to List' +
                     '  </button>' +
@@ -504,20 +505,39 @@
                 template = template + listDirective;
 
                 scope.addToList = function () {
+                    logWarning("Multiple responses not yet supported.");
+                    return;
                     console.log('addRepeatingGroupToList::');
                     console.log(scope);
-                   // return;
-
+                    var addToArray = false;
                     var arrayItem = {};
+                    var clonedGroup;
+
+                    if (angular.isArray(scope.$parent.answerGroup)) {
+                        var sourceGroup = _.find(scope.$parent.answerGroup, function(item) {
+                            return (item.linkId === groupId && (item.question[0].answer.length === 0));
+                        });
+                        if (angular.isDefined(sourceGroup) && (angular.isArray(sourceGroup) === false)) {
+                            clonedGroup = _.cloneDeep(sourceGroup);
+                        }
+                    }
+
+                    // empty the input values
                     _.forEach(members, function (item) {
                         var element = document.getElementById(item);
                         var val = element.value;
-                        var path = item.replace(groupId + '.', '');
-                        setArrayItem(arrayItem, path, val);
-                        element.value = '';
+                        if (val.length > 0) {
+                            addToArray = true;
+                            var path = item.replace(groupId + '.', '');
+                            // add to cloned group
+                            setArrayItem(arrayItem, path, val);
+                            element.value = '';
+                        }
                     });
-                    localArray.push(arrayItem);
-                    setModel(ngModelGet, groupId, localArray);
+                    if (addToArray) {
+                        localArray.push(arrayItem);
+                        setModel(ngModelGet, groupId, localArray);
+                    }
                 };
 
                 scope.reset = function () {

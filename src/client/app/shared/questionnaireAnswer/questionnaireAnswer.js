@@ -120,7 +120,7 @@
                     vm.questionnaire = results.data;
                     vm.answers.resourceType = "QuestionnaireAnswers";
                     vm.answers.questionnaire = { "reference": results.config.url };
-                    vm.answers.status = "in progress";
+                    vm.answers.status = "completed";
                     vm.answers.group = {};
                     vm.answers.group.title = vm.questionnaire.group.title;
                     vm.answers.group.linkId = vm.questionnaire.group.linkId;
