@@ -194,8 +194,8 @@
         }
     }]);
 
-    app.directive('fsQuestionnaireQuestion', ['$compile', '$filter', '$parse', 'questionnaireAnswerService', 'valuesetService',
-        function ($compile, $filter, $parse, questionnaireAnswerService, valuesetService) {
+    app.directive('fsQuestionnaireQuestion', ['$rootScope', '$compile', '$filter', '$parse', 'common', 'questionnaireAnswerService', 'valuesetService',
+        function ($rootScope, $compile, $filter, $parse, common, questionnaireAnswerService, valuesetService) {
             // Description: Renders the HTML input element for a specific question
             // Usage:  <fs-questionnaire-question question="q" ng-model="vm.answers" value-sets="valueSets" />
             var directiveDefinitionObject = {
@@ -325,7 +325,7 @@
                 template = angular.isDefined(readOnlyView) ? template.replace("valueToken@", 'value="' + readOnlyView + '"') : template.replace("valueToken@", "");
                 template = angular.isDefined(readOnlyView) ? template.replace("readOnlyToken@", "readonly") : template.replace("readOnlyToken@", "");
 
-                if (_.contains(['integer','decimal'], question.type)) {
+                if (_.contains(['integer', 'decimal'], question.type)) {
                     template = template.replace("stepToken@", 'step="any"')
                 } else {
                     template = template.replace("stepToken@", '');
@@ -363,6 +363,9 @@
                         if (scope.question.type === 'choice') {
                             if (val.length > 2) {
                                 val = JSON.parse(val);
+                                if (linkId.indexOf('.coding') > 1) {
+                                    common.$broadcast('codeableConceptUpdated', _.cloneDeep(val), linkId);
+                                }
                             } else {
                                 val = null;
                             }
@@ -379,6 +382,16 @@
                 }
 
                 iElem.bind('change', updateModel);
+
+                $rootScope.$on('codeableConceptUpdated',
+                    function (event, data, id) {
+                        var matchId = id.replace("coding", "text");
+                        if (matchId === linkId) {
+                            var text = document.getElementById(matchId);
+                            text.value = data.display;
+                        }
+                    }
+                );
 
                 function filteredValueSet(input) {
                     // TODO: will need a custom directive for typeahead search
