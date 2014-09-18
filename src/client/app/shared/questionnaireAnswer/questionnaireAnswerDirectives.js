@@ -470,8 +470,7 @@
                 }
             }
         }
-    ])
-    ;
+    ]);
 
     app.directive('fsQuestionnaireRepeatingGroup', ['$compile', '$filter', '$parse',
         function ($compile, $filter, $parse) {
@@ -493,7 +492,7 @@
                 var ngModelGet = $parse(iAttrs.ngModel)(scope);
 
                 var template = '<div class="btn-group col-md-10">' +
-                    '  <button type="submit"' +
+                    '  <button type="button"' +
                     '          class="btn btn-info"' +
                     '          data-ng-click="addToList()">' +
                     '          <i class="fa fa-plus"></i>&nbsp;Add to List' +
@@ -505,6 +504,10 @@
                 template = template + listDirective;
 
                 scope.addToList = function () {
+                    console.log('addRepeatingGroupToList::');
+                    console.log(scope);
+                   // return;
+
                     var arrayItem = {};
                     _.forEach(members, function (item) {
                         var element = document.getElementById(item);
@@ -586,8 +589,7 @@
                     '</span>';
 
                 scope.addToList = function () {
-                    console.log('addToList::');
-                    console.log(iAttrs);
+                    console.log('addRepeatingQuestionToList::');
                     console.log(scope);
                 };
 

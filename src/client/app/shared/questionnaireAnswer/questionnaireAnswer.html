@@ -15,7 +15,7 @@
             <div data-cc-widget-header title="{{vm.questionnaire.group.title}}"></div>
             <span class="help-block">{{vm.questionnaire.group.text}}</span>
             <form name="questionnaireAnswerForm" class="form-horizontal"
-                          data-ng-model="vm.answers" data-ng-submit="vm.save(vm.answers)">
+                          data-ng-model="vm.answers" data-ng-submit="vm.save($event)">
                 <div class="row">
                      <div class="btn-group pull-right">
                         <button class="btn btn-success" type="submit"><i

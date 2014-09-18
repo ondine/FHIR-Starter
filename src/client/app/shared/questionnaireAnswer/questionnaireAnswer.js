@@ -32,9 +32,9 @@
     var controllerId = 'questionnaireAnswer';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$routeParams', '$window', 'common', 'localValueSets', 'questionnaireAnswerService', questionnaireAnswer]);
+        ['$routeParams', '$scope', '$window', 'common', 'localValueSets', 'questionnaireAnswerService', questionnaireAnswer]);
 
-    function questionnaireAnswer($routeParams, $window, common, localValueSets, questionnaireAnswerService) {
+    function questionnaireAnswer($routeParams, $scope, $window, common, localValueSets, questionnaireAnswerService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
         var logInfo = common.logger.getLogFn(controllerId, 'info');
@@ -172,7 +172,7 @@
             vm.isRendered = true;
         }
 
-        function save() {
+        function save(event) {
             vm.busyMessage = "Sending answers to remote host ...";
             toggleSpinner(true);
             vm.answers.authored = moment();
