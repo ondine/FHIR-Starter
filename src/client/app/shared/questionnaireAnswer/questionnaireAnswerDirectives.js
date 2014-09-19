@@ -303,7 +303,7 @@
                                 '{{coding.display || ""}}' +
                                 '</select>requiredIcon@' +
                                 '</div>';
-          /*              if (needsFilter) {
+            /*            if (needsFilter) {
                             template =
                                 '  <input readOnlyToken@ requiredToken@' +
                                     '    type="' + $filter('questionnaireInputType')(question.type) + '" ' +
@@ -316,7 +316,6 @@
                                     '    data-ng-model="answeredQuestion.answer[0]" ' +
                                     '    placeholder="' + question.text + '">repeatToken@' +
                                     '</div>';
-
                         }*/
                     }
                 }

@@ -104,7 +104,7 @@
                         "secure": false
                     },
                     {
-                        "id": 7,
+                        "id": 8,
                         "name": "Local Server (DEBUG USE ONLY)",
                         "baseUrl": "http://localhost:960/open",
                         "secure": false
