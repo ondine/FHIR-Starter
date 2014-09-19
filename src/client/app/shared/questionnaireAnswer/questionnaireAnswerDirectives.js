@@ -303,22 +303,22 @@
                                 '{{coding.display || ""}}' +
                                 '</select>requiredIcon@' +
                                 '</div>';
+          /*              if (needsFilter) {
+                            template =
+                                '  <input readOnlyToken@ requiredToken@' +
+                                    '    type="' + $filter('questionnaireInputType')(question.type) + '" ' +
+                                    '    id="' + linkId + '" ' +
+                                    '    class="classToken@" valueToken@ ' +
+                                    '    typeahead="item as item.display for item in filteredValueSet($viewValue) | filter:$viewValue" ' +
+                                    '    typeahead-wait-ms="300" ' +
+                                    '    typeahead-editable="false" ' +
+                                    '    typeahead-min-length="5" ' +
+                                    '    data-ng-model="answeredQuestion.answer[0]" ' +
+                                    '    placeholder="' + question.text + '">repeatToken@' +
+                                    '</div>';
 
-                        /*    template =
-                         '  <input readOnlyToken@ requiredToken@' +
-                         '    type="' + $filter('questionnaireInputType')(question.type) + '" ' +
-                         '    id="' + linkId + '" ' +
-                         '    class="classToken@" valueToken@ ' +
-                         '    typeahead="item as item.display for item in filteredValueSet($viewValue) | filter:$viewValue" ' +
-                         '    typeahead-wait-ms="300" ' +
-                         '    typeahead-editable="false" ' +
-                         '    typeahead-min-length="5" ' +
-                         '    data-ng-model="answeredQuestion.answer[0]" ' +
-                         '    placeholder="' + question.text + '">repeatToken@' +
-                         '</div>';
-                         */
+                        }*/
                     }
-
                 }
 
                 template = question.type === 'boolean' ? template.replace("classToken@", "checkbox") : template.replace("classToken@", "form-control");
@@ -517,7 +517,7 @@
                     var clonedGroup;
 
                     if (angular.isArray(scope.$parent.answerGroup)) {
-                        var sourceGroup = _.find(scope.$parent.answerGroup, function(item) {
+                        var sourceGroup = _.find(scope.$parent.answerGroup, function (item) {
                             return (item.linkId === groupId && (item.question[0].answer.length === 0));
                         });
                         if (angular.isDefined(sourceGroup) && (angular.isArray(sourceGroup) === false)) {

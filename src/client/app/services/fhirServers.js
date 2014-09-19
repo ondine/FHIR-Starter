@@ -103,6 +103,12 @@
                         "baseUrl": "https://fhir-open-api.smartplatforms.org",
                         "secure": false
                     },
+                    {
+                        "id": 7,
+                        "name": "Local Server (DEBUG USE ONLY)",
+                        "baseUrl": "http://localhost:960/open",
+                        "secure": false
+                    },
                 ];
                 var servers = dataCache.readFromCache('servers');
                 if (angular.isUndefined(servers)) {
