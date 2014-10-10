@@ -194,6 +194,84 @@
         }
     }]);
 
+    app.directive('fsQuestionnaireAutoFill', ['$compile', '$timeout', 'valuesetService',
+        function ($compile, $timeout, valuesetService) {
+
+            var directiveDefinitionObject = {
+                restrict: 'E',
+                link: link,
+                scope: {
+                    ngModel: '='
+                }
+            };
+            return directiveDefinitionObject;
+
+            function link(scope, iElem, iAttrs) {
+//code as code.display for code in vm.languages | filter:$viewValue | limitTo:5
+                var template = angular.element(
+                    '<input type="text" autocomplete="off" />' +
+                        '<ul id="autolist">' +
+                        ' <li data-ng-repeat="coding in filteredValueset">{{coding.code}}</li>' +
+                        '</ul>');
+
+                // template = angular.element('<div><input type="text" /></div>');
+                var input = template.find('input');
+
+                // input.attr('data-ng-model', iAttrs.ngModel);
+                input.attr('class', 'form-control');
+                input.attr('id', iAttrs.id);
+                input.attr('valueset', iAttrs.valueset);
+                input.attr('placeholder', iAttrs.placeholder);
+
+                $compile(template)(scope, function (cloned) {
+                    iElem.append(cloned);
+                });
+
+                // Link function
+                var noResultsItem = { "code": "", "display": "No Results", "system": ""};
+                var noResults = [noResultsItem];
+                var minKeyCount = iAttrs.minKeyCount || 5,
+                    timer,
+                    input = iElem.find('input');
+
+                input.bind('keyup', fetchValueset);
+
+                function fetchValueset(event) {
+                    scope.val = event.target.value;
+                    scope.$apply(function (scope) {
+                        if (scope.val.length < minKeyCount) {
+                            if (timer) {
+                                $timeout.cancel(timer);
+                            }
+                            scope.filteredValueset = null;
+                        } else {
+                            if (timer) {
+                                $timeout.cancel(timer);
+                            }
+                            timer = $timeout(function () {
+                                valuesetService.getFilteredExpansion(iAttrs.valueset, scope.val)
+                                    .then(function (data) {
+                                        if (data && data.length > 0) {
+                                            scope.filteredValueset = data;
+                                        } else {
+                                            scope.filteredValueset = noResults;
+                                        }
+                                    }, function (error) {
+                                        console.log(error);
+                                        scope.filteredValueset = noResults;
+                                    });
+                            }, 300);
+                        }
+                    });
+                }
+
+                input.bind('blur',
+                    function (event) {
+                        scope.filteredValueSet = null;
+                    });
+            }
+        }]);
+
     app.directive('fsQuestionnaireQuestion', ['$rootScope', '$compile', '$filter', '$parse', 'common', 'questionnaireAnswerService', 'valuesetService',
         function ($rootScope, $compile, $filter, $parse, common, questionnaireAnswerService, valuesetService) {
             // Description: Renders the HTML input element for a specific question
@@ -223,6 +301,7 @@
                 var linkId = setLinkId(question.linkId, scope.questionGroup.repeats);
                 var readOnlyView;
                 var defaultValue = '';
+                var $q = common.$q;
                 //  setModel(ngModelGet, linkId.replace('[x]', ''), scope.questionGroup.repeats, null);
 
                 var answeredQuestion = {};
@@ -230,6 +309,8 @@
                 scope.answerType = $filter('questionnaireAnswerType')(question.type);
                 answeredQuestion.answer = [];
                 scope.answeredQuestion = answeredQuestion;
+                scope.selectedCoding;
+                scope.getFilteredValueset = getFilteredValueset;
 
                 if (angular.isDefined(scope.questionGroup.question)) {
                     scope.answerGroup.question.push(answeredQuestion);
@@ -285,12 +366,13 @@
                         needsFilter = vsReference === "http://www.healthintersections.com.au/fhir/ValueSet/anything";
                     }
                     if (angular.isDefined(vsReference)) {
-
                         if (vsReference.indexOf('#') > -1) {
                             // local reference
                             buildLocalValueSet(vsReference);
-                        } else {
+                        } else if(needsFilter === false) {
                             buildExternalValueSet(vsReference);
+                        } else {
+                            scope.valuesetId = vsReference;
                         }
                         template =
                             ' <select ' +
@@ -303,20 +385,19 @@
                                 '{{coding.display || ""}}' +
                                 '</select>requiredIcon@' +
                                 '</div>';
-            /*            if (needsFilter) {
-                            template =
-                                '  <input readOnlyToken@ requiredToken@' +
-                                    '    type="' + $filter('questionnaireInputType')(question.type) + '" ' +
-                                    '    id="' + linkId + '" ' +
-                                    '    class="classToken@" valueToken@ ' +
-                                    '    typeahead="item as item.display for item in filteredValueSet($viewValue) | filter:$viewValue" ' +
-                                    '    typeahead-wait-ms="300" ' +
-                                    '    typeahead-editable="false" ' +
-                                    '    typeahead-min-length="5" ' +
-                                    '    data-ng-model="answeredQuestion.answer[0]" ' +
-                                    '    placeholder="' + question.text + '">repeatToken@' +
-                                    '</div>';
-                        }*/
+                        if (needsFilter) {
+                            template = '  <input requiredToken@' +
+                                ' type="text"' +
+                                ' id="' + linkId + '"' +
+                                ' typeahead="code as code.display for code in getFilteredValueset($viewValue) | filter:$viewValue | limitTo:50"' +
+                                ' typeahead-wait-ms="300"' +
+                                ' class="form-control"' +
+                                ' typeahead-min-length="5"' +
+                                ' typeahead-editable="true"' +
+                                ' data-ng-model="selectedCoding"' +
+                                ' placeholder="' + question.text + '"/>requiredIcon@' +
+                                '</div>';
+                        }
                     }
                 }
 
@@ -383,8 +464,26 @@
                     });
                 }
 
-                iElem.bind('change', updateModel);
+                function getFilteredValueset (input) {
+                    var deferred = $q.defer();
+                    valuesetService.getFilteredExpansion(scope.valuesetId, input)
+                        .then(function (data) {
+                            if (data && data.length > 0) {
+                                deferred.resolve(data);
+                            } else {
+                                deferred.resolve([]);
+                            }
+                        }, function (error) {
+                            console.log(error);
+                            defer.resolve([]);
+                        });
+                    return deferred.promise;
+                }
 
+                //TODO: break out control types into seperate directives?
+                if (needsFilter === false) {
+                    iElem.bind('change', updateModel);
+                }
                 $rootScope.$on('codeableConceptUpdated',
                     function (event, data, id) {
                         var matchId = id.replace("coding", "text");
@@ -397,11 +496,6 @@
                         }
                     }
                 );
-
-                function filteredValueSet(input) {
-                    // TODO: will need a custom directive for typeahead search
-                    console.log(input);
-                }
 
                 function buildLocalValueSet(vsReference) {
                     var options = [];
@@ -472,7 +566,9 @@
                 }
             }
         }
-    ]);
+
+    ])
+    ;
 
     app.directive('fsQuestionnaireRepeatingGroup', ['$compile', '$filter', '$parse', 'common',
         function ($compile, $filter, $parse, common) {

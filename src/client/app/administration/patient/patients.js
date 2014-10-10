@@ -21,7 +21,9 @@
         ['$location', 'common', 'config', 'fhirServers', 'patientService', patients]);
 
     function patients($location, common, config, fhirServers, patientService) {
-        var vm = this;
+        /*jshint validthis:true */
+        var vm;
+        vm = this;
         var getLogFn = common.logger.getLogFn;
         var keyCodes = config.keyCodes;
         var log = getLogFn(controllerId);
@@ -65,14 +67,10 @@
                 });
         }
 
-        function applyFilter() {
-            vm.filteredPatients = vm.patients.filter(patientFilter);
-        }
-
         function getActiveServer() {
             fhirServers.getActiveServer()
                 .then(function (server) {
-                    return vm.activeServer = server;
+                    vm.activeServer = server;
                 });
         }
 
@@ -87,39 +85,10 @@
                 .then(processSearchResults);
         }
 
-        function getPatientsFilteredCount() {
-            // TODO: filter results based on doB or address, etc.
-        }
-
-        function fetchLinkedPage(url) {
-            if (url.length > 0) {
-                toggleSpinner(true);
-                patientService.getLink(url)
-                    .then(function (data) {
-                        log('Returned ' + (angular.isArray(data.entry) ? data.entry.length : 0) + ' Patients from ' + vm.activeServer.name, true);
-                        return data;
-                    }, function (error) {
-                        log('Error ' + error);
-                        toggleSpinner(false);
-                    })
-                    .then(processSearchResults)
-                    .then(function () {
-                        toggleSpinner(false);
-                    });
-            }
-        }
-
         function goToPatient(patient) {
             if (patient && patient.$$hashKey) {
                 $location.path('/patient/view/' + patient.$$hashKey);
             }
-        }
-
-        function patientFilter(patient) {
-            var isMatch = vm.searchText
-                ? common.textContains(patient.name, vm.searchText)
-                : true;
-            return isMatch;
         }
 
         function pageChanged() {

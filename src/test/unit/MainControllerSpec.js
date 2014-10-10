@@ -1,4 +1,3 @@
-'use strict';
 
 describe('MainController', function () {
     var scope, $controllerConstructor, mockServerData;
@@ -19,5 +18,5 @@ describe('MainController', function () {
             {$scope: scope, $log:{}, $cookieStore:{}, fhirClient:{}, serverData: mockServerData, cacheData:{}});
 
         expect(scope.servers).toBe(mockServers);
-    })
-})
+    });
+});

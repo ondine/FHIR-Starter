@@ -17,7 +17,8 @@
 
     var serviceId = 'allergyIntoleranceService';
 
-    angular.module('FHIRStarter').factory(serviceId, ['$filter', 'common', 'dataCache', 'fhirClient', 'fhirServers', allergyIntoleranceService]);
+    angular.module('FHIRStarter').factory(serviceId, ['$filter', 'common', 'dataCache', 'fhirClient', 'fhirServers',
+        allergyIntoleranceService]);
 
     function allergyIntoleranceService($filter, common, dataCache, fhirClient, fhirServers) {
         var dataCacheKey = 'localAllergyIntolerances';

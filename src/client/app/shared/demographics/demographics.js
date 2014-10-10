@@ -6,7 +6,9 @@
     angular.module('FHIRStarter').controller(controllerId, ['common', 'config', 'demographicsService', 'localValueSets', demographics]);
 
     function demographics(common, config, demographicsService, localValueSets) {
-        var vm = this;
+        /*jshint validthis:true */
+        var vm;
+        vm = this;
         var keyCodes = config.keyCodes;
 
         vm.addLanguage = addLanguage;
@@ -38,7 +40,7 @@
 
         function activate() {
             common.activateController([getGenders(), getMaritalStatuses(), getLanguages()], controllerId).then(function () {
-                initData()
+                initData();
             });
         }
 

@@ -17,11 +17,11 @@
 
     var serviceId = 'patientService';
 
-    angular.module('FHIRStarter').factory(serviceId, ['$filter', 'common', 'dataCache', 'fhirClient', 'fhirServers', patientService]);
+    angular.module('FHIRStarter').factory(serviceId, ['$filter', 'common', 'dataCache', 'fhirClient', 'fhirServers',
+        patientService]);
 
     function patientService($filter, common, dataCache, fhirClient, fhirServers) {
         var dataCacheKey = 'localPatients';
-        var linksCacheKey = 'linksPatients';
         var itemCacheKey = 'contextPatient';
         var $q = common.$q;
 
@@ -56,7 +56,7 @@
                             deferred.reject(outcome);
                         });
                 });
-            return deferred.promise
+            return deferred.promise;
         }
 
         function clearCache() {
@@ -75,7 +75,7 @@
                     deferred.reject(error);
                 })
                 .then(function () {
-                    deferred.resolve()
+                    deferred.resolve();
                 });
             return deferred.promise;
 
@@ -125,7 +125,7 @@
                 }
                 if (cachedPatient) {
 
-                    deferred.resolve(cachedPatient.content)
+                    deferred.resolve(cachedPatient.content);
                 } else {
                     deferred.reject('Patient not found in cache: ' + hashKey);
                 }
@@ -174,7 +174,7 @@
                             });
                     }
                     if (patients.length === 0) {
-                        patients.push({display: "No matches", reference: ''})
+                        patients.push({display: "No matches", reference: ''});
                     }
                     deferred.resolve(patients);
                 }, function (outcome) {
@@ -242,18 +242,6 @@
                     deferred.reject(outcome);
                 });
             return deferred.promise;
-        }
-
-        function _addToCache(patient) {
-            var cachedPatients = searchResults.entry;
-            _.remove(cachedPatients,function (item) {
-                return item.$$hashKey !== hashKey;
-            }).then(function (reducedItems) {
-                    searchResults.entry = reducedItems;
-                    searchResults.totalResults = (searchResults.totalResults - 1);
-                    dataCache.addToCache(dataCacheKey, searchResults);
-                });
-            deferred.resolve();
         }
 
         function _prepArrays(resource) {

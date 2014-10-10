@@ -32,6 +32,7 @@
             deleteValueset: deleteValueset,
             getCachedValueset: getCachedValueset,
             getExpansion: getExpansion,
+            getFilteredExpansion: getFilteredExpansion,
             getFilteredCount: getFilteredCount,
             getRemoteValueset: getRemoteValueset,
             getValuesetsCount: getValuesetsCount,
@@ -123,7 +124,7 @@
             var deferred = $q.defer();
             fhirServers.getActiveServer()
                 .then(function (server) {
-                    var url = server.baseUrl + "/ValueSet/$expand?identifier=" + identifier + "$filter=" + filter;
+                    var url = server.baseUrl + "/ValueSet/$expand?identifier=" + identifier + "&filter='" + filter + "'&_limit=100&_incomplete=1";
                     fhirClient.getResource(url)
                         .then(function (results) {
                             if (results.data && results.data.expansion && angular.isArray(results.data.expansion.contains)) {

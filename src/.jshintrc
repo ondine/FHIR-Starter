@@ -1,0 +1,15 @@
+{
+    "globals": {
+        "angular" : false,
+        "sinon" : false,
+        "describe": false,
+        "it": false,
+        "before": false,
+        "beforeEach": false,
+        "after": false,
+        "expect": false
+    },
+    "validthis": true, "multistr": true, "laxcomma": true, "laxbreak": true, "browser": true, "eqeqeq": false,
+    "eqnull": true, "debug": true, "devel": true, "curly": false, "boss": true, "expr": true, "asi": true,
+    "supernew": true
+}

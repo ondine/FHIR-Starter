@@ -1,0 +1,31 @@
+{
+  "name": "FHIRStarter",
+  "version": "0.1.0",
+  "homepage": "https://github.com/PBernhardt/FHIR-Starter",
+  "authors": [
+    "Peter Bernhardt <peter.bernhardt@gmail.com>"
+  ],
+  "description": "Reference client for FHIR services",
+  "moduleType": [
+    "es6"
+  ],
+  "keywords": [
+    "fhir",
+    "angularjs"
+  ],
+  "license": "Apache",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-bootstrap": "~0.11.2",
+    "lodash": "~2.4.1"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.2.26"
+  }
+}

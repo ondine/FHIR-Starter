@@ -18,9 +18,13 @@
     var controllerId = 'locationDetail';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$location', '$routeParams', '$window', 'addressService',  'bootstrap.dialog', 'common', 'fhirServers', 'identifierService', 'localValueSets', 'locationService', 'organizationService', 'telecomService', 'valuesetService', locationDetail]);
+        ['$location', '$routeParams', '$window', 'addressService',  'bootstrap.dialog', 'common', 'fhirServers',
+            'identifierService', 'localValueSets', 'locationService', 'organizationService', 'telecomService',
+            'valuesetService', locationDetail]);
 
-    function locationDetail($location, $routeParams, $window, addressService, bsDialog, common, fhirServers, identifierService, localValueSets, locationService, organizationService, telecomService, valuesetService) {
+    function locationDetail($location, $routeParams, $window, addressService, bsDialog, common, fhirServers,
+                            identifierService, localValueSets, locationService, organizationService, telecomService,
+                            valuesetService) {
         var vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
         var logSuccess = common.logger.getLogFn(controllerId, 'success');
@@ -57,7 +61,8 @@
         activate();
 
         function activate() {
-            common.activateController([getActiveServer(), getLocationModes(), getLocationPhysicalTypes(), getLocationStatuses()], controllerId)
+            common.activateController([getActiveServer(), getLocationModes(), getLocationPhysicalTypes(),
+                getLocationStatuses()], controllerId)
                 .then(function () {
                     getLocationRoleTypes();
                     getRequestedLocation();
@@ -182,10 +187,10 @@
             function intitializeRelatedData(data) {
                 vm.location = data;
                 if (angular.isUndefined(vm.location.type)) {
-                    vm.location.type = { "coding": [] }
+                    vm.location.type = { "coding": [] };
                 }
                 if (angular.isUndefined(vm.location.physicalType)) {
-                    vm.location.physicalType = { "coding": [] }
+                    vm.location.physicalType = { "coding": [] };
                 }
                 vm.title = vm.location.name;
                 identifierService.init(vm.location.identifier, 'multi');

@@ -18,12 +18,16 @@
     var controllerId = 'patientDetail';
 
     angular.module('FHIRStarter').controller(controllerId,
-        ['$location', '$routeParams', '$scope', '$window', 'addressService', 'attachmentService', 'bootstrap.dialog', 'common',
-            'demographicsService', 'fhirServers', 'humanNameService', 'identifierService', 'localValueSets', 'organizationService',
-            'patientService', 'questionnaireAnswerService', 'telecomService', patientDetail]);
+        ['$location', '$routeParams', '$scope', '$window', 'addressService', 'attachmentService', 'bootstrap.dialog',
+            'common', 'demographicsService', 'fhirServers', 'humanNameService', 'identifierService',
+            'organizationService', 'patientService', 'questionnaireAnswerService', 'telecomService', patientDetail]);
 
-    function patientDetail($location, $routeParams, $scope, $window, addressService, attachmentService, bsDialog, common, demographicsService, fhirServers, humanNameService, identifierService, localValueSets, organizationService, patientService, questionnaireAnswerService, telecomService) {
-        var vm = this;
+    function patientDetail($location, $routeParams, $scope, $window, addressService, attachmentService, bsDialog,
+                           common, demographicsService, fhirServers, humanNameService, identifierService,
+                           organizationService, patientService, questionnaireAnswerService, telecomService) {
+        /*jshint validthis:true */
+        var vm;
+        vm = this;
         var logError = common.logger.getLogFn(controllerId, 'error');
         var logSuccess = common.logger.getLogFn(controllerId, 'success');
         var logWarning = common.logger.getLogFn(controllerId, 'warning');
@@ -154,7 +158,7 @@
         function getActiveServer() {
             fhirServers.getActiveServer()
                 .then(function (server) {
-                    return vm.activeServer = server;
+                    vm.activeServer = server;
                 });
         }
 

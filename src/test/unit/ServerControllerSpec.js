@@ -1,4 +1,3 @@
-'use strict';
 
 describe('ServerController', function () {
     var scope, $controllerConstructor, mockServerData;
@@ -24,4 +23,4 @@ describe('ServerController', function () {
 
         expect(mockUpdatedServer).toBe(mockServerData);
     })
-})
+});

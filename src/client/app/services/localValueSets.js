@@ -39,10 +39,10 @@
         //
         function administrativeGender() {
             return [
-                {"code": "UNK", "display": "Unknown", "system": "http://hl7.org/fhir/v3/NullFlavor"},
-                {"code": "F", "display": "Female", "system": "http://hl7.org/fhir/vs/administrative-gender"},
-                {"code": "M", "display": "Male", "system": "http://hl7.org/fhir/vs/administrative-gender"},
-                {"code": "UN", "display": "Undifferentiated", "system": "http://hl7.org/fhir/vs/administrative-gender"}
+                {"code": "unknown", "display": "Unknown", "system": "http://hl7.org/fhir/administrative-gender"},
+                {"code": "female", "display": "Female", "system": "http://hl7.org/fhir/administrative-gender"},
+                {"code": "male", "display": "Male", "system": "http://hl7.org/fhir/administrative-gender"},
+                {"code": "other", "display": "Other", "system": "http://hl7.org/fhir/administrative-gender"}
             ];
         }
 

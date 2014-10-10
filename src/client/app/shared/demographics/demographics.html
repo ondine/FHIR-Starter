@@ -9,8 +9,8 @@
                         <select class="form-control" id="demographics-gender"
                                 data-ng-model="vm.demographics.gender"
                                 data-ng-change="vm.updateGender()">
-                            <option data-ng-repeat="coding in vm.genders" value="{{coding.display}}"
-                                    data-ng-selected="coding.display===vm.demographics.gender">
+                            <option data-ng-repeat="coding in vm.genders" value="{{coding.code}}"
+                                    data-ng-selected="coding.code===vm.demographics.gender">
                                 {{coding.display || ''}}
                             </option>
                         </select>

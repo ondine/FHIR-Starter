@@ -1,0 +1,44 @@
+{
+  "name": "FHIRStarter",
+  "version": "0.1.0",
+  "description": "Reference client for FHIR services",
+  "main": "fhirStarterFiles.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "bower": "~1.3.12",
+    "grunt": "~0.4.5",
+    "grunt-contrib-clean": "~0.6.0",
+    "grunt-contrib-compress": "~0.12.0",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-contrib-concat": "~0.5.0",
+    "grunt-contrib-uglify": "~0.6.0",
+    "grunt-devserver": "~0.6.0",
+    "grunt-contrib-jasmine": "~0.8.0",
+    "karma": "~0.12.24",
+    "protractor": "~1.3.1",
+    "karma-cli": "0.0.4",
+    "karma-jasmine": "~0.1.5",
+    "karma-chrome-launcher": "~0.1.5"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PBernhardt/FHIR-Starter.git"
+  },
+  "keywords": [
+    "fhir",
+    "angularjs"
+  ],
+  "author": "Peter Bernhardt, et al",
+  "license": "Apache",
+  "bugs": {
+    "url": "https://github.com/PBernhardt/FHIR-Starter/issues"
+  },
+  "homepage": "https://github.com/PBernhardt/FHIR-Starter"
+}

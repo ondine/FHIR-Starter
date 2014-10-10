@@ -35,7 +35,7 @@
             setLanguage: setLanguage,
             setMaritalStatus: setMaritalStatus,
             setMultipleBirth: setMultipleBirth
-        }
+        };
 
         return service;
 
