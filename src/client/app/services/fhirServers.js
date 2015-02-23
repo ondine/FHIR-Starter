@@ -57,8 +57,8 @@
                 var baseList = [
                     {
                         "id": 0,
-                        "name": "FHIR Place",
-                        "baseUrl": "http://try-fhirplace.hospital-systems.com",
+                        "name": "McKesson Spark",
+                        "baseUrl": "http://mckesson-fhir-server.azurewebsites.net/fhir",
                         "secure": false
                     },
                     {
