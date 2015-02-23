@@ -57,48 +57,36 @@
                 var baseList = [
                     {
                         "id": 0,
-                        "name": "McKesson Spark",
-                        "baseUrl": "http://mckesson-fhir-server.azurewebsites.net/fhir",
-                        "secure": false
-                    },
-                    {
-                        "id": 1,
                         "name": "Furore Spark",
                         "baseUrl": "http://spark.furore.com/fhir",
                         "secure": false
                     },
                     {
-                        "id": 2,
+                        "id": 1,
                         "name": "HAPI",
                         "baseUrl": "http://fhirtest.uhn.ca/base",
                         "secure": false
                     },
                     {
-                        "id": 3,
+                        "id": 2,
                         "name": "Health Intersections",
                         "baseUrl": "http://fhir.healthintersections.com.au/open",
                         "secure": false
                     },
                     {
+                        "id": 3,
+                        "name": "McKesson Spark",
+                        "baseUrl": "http://mckesson-fhir-server.azurewebsites.net/fhir",
+                        "secure": false
+                    },
+                    {
                         "id": 4,
-                        "name": "Health Intersections (DEV)",
-                        "baseUrl": "http://fhir-dev.healthintersections.com.au/open",
-                        "secure": false
-                    },
-                    {
-                        "id": 5,
-                        "name": "Oridashi",
-                        "baseUrl": "http://demo.oridashi.com.au:8190",
-                        "secure": false
-                    },
-                    {
-                        "id": 6,
                         "name": "Orion Health Blaze",
                         "baseUrl": "https://fhir.orionhealth.com/blaze/fhir",
                         "secure": false
                     },
                     {
-                        "id": 7,
+                        "id": 5,
                         "name": "SMART",
                         "baseUrl": "https://fhir-open-api.smartplatforms.org",
                         "secure": false
